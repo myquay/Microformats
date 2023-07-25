@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 namespace Microformats.Result
@@ -7,12 +8,12 @@ namespace Microformats.Result
     /// <summary>
     /// Result of parsing a document for microformats
     /// </summary>
-    public class MResult
+    public class MfResult
     {
         /// <summary>
         /// Items present
         /// </summary>
-        public MValue[] Items { get; set; } = Array.Empty<MValue>();
+        public MfType[] Items { get; set; } = Array.Empty<MfType>();
 
         /// <summary>
         /// Rel values present

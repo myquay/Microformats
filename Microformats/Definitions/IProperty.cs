@@ -10,4 +10,13 @@ namespace Microformats.Definitions
         MType Type { get; }
         string Name { get; }
     }
+
+    public enum MType
+    {
+        Root,
+        Property,
+        Url,
+        DateTime,
+        Embedded
+    }
 }
