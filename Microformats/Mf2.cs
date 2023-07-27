@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microformats.Definitions;
+using Microformats.Definitions.Properties;
 using Microformats.Result;
 using System;
 using System.Collections.Generic;
@@ -131,10 +132,17 @@ namespace Microformats
                 {
                     case MType.Property:
                         //if such class(es) are found, it is a property element
-                        var item = ParseChildrenForProperty(node, property.Name);
+                        var propertyItem = ParseChildrenForProperty(node, property.Name);
                         //add properties found to current microformat's properties: { } structure
-                        if (item != null)
-                            resultSet.Properties.Add(property.Name.Remove(0, 2), item);
+                        if (propertyItem != null)
+                            resultSet.Properties.Add(property.Name.Remove(0, 2), propertyItem);
+                        break;
+                    case MType.Url:
+                        //if such class(es) are found, it is a property element
+                        var urlItem = ParseChildrenForProperty(node, property.Name);
+                        //add properties found to current microformat's properties: { } structure
+                        if (urlItem != null)
+                            resultSet.Properties.Add(property.Name.Remove(0, 2), urlItem);
                         break;
                     default:
                         break;
@@ -169,8 +177,66 @@ namespace Microformats
             {
                 if(property == "p-name")
                 {
-                    return new[] { new MfValue("set implicit") };
-                    //TODO: IMPLICIT PROCESSING
+                    if (node.Is("img", "area") && node.HasAttr("alt"))
+                        return new[] { new MfValue(node.GetAttributeValue("alt", null)) };
+
+                    if (node.Is("abbr") && node.HasAttr("title"))
+                        return new[] { new MfValue(node.GetAttributeValue("title", null)) };
+
+                    if(node.TrySelectSingleChild("img", out HtmlNode imgChild) && imgChild.HasAttr("alt") && !imgChild.IsMicoformatEntity())
+                        return new[] { new MfValue(imgChild.GetAttributeValue("alt", null)) };
+
+                    if (node.TrySelectSingleChild("area", out HtmlNode areaChild) && areaChild.HasAttr("alt") && !areaChild.IsMicoformatEntity())
+                        return new[] { new MfValue(areaChild.GetAttributeValue("alt", null)) };
+
+                    if (node.TrySelectSingleChild("abbr", out HtmlNode abbrChild) && abbrChild.HasAttr("title") && !abbrChild.IsMicoformatEntity())
+                        return new[] { new MfValue(abbrChild.GetAttributeValue("title", null)) };
+
+                    if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicoformatEntity())
+                    {
+                        if (anyChild.TrySelectSingleChild("img", out HtmlNode imgNestedChild) && imgNestedChild.HasAttr("alt") && !imgNestedChild.IsMicoformatEntity())
+                            return new[] { new MfValue(imgNestedChild.GetAttributeValue("alt", null)) };
+
+                        if (anyChild.TrySelectSingleChild("area", out HtmlNode areaNestedChild) && areaNestedChild.HasAttr("alt") && !areaNestedChild.IsMicoformatEntity())
+                            return new[] { new MfValue(areaNestedChild.GetAttributeValue("alt", null)) };
+
+                        if (anyChild.TrySelectSingleChild("abbr", out HtmlNode abbrNestedChild) && abbrNestedChild.HasAttr("title") && !abbrNestedChild.IsMicoformatEntity())
+                            return new[] { new MfValue(abbrNestedChild.GetAttributeValue("title", null)) };
+                    }
+
+                    //else use the textContent of the .h-x for name after: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
+                    //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
+                    return new[] { new MfValue(node.InnerText) };
+                   
+                }
+                //if no explicit "photo" property, and no other explicit u-* (Proposed: change to: u-* or e-*) properties, and no nested microformats,
+                else if (property == "u-photo")
+                {
+                    return null;
+                }
+                else if (property == "u-url")
+                {
+                    if (node.Is("a", "area") && node.HasAttr("href"))
+                        return new[] { new MfValue(node.GetAttributeValue("href", null)) };
+
+                    if (node.TrySelectFirstChild("a", out HtmlNode aChild, onlyOfType: true) && aChild.HasAttr("href") && !aChild.IsMicoformatEntity())
+                        return new[] { new MfValue(aChild.GetAttributeValue("href", null)) };
+
+                    if (node.TrySelectFirstChild("area", out HtmlNode areaChild, onlyOfType: true) && areaChild.HasAttr("href") && !areaChild.IsMicoformatEntity())
+                        return new[] { new MfValue(aChild.GetAttributeValue("href", null)) };
+
+                    if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicoformatEntity())
+                    {
+
+                        if (anyChild.TrySelectFirstChild("a", out HtmlNode aNestedChild, onlyOfType: true) && aNestedChild.HasAttr("href") && !aNestedChild.IsMicoformatEntity())
+                            return new[] { new MfValue(aNestedChild.GetAttributeValue("href", null)) };
+
+                        if (anyChild.TrySelectFirstChild("area", out HtmlNode areaNestedChild, onlyOfType: true) && areaNestedChild.HasAttr("href") && !areaNestedChild.IsMicoformatEntity())
+                            return new[] { new MfValue(areaNestedChild.GetAttributeValue("href", null)) };
+
+                    }
+
+                    return null;
                 }
                 else
                 {

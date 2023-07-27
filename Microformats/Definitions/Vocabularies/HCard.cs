@@ -9,6 +9,6 @@ namespace Microformats.Definitions.Vocabularies
     {
         public MicroformatsVersion Version => MicroformatsVersion.Two;
         public string Name => "h-card";
-        public IProperty[] Properties => new[] { new PName() };
+        public IProperty[] Properties => new IProperty[] { new PName(), new UUrl() };
     }
 }
