@@ -4,18 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microformats.Definitions.Properties
+namespace Microformats.Definitions.Properties.Standard.Card
 {
     /// <summary>
-    /// p-note - additional notes
+    /// p-org - affiliated organization, optionally embed an h-card
     /// </summary>
     [HCard]
-    public class PNote : IProperty
+    public class Org : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-note";
+        public string Name => "p-org";
 
-        public string Key => "note";
+        public string Key => "org";
     }
 }

@@ -4,18 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microformats.Definitions.Properties
+namespace Microformats.Definitions.Properties.Standard.Address
 {
     /// <summary>
-    /// p-category - category/tag
+    /// p-latitude - decimal latitude
     /// </summary>
-    [HCard]
-    public class PCategory : IProperty
+    [HAdr]
+    public class Latitude : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-category";
+        public string Name => "p-latitude";
 
-        public string Key => "category";
+        public string Key => "latitude";
     }
 }

@@ -4,18 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microformats.Definitions.Properties
+namespace Microformats.Definitions.Properties.Standard.Address
 {
     /// <summary>
-    /// p-org - affiliated organization, optionally embed an h-card
+    /// p-longitude - decimal longitude
     /// </summary>
-    [HCard]
-    public class POrg : IProperty
+    [HAdr]
+    public class Longitude : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-org";
+        public string Name => "p-longitude";
 
-        public string Key => "org";
+        public string Key => "longitude";
     }
 }

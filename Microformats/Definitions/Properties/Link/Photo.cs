@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microformats.Definitions.Properties
+namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
     /// u-photo - a photo of the person or organization
     /// </summary>
     [HCard]
-    public class UPhoto : IProperty
+    public class Photo : IProperty
     {
         public MType Type => MType.Url;
 

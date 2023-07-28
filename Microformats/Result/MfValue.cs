@@ -1,4 +1,5 @@
-﻿using Microformats.Definitions.Properties;
+﻿using Microformats.Definitions;
+using Microformats.Definitions.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,13 @@ namespace Microformats.Result
             _value = value;
         }
 
+        public MfType GetValueMfType()
+        {
+            if(_value is MfType)
+                return (MfType)_value;
+            throw new ArgumentException("Value is not MfType");
+        }
+
         public string GetValue()
         {
             if (_value is string v)
@@ -55,7 +63,7 @@ namespace Microformats.Result
             }
             else
             {
-                return ((MfType)_value).GetProperty(new PName())?.First();
+                return ((MfType)_value).GetProperty(Props.Name)?.First();
             }
         }
     }

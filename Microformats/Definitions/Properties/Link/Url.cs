@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microformats.Definitions.Properties
+namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
     /// u-url - home page or other URL representing the person or organization
     /// </summary>
     [HCard]
-    public class UUrl : IProperty
+    public class Url : IProperty
     {
         public MType Type => MType.Url;
 

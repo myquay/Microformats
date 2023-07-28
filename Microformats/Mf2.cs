@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microformats.Definitions;
-using Microformats.Definitions.Properties;
+using Microformats.Definitions.Properties.Link;
+using Microformats.Definitions.Properties.Standard;
 using Microformats.Result;
 using System;
 using System.Collections.Generic;
@@ -150,7 +151,7 @@ namespace Microformats
                 if (Vocabularies.Any(v => child.GetClasses().Contains(v.Name)))
                 {
                     var value = ParseElementForMicroformat(child);
-                    value.Value = value.GetProperty(property)?.First();
+                    value.Value = value.GetProperty(Props.Name)?.First();
                     propertyValue.Add(new MfValue(value));
                 }
                 else
@@ -292,7 +293,7 @@ namespace Microformats
                     return new[] { new MfValue(node.InnerText.Trim()) };
 
                 }
-                else if (property is UPhoto)
+                else if (property is Photo)
                 {
 
                     //TODO: if there is a gotten photo value, return the normalized absolute URL of it, following the containing document's language's rules for resolving relative URLs (e.g. in HTML, use the current URL context as determined by the page, and first <base> element, if any).
@@ -358,7 +359,7 @@ namespace Microformats
 
                     return null;
                 }
-                else if (property is UUrl)
+                else if (property is Url)
                 {
 
                     //TODO: if there is a gotten url value, return the normalized absolute URL of it, following the containing document's language's rules for resolving relative URLs (e.g. in HTML, use the current URL context as determined by the page, and first <base> element, if any).
