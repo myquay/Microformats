@@ -78,9 +78,15 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Type.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-card");
             Assert.IsTrue(result.Items[0].Properties.Count == 6);
-            //Assert.IsTrue(result.Items[0].GetProperty("p-name")[0] == "Rohit Khare");
-            //Assert.IsTrue(result.Items[0].GetProperty("u-url")[0] == "http://rohit.khare.org/");
-            //Assert.IsTrue(result.Items[0].GetProperty("u-photo")[0] == "https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.UPhoto)[0] == "https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.PName)[0] == "Mitchell Baker");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.UUrl)[0] == "http://blog.lizardwrangler.com/");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.UUrl)[1] == "https://twitter.com/MitchellBaker");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.POrg)[0] == "Mozilla Foundation");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.PNote)[0] == "Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities.");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.PCategory)[0] == "Strategy"); 
+            Assert.IsTrue(result.Items[0].GetProperty(Props.PCategory)[1] == "Leadership");
+
         }
     }
 }

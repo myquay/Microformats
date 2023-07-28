@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties
 {
     /// <summary>
-    /// u-photo - a photo of the person or organization
+    /// p-category - category/tag
     /// </summary>
     [HCard]
-    public class UPhoto : IProperty
+    public class PCategory : IProperty
     {
-        public MType Type => MType.Url;
+        public MType Type => MType.Property;
 
-        public string Name => "u-photo";
+        public string Name => "p-category";
 
-        public string Key => "photo";
+        public string Key => "category";
     }
 }
