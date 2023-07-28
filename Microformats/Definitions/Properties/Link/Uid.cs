@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
-    /// p-geo (or u-geo with a RFC 5870 geo: URL), optionally embedded h-geo
+    /// u-uid - universally unique identifier, preferably canonical URL
     /// </summary>
-    [HAdr, HCard]
-    public class Geo : IProperty
+    [HCard]
+    public class Uid : IProperty
     {
         public MType Type => MType.Url;
 
-        public string Name => "u-geo";
+        public string Name => "u-uid";
 
-        public string Key => "geo";
+        public string Key => "uid";
     }
 }

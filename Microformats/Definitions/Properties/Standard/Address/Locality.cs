@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// p-locality - city/town/village
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class Locality : IProperty
     {
         public MType Type => MType.Property;
@@ -22,7 +22,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// locality - city/town/village
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class LocalityLegacy : IProperty
     {
         public MType Type => MType.Property;

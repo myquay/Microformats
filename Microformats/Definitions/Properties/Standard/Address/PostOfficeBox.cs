@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// p-post-office-box - post office mailbox
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class PostOfficeBox : IProperty
     {
         public MType Type => MType.Property;
@@ -22,7 +22,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// post-office-box - post office mailbox
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class PostOfficeBoxLegacy : IProperty
     {
         public MType Type => MType.Property;

@@ -4,18 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microformats.Definitions.Properties.Standard.Address
+namespace Microformats.Definitions.Properties.Standard.Card
 {
     /// <summary>
-    /// p-latitude - decimal latitude
+    /// p-sex - biological sex, new in vCard4 (RFC 6350)
     /// </summary>
-    [HAdr, HCard]
-    public class Latitude : IProperty
+    [HCard]
+    public class Sex : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-latitude";
+        public string Name => "p-sex";
 
-        public string Key => "latitude";
+        public string Key => "sex";
     }
 }

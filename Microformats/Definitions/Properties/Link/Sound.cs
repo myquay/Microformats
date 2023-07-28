@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
-    /// p-geo (or u-geo with a RFC 5870 geo: URL), optionally embedded h-geo
+    /// u-sound - sound file containing the proper pronunciation of the name property, per vCard (RFC 6350).
     /// </summary>
-    [HAdr, HCard]
-    public class Geo : IProperty
+    [HCard]
+    public class Sound : IProperty
     {
         public MType Type => MType.Url;
 
-        public string Name => "u-geo";
+        public string Name => "u-sound";
 
-        public string Key => "geo";
+        public string Key => "sound";
     }
 }

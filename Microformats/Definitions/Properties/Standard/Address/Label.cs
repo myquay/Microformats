@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// p-label - a mailing label, plain text, perhaps with preformatting
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class Label : IProperty
     {
         public MType Type => MType.Property;

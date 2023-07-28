@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// p-geo (or u-geo with a RFC 5870 geo: URL), optionally embedded h-geo
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class Geo : IProperty
     {
         public MType Type => MType.Property;

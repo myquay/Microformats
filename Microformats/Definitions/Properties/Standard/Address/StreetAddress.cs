@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// p-street-address - house/apartment number, floor, street name
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class StreetAddress : IProperty
     {
         public MType Type => MType.Property;
@@ -22,7 +22,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// street-address - post office mailbox
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class StreetAddressLegacy : IProperty
     {
         public MType Type => MType.Property;

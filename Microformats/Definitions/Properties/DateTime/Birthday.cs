@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
-    /// p-geo (or u-geo with a RFC 5870 geo: URL), optionally embedded h-geo
+    /// dt-bday - birth date
     /// </summary>
-    [HAdr, HCard]
-    public class Geo : IProperty
+    [HCard]
+    public class Birthday : IProperty
     {
-        public MType Type => MType.Url;
+        public MType Type => MType.DateTime;
 
-        public string Name => "u-geo";
+        public string Name => "dt-bday";
 
-        public string Key => "geo";
+        public string Key => "bday";
     }
 }

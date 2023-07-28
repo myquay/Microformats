@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// p-extended-address - additional street details
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class ExtendedAddress : IProperty
     {
         public MType Type => MType.Property;
@@ -22,7 +22,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// extended-address - post office mailbox
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class ExtendedAddressLegacy : IProperty
     {
         public MType Type => MType.Property;

@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
-    /// p-geo (or u-geo with a RFC 5870 geo: URL), optionally embedded h-geo
+    /// u-key - cryptographic public key e.g. SSH or GPG
     /// </summary>
-    [HAdr, HCard]
-    public class Geo : IProperty
+    [HCard]
+    public class CKey : IProperty
     {
         public MType Type => MType.Url;
 
-        public string Name => "u-geo";
+        public string Name => "u-key";
 
-        public string Key => "geo";
+        public string Key => "key";
     }
 }

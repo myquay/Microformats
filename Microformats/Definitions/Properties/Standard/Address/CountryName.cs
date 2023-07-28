@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// p-country-name - should be full name of country, country code ok
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class CountryName : IProperty
     {
         public MType Type => MType.Property;
@@ -22,7 +22,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// country-name - should be full name of country, country code ok
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class CountryNameLegacy : IProperty
     {
         public MType Type => MType.Property;

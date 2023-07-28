@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// p-postal-code - postal code, e.g. ZIP in the US
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class PostalCode : IProperty
     {
         public MType Type => MType.Property;
@@ -22,7 +22,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// postal-code - postal code, e.g. ZIP in the US
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class PostalCodeLegacy : IProperty
     {
         public MType Type => MType.Property;

@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// p-altitude - decimal altitude - new in vCard4 (RFC6350)
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class Altitude : IProperty
     {
         public MType Type => MType.Property;

@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
-    /// p-geo (or u-geo with a RFC 5870 geo: URL), optionally embedded h-geo
+    /// u-impp per RFC4770, new in vCard4 (RFC 6350)
     /// </summary>
-    [HAdr, HCard]
-    public class Geo : IProperty
+    [HCard]
+    public class Impp : IProperty
     {
         public MType Type => MType.Url;
 
-        public string Name => "u-geo";
+        public string Name => "u-impp";
 
-        public string Key => "geo";
+        public string Key => "impp";
     }
 }

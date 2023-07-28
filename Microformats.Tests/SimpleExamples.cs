@@ -129,5 +129,42 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Properties[Props.Org.Key][0].GetValueMfType().GetProperty(Props.Name)[0] == "Mozilla Foundation");
             Assert.IsTrue(result.Items[0].Properties[Props.Org.Key][0].GetValueMfType().GetProperty(Props.Url)[0] == "https://mozilla.org/");
         }
+
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-card"/>
+        /// </summary>
+        [TestMethod]
+        public void LotsOfPropertiesExample()
+        {
+            var parser = new Mf2();
+            var html = "<div class=\"h-card\">\r\n<span class=\"p-name\">Sally Ride</span>\r\n<span class=\"p-honorific-prefix\">Dr.</span>\r\n<span class=\"p-given-name\">Sally</span>\r\n<abbr class=\"p-additional-name\">K.</abbr>\r\n<span class=\"p-family-name\">Ride</span>\r\n<span class=\"p-honorific-suffix\">Ph.D.</span>,\r\n<span class=\"p-nickname\">sallykride</span> (IRC)\r\n<div class=\"p-org\">Sally Ride Science</div>\r\n<img class=\"u-photo\" src=\"http://example.com/sk.jpg\"/>\r\n<a class=\"u-url\" href=\"http://sally.example.com\">w</a>,\r\n<a class=\"u-email\" href=\"mailto:sally@example.com\">e</a>\r\n<div class=\"p-tel\">+1.818.555.1212</div>\r\n<div class=\"p-street-address\">123 Main st.</div>\r\n<span class=\"p-locality\">Los Angeles</span>,\r\n<abbr class=\"p-region\" title=\"California\">CA</abbr>,\r\n<span class=\"p-postal-code\">91316</span>\r\n<div class=\"p-country-name\">U.S.A</div>\r\n<time class=\"dt-bday\">1951-05-26</time> birthday\r\n<div class=\"p-category\">physicist</div>\r\n<div class=\"p-note\">First American woman in space.</div>\r\n</div>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-card");
+            Assert.IsTrue(result.Items[0].Properties.Count == 20);
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Sally Ride");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.HonorificPrefix)[0] == "Dr.");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.GivenName)[0] == "Sally");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.AdditionalName)[0] == "K.");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.FamilyName)[0] == "Ride");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.HonorificSuffix)[0] == "Ph.D.");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Nickname)[0] == "sallykride");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Org)[0] == "Sally Ride Science");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Photo)[0] == "http://example.com/sk.jpg");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[0] == "http://sally.example.com");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Email)[0] == "mailto:sally@example.com");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Telephone)[0] == "+1.818.555.1212");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.StreetAddress)[0] == "123 Main st.");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Locality)[0] == "Los Angeles");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Region)[0] == "California");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.PostalCode)[0] == "91316");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.CountryName)[0] == "U.S.A");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Birthday)[0] == "1951-05-26");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Category)[0] == "physicist");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Note)[0] == "First American woman in space.");
+        }
+
     }
 }

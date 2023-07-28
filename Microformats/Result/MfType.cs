@@ -45,6 +45,7 @@ namespace Microformats.Result
                     return Properties[property.Key].Select(s => s.GetValue()).ToArray();
             }
             return null;
-        }       
+        }
+
     }
 }

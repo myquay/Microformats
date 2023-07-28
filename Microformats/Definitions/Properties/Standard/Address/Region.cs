@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// p-region - state/county/province
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class Region : IProperty
     {
         public MType Type => MType.Property;
@@ -22,7 +22,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// region - state/county/province
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class RegionLegacy : IProperty
     {
         public MType Type => MType.Property;

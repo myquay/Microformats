@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
-    /// p-geo (or u-geo with a RFC 5870 geo: URL), optionally embedded h-geo
+    /// u-logo - a logo representing the person or organization (e.g. a face icon)
     /// </summary>
-    [HAdr, HCard]
-    public class Geo : IProperty
+    [HCard]
+    public class Logo : IProperty
     {
         public MType Type => MType.Url;
 
-        public string Name => "u-geo";
+        public string Name => "u-logo";
 
-        public string Key => "geo";
+        public string Key => "logo";
     }
 }

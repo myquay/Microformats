@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard.Address
     /// <summary>
     /// p-longitude - decimal longitude
     /// </summary>
-    [HAdr]
+    [HAdr, HCard]
     public class Longitude : IProperty
     {
         public MType Type => MType.Property;
