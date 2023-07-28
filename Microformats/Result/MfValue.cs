@@ -22,11 +22,35 @@ namespace Microformats.Result
             _value = value;
         }
 
+        public MfValue(MfImage value)
+        {
+            _value = value;
+        }
+
+        public string GetValue()
+        {
+            if (_value is string v)
+            {
+                return v;
+            }
+            else if (_value is MfImage img)
+            {
+                return img.Value;
+            }
+            else
+            {
+                return ((MfType)_value).Value;
+            }
+        }
+
         public string GetName()
         {
             if(_value is  string v)
             {
                 return v;
+            }else if(_value is MfImage img)
+            {
+                return img.Value;
             }
             else
             {

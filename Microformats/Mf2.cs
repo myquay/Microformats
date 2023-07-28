@@ -157,7 +157,8 @@ namespace Microformats
             var propertyValue = new List<MfValue>();
 
             //parse a child element for microformats (recurse)
-            foreach (var child in node.ChildNodes.Where(c => c.GetClasses().Contains(property))) {
+            foreach (var child in node.ChildNodes.Where(c => c.GetClasses().Contains(property)))
+            {
                 //if that child element itself has a microformat ("h-*" or backcompat roots) and is a property element, add it into the array of values for that property as a { } structure, add to that { } structure:
                 if (Vocabularies.Any(v => node.GetClasses().Contains(v.Name)))
                 {
@@ -175,7 +176,7 @@ namespace Microformats
 
             if (!propertyValue.Any())
             {
-                if(property == "p-name")
+                if (property == "p-name")
                 {
                     if (node.Is("img", "area") && node.HasAttr("alt"))
                         return new[] { new MfValue(node.GetAttributeValue("alt", null)) };
@@ -183,7 +184,7 @@ namespace Microformats
                     if (node.Is("abbr") && node.HasAttr("title"))
                         return new[] { new MfValue(node.GetAttributeValue("title", null)) };
 
-                    if(node.TrySelectSingleChild("img", out HtmlNode imgChild) && imgChild.HasAttr("alt") && !imgChild.IsMicoformatEntity())
+                    if (node.TrySelectSingleChild("img", out HtmlNode imgChild) && imgChild.HasAttr("alt") && !imgChild.IsMicoformatEntity())
                         return new[] { new MfValue(imgChild.GetAttributeValue("alt", null)) };
 
                     if (node.TrySelectSingleChild("area", out HtmlNode areaChild) && areaChild.HasAttr("alt") && !areaChild.IsMicoformatEntity())
@@ -204,18 +205,81 @@ namespace Microformats
                             return new[] { new MfValue(abbrNestedChild.GetAttributeValue("title", null)) };
                     }
 
-                    //else use the textContent of the .h-x for name after: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
                     //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
                     return new[] { new MfValue(node.InnerText) };
-                   
+
                 }
-                //if no explicit "photo" property, and no other explicit u-* (Proposed: change to: u-* or e-*) properties, and no nested microformats,
                 else if (property == "u-photo")
                 {
+
+                    //TODO: if there is a gotten photo value, return the normalized absolute URL of it, following the containing document's language's rules for resolving relative URLs (e.g. in HTML, use the current URL context as determined by the page, and first <base> element, if any).
+                    
+                    if (node.Is("img"))
+                    {
+                        if (node.HasAttr("alt"))
+                        {
+                            return new[] { new MfValue(new MfImage{
+                                  Value = node.GetAttributeValue("src", null),
+                                  Alt = node.GetAttributeValue("alt", null)
+                            }) };
+                        }
+                        else
+                        {
+                            return new[] { new MfValue(node.GetAttributeValue("src", null)) };
+                        }
+                    }
+                    
+                    if (node.Is("object") && node.HasAttr("data"))
+                        return new[] { new MfValue(node.GetAttributeValue("data", null)) };
+
+                    if (node.TrySelectFirstChild("img", out HtmlNode imgChild, onlyOfType: true) && !imgChild.IsMicoformatEntity())
+                    {
+                        if (imgChild.HasAttr("alt"))
+                        {
+                            return new[] { new MfValue(new MfImage{
+                                  Value = imgChild.GetAttributeValue("src", null),
+                                  Alt = imgChild.GetAttributeValue("alt", null)
+                            }) };
+                        }
+                        else
+                        {
+                            return new[] { new MfValue(imgChild.GetAttributeValue("src", null)) };
+                        }
+                    }
+
+                    if (node.TrySelectFirstChild("object", out HtmlNode objChild, onlyOfType: true) && objChild.HasAttr("data") && !objChild.IsMicoformatEntity())
+                        return new[] { new MfValue(objChild.GetAttributeValue("data", null)) };
+
+                    if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicoformatEntity())
+                    {
+
+                        if (anyChild.TrySelectFirstChild("img", out HtmlNode nestedImgChild, onlyOfType: true) && !nestedImgChild.IsMicoformatEntity())
+                        {
+                            if (nestedImgChild.HasAttr("alt"))
+                            {
+                                return new[] { new MfValue(new MfImage{
+                                  Value = nestedImgChild.GetAttributeValue("src", null),
+                                  Alt = nestedImgChild.GetAttributeValue("alt", null)
+                            }) };
+                            }
+                            else
+                            {
+                                return new[] { new MfValue(nestedImgChild.GetAttributeValue("src", null)) };
+                            }
+                        }
+
+                        if (anyChild.TrySelectFirstChild("object", out HtmlNode objNestedChild, onlyOfType: true) && objNestedChild.HasAttr("data") && !objNestedChild.IsMicoformatEntity())
+                            return new[] { new MfValue(objNestedChild.GetAttributeValue("data", null)) };
+
+                    }
+
                     return null;
                 }
                 else if (property == "u-url")
                 {
+
+                    //TODO: if there is a gotten url value, return the normalized absolute URL of it, following the containing document's language's rules for resolving relative URLs (e.g. in HTML, use the current URL context as determined by the page, and first <base> element, if any).
+
                     if (node.Is("a", "area") && node.HasAttr("href"))
                         return new[] { new MfValue(node.GetAttributeValue("href", null)) };
 

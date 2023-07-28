@@ -33,12 +33,17 @@ namespace Microformats.Result
         /// <returns></returns>
         public string[] GetProperty(string property)
         {
-            var name = property.Remove(0, 2);
-            //TODO: ADD SUPPORT FOR e-*, u-* and dt-* properties
-            if (Properties.ContainsKey(name))
+            //TODO: ADD SUPPORT FOR e-*, and dt-* properties
+            if (property.StartsWith("p-"))
             {
-                //Suitable for p-*
-                return Properties[name].Select(s => s.GetName()).ToArray();
+                property = property.Remove(0, 2);
+                if (Properties.ContainsKey(property))
+                    return Properties[property].Select(s => s.GetName()).ToArray();
+            }else if (property.StartsWith("u-"))
+            {
+                property = property.Remove(0, 2);
+                if (Properties.ContainsKey(property))
+                    return Properties[property].Select(s => s.GetValue()).ToArray();
             }
             return null;
         }       
