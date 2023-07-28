@@ -127,9 +127,7 @@ namespace Microformats
                             resultSet.Properties.Add(property.Key, propertyItem);
                         break;
                     case MType.Url:
-                        //if such class(es) are found, it is a property element
                         var urlItem = ParseChildrenForProperty(node, property);
-                        //add properties found to current microformat's properties: { } structure
                         if (urlItem != null)
                             resultSet.Properties.Add(property.Key, urlItem);
                         break;
@@ -157,8 +155,104 @@ namespace Microformats
                 }
                 else
                 {
-                    //TODO: ADD PROPER PARSING
-                    propertyValue.Add(new MfValue(node.GetDirectInnerText()));
+                    if (property.Type == MType.Property)
+                    {
+                        if (child.ChildNodes.Any(c => c.HasClass("value")))
+                        {
+                            propertyValue.Add(new MfValue(child.ChildNodes.Where(c => c.HasClass("value")).Select(s =>
+                            {
+                                if (s.Is("img", "area") && s.HasAttr("alt"))
+                                    return s.GetAttributeValue("alt", null);
+                                if (s.Is("data"))
+                                    return s.GetAttributeValue("value", null) ?? s.InnerText.Trim();
+                                if (s.Is("abbr"))
+                                    return s.GetAttributeValue("title", null) ?? s.InnerText.Trim();
+                                return s.InnerText.Trim();
+                            }).Aggregate((current, next) => current + next)));
+                        }
+                        else if (child.Is("abbr", "link") && child.HasAttr("title"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("title", null)));
+                        }
+                        else if (child.Is("data", "input") && child.HasAttr("value"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("value", null)));
+                        }
+                        else if (child.Is("img", "area") && child.HasAttr("alt"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("alt", null)));
+                        }
+                        else
+                        {
+                            //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
+                            propertyValue.Add(new MfValue(child.InnerText.Trim()));
+                        }
+                    }
+                    else if (property.Type == MType.Url)
+                    {
+                        if (child.Is("a", "area", "link") && child.HasAttr("href"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("href", null)));
+                        }
+                        else if (child.Is("img") && child.HasAttr("src"))
+                        {
+                            if (child.HasAttr("alt"))
+                            {
+                                propertyValue.Add(new MfValue(new MfImage
+                                {
+                                    Value = child.GetAttributeValue("src", null),
+                                    Alt = child.GetAttributeValue("alt", null)
+                                }));
+                            }
+                            else
+                            {
+                                propertyValue.Add(new MfValue(child.GetAttributeValue("src", null)));
+                            }
+                        }
+                        else if (child.Is("audio", "video", "source", "iframe") && child.HasAttr("src"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("src", null)));
+                        }
+                        else if (child.Is("video") && child.HasAttr("poster"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("poster", null)));
+                        }
+                        else if (child.Is("object") && child.HasAttr("data"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("data", null)));
+                        }
+                        else if (child.ChildNodes.Any(c => c.HasClass("value")))
+                        {
+                            propertyValue.Add(new MfValue(child.ChildNodes.Where(c => c.HasClass("value")).Select(s =>
+                            {
+                                if (s.Is("img", "area") && s.HasAttr("alt"))
+                                    return s.GetAttributeValue("alt", null);
+                                if (s.Is("data"))
+                                    return s.GetAttributeValue("value", null) ?? s.InnerText.Trim();
+                                if (s.Is("abbr"))
+                                    return s.GetAttributeValue("title", null) ?? s.InnerText.Trim();
+                                return s.InnerText.Trim();
+                            }).Aggregate((current, next) => current + next)));
+                        }
+                        else if (child.Is("abbr") && child.HasAttr("title"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("title", null)));
+                        }
+                        else if (child.Is("data", "input") && child.HasAttr("value"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("value", null)));
+                        }
+                        else
+                        {
+                            //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
+                            propertyValue.Add(new MfValue(child.InnerText.Trim()));
+                        }
+                    }
+                    else
+                    {
+                        //TODO: ADD PROPER PARSING
+                        propertyValue.Add(new MfValue(child.InnerText.Trim()));
+                    }
                 }
             }
 
@@ -195,14 +289,14 @@ namespace Microformats
                     }
 
                     //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
-                    return new[] { new MfValue(node.InnerText) };
+                    return new[] { new MfValue(node.InnerText.Trim()) };
 
                 }
                 else if (property is UPhoto)
                 {
 
                     //TODO: if there is a gotten photo value, return the normalized absolute URL of it, following the containing document's language's rules for resolving relative URLs (e.g. in HTML, use the current URL context as determined by the page, and first <base> element, if any).
-                    
+
                     if (node.Is("img"))
                     {
                         if (node.HasAttr("alt"))
@@ -217,7 +311,7 @@ namespace Microformats
                             return new[] { new MfValue(node.GetAttributeValue("src", null)) };
                         }
                     }
-                    
+
                     if (node.Is("object") && node.HasAttr("data"))
                         return new[] { new MfValue(node.GetAttributeValue("data", null)) };
 
