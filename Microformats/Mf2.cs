@@ -107,21 +107,12 @@ namespace Microformats
             if (!vocab.Any())
                 throw new ArgumentException("No micoformat found on supplied node");
 
-            /*
-             create a new { } structure with:
-                type: [array of unique microformat "h-*" type(s) on the element sorted alphabetically],
-                properties: { } - to be filled in when that element itself is parsed for microformats properties
-                if the element has a non-empty id attribute:
-                    id: string value of element's id attribute
-             */
             var resultSet = new MfType
             {
                 Type = vocab.Select(c => c.Name).OrderBy(s => s).ToArray(),
                 Id = !String.IsNullOrEmpty(node.Id) ? node.Id : null,
             };
 
-            //if parsing a backcompat root, parse child element class name(s) for backcompat properties
-            //else parse a child element class for property class name(s) "p-*,u-*,dt-*,e-*"
             var properties = vocab.SelectMany(c => c.Properties).GroupBy(p => p.Name)
              .Select(g => g.First())
              .ToList();
@@ -131,18 +122,16 @@ namespace Microformats
                 switch (property.Type)
                 {
                     case MType.Property:
-                        //if such class(es) are found, it is a property element
-                        var propertyItem = ParseChildrenForProperty(node, property.Name);
-                        //add properties found to current microformat's properties: { } structure
+                        var propertyItem = ParseChildrenForProperty(node, property);
                         if (propertyItem != null)
-                            resultSet.Properties.Add(property.Name.Remove(0, 2), propertyItem);
+                            resultSet.Properties.Add(property.Key, propertyItem);
                         break;
                     case MType.Url:
                         //if such class(es) are found, it is a property element
-                        var urlItem = ParseChildrenForProperty(node, property.Name);
+                        var urlItem = ParseChildrenForProperty(node, property);
                         //add properties found to current microformat's properties: { } structure
                         if (urlItem != null)
-                            resultSet.Properties.Add(property.Name.Remove(0, 2), urlItem);
+                            resultSet.Properties.Add(property.Key, urlItem);
                         break;
                     default:
                         break;
@@ -152,15 +141,15 @@ namespace Microformats
             return resultSet;
         }
 
-        private MfValue[] ParseChildrenForProperty(HtmlNode node, string property)
+        private MfValue[] ParseChildrenForProperty(HtmlNode node, IProperty property)
         {
             var propertyValue = new List<MfValue>();
 
             //parse a child element for microformats (recurse)
-            foreach (var child in node.ChildNodes.Where(c => c.GetClasses().Contains(property)))
+            foreach (var child in node.ChildNodes.Where(c => c.GetClasses().Contains(property.Name)))
             {
                 //if that child element itself has a microformat ("h-*" or backcompat roots) and is a property element, add it into the array of values for that property as a { } structure, add to that { } structure:
-                if (Vocabularies.Any(v => node.GetClasses().Contains(v.Name)))
+                if (Vocabularies.Any(v => child.GetClasses().Contains(v.Name)))
                 {
                     var value = ParseElementForMicroformat(child);
                     value.Value = value.GetProperty(property)?.First();
@@ -168,15 +157,15 @@ namespace Microformats
                 }
                 else
                 {
-                    //var valueNode = child.SelectNodes("//*[contains(@class, 'value')]").FirstOrDefault();
                     //TODO: ADD PROPER PARSING
                     propertyValue.Add(new MfValue(node.GetDirectInnerText()));
                 }
             }
 
+            //Implicit parsing for special properties
             if (!propertyValue.Any())
             {
-                if (property == "p-name")
+                if (property is PName)
                 {
                     if (node.Is("img", "area") && node.HasAttr("alt"))
                         return new[] { new MfValue(node.GetAttributeValue("alt", null)) };
@@ -209,7 +198,7 @@ namespace Microformats
                     return new[] { new MfValue(node.InnerText) };
 
                 }
-                else if (property == "u-photo")
+                else if (property is UPhoto)
                 {
 
                     //TODO: if there is a gotten photo value, return the normalized absolute URL of it, following the containing document's language's rules for resolving relative URLs (e.g. in HTML, use the current URL context as determined by the page, and first <base> element, if any).
@@ -275,7 +264,7 @@ namespace Microformats
 
                     return null;
                 }
-                else if (property == "u-url")
+                else if (property is UUrl)
                 {
 
                     //TODO: if there is a gotten url value, return the normalized absolute URL of it, following the containing document's language's rules for resolving relative URLs (e.g. in HTML, use the current URL context as determined by the page, and first <base> element, if any).

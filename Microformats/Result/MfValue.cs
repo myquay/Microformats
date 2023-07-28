@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microformats.Definitions.Properties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,7 +55,7 @@ namespace Microformats.Result
             }
             else
             {
-                return ((MfType)_value).GetProperty("p-name")?.First();
+                return ((MfType)_value).GetProperty(new PName())?.First();
             }
         }
     }

@@ -9,6 +9,7 @@ namespace Microformats.Definitions
     {
         MType Type { get; }
         string Name { get; }
+        string Key { get; }
     }
 
     public enum MType

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microformats.Definitions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -31,19 +32,17 @@ namespace Microformats.Result
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public string[] GetProperty(string property)
+        public string[] GetProperty(IProperty property)
         {
             //TODO: ADD SUPPORT FOR e-*, and dt-* properties
-            if (property.StartsWith("p-"))
+            if (property.Type == MType.Property)
             {
-                property = property.Remove(0, 2);
-                if (Properties.ContainsKey(property))
-                    return Properties[property].Select(s => s.GetName()).ToArray();
-            }else if (property.StartsWith("u-"))
+                if (Properties.ContainsKey(property.Key))
+                    return Properties[property.Key].Select(s => s.GetName()).ToArray();
+            }else
             {
-                property = property.Remove(0, 2);
-                if (Properties.ContainsKey(property))
-                    return Properties[property].Select(s => s.GetValue()).ToArray();
+                if (Properties.ContainsKey(property.Key))
+                    return Properties[property.Key].Select(s => s.GetValue()).ToArray();
             }
             return null;
         }       
