@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard.Card
 {
     /// <summary>
-    /// p-category - category/tag
+    /// p-location - location the entry was posted from, optionally embed h-card, h-adr, or h-geo
     /// </summary>
-    [HCard, HEntry]
-    public class Category : IProperty
+    [HEntry]
+    public class Location : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-category";
+        public string Name => "p-location";
 
-        public string Key => "category";
+        public string Key => "location";
     }
 }

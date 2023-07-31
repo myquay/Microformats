@@ -5,9 +5,11 @@ using Microformats.Definitions.Properties.Standard;
 using Microformats.Result;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace Microformats
@@ -308,6 +310,12 @@ namespace Microformats
                 }
             }
 
+            //continue search for nested properties
+            foreach(var child in node.ChildNodes.Where(c => !c.GetClasses().Contains(property.Name)))
+            {
+                propertyValue.Add(new MfValue(ParseElementForMicroformat(child)));
+            }   
+
             //Implicit parsing for special properties
             if (!propertyValue.Any())
             {
@@ -341,7 +349,7 @@ namespace Microformats
                     }
 
                     //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
-                    return new[] { new MfValue(node.InnerText.Trim()) };
+                    return new[] { new MfValue(Regex.Replace(node.InnerText.Trim(), @"\s+", " ")) };
 
                 }
                 else if (property is Photo)

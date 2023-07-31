@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
-    /// u-uid - universally unique identifier, preferably canonical URL
+    /// u-like-of - the URL which the h-entry is considered a “like” (favorite, star) of. Optionally an embedded h-cite
     /// </summary>
-    [HCard, HEntry]
-    public class Uid : IProperty
+    [HEntry]
+    public class LikeOf : IProperty
     {
         public MType Type => MType.Url;
 
-        public string Name => "u-uid";
+        public string Name => "u-like-of";
 
-        public string Key => "uid";
+        public string Key => "like-of";
     }
 }

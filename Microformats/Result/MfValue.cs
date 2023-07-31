@@ -33,7 +33,6 @@ namespace Microformats.Result
             _value = value;
         }
 
-
         public MfType GetValueMfType()
         {
             if(_value is MfType)

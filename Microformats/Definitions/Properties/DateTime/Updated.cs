@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
-    /// u-uid - universally unique identifier, preferably canonical URL
+    /// dt-updated - when the entry was updated
     /// </summary>
-    [HCard, HEntry]
-    public class Uid : IProperty
+    [HEntry]
+    public class Updated : IProperty
     {
-        public MType Type => MType.Url;
+        public MType Type => MType.DateTime;
 
-        public string Name => "u-uid";
+        public string Name => "dt-updated";
 
-        public string Key => "uid";
+        public string Key => "updated";
     }
 }

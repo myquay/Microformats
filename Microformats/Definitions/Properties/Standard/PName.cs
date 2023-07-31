@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard
     /// <summary>
     /// p-name - The full/formatted name of the person or organization
     /// </summary>
-    [HCard, HAdr]
+    [HCard, HAdr, HEntry]
     public class PName : IProperty
     {
         public MType Type => MType.Property;

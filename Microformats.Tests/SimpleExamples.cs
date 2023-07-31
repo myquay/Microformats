@@ -191,5 +191,41 @@ namespace Microformats.Tests
             Assert.IsTrue(address.GetProperty(Props.CountryName)[0] == "Iceland");
         }
 
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-adr"/>
+        /// </summary>
+        [TestMethod]
+        public void AdrExample()
+        {
+            var parser = new Mf2();
+            var html = "<p class=\"h-adr\">\r\n  <span class=\"p-street-address\">17 Austerstræti</span>\r\n  <span class=\"p-locality\">Reykjavík</span>\r\n  <span class=\"p-country-name\">Iceland</span>\r\n  <span class=\"p-postal-code\">107</span>\r\n</p>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-adr");
+            Assert.IsTrue(result.Items[0].Properties.Count == 5);
+            Assert.IsTrue(result.Items[0].GetProperty(Props.StreetAddress)[0] == "17 Austerstræti");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Locality)[0] == "Reykjavík");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.CountryName)[0] == "Iceland");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.PostalCode)[0] == "107");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "17 Austerstræti Reykjavík Iceland 107");
+        }
+
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-entry"/>
+        /// </summary>
+        [TestMethod]
+        public void EntryExample()
+        {
+            var parser = new Mf2();
+            var html = "<article class=\"h-entry\">\r\n  <h1 class=\"p-name\">Microformats are amazing</h1>\r\n  <p>Published by <a class=\"p-author h-card\" href=\"http://example.com\">W. Developer</a>\r\n     on <time class=\"dt-published\" datetime=\"2013-06-13 12:00:00\">13<sup>th</sup> June 2013</time></p>\r\n  \r\n  <p class=\"p-summary\">In which I extoll the virtues of using microformats.</p>\r\n  \r\n  <div class=\"e-content\">\r\n    <p>Blah blah blah</p>\r\n  </div>\r\n</article>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-entry");
+            Assert.IsTrue(result.Items[0].Properties.Count == 4);
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Microformats are amazing");
+            //Assert.IsTrue(result.Items[0].GetProperty(Props.Author)[0] == "Microformats are amazing");
+        }
     }
 }

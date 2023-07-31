@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard.Card
 {
     /// <summary>
-    /// p-category - category/tag
+    /// e-content - full content of the entry
     /// </summary>
-    [HCard, HEntry]
-    public class Category : IProperty
+    [HEntry]
+    public class Content : IProperty
     {
-        public MType Type => MType.Property;
+        public MType Type => MType.Embedded;
 
-        public string Name => "p-category";
+        public string Name => "e-content";
 
-        public string Key => "category";
+        public string Key => "content";
     }
 }
