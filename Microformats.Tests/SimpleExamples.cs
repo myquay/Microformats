@@ -126,8 +126,8 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Mitchell Baker");
             Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[0] == "https://blog.lizardwrangler.com/");
             Assert.IsTrue(result.Items[0].Properties[Props.Org.Key][0].GetValue() == "Mozilla Foundation");
-            Assert.IsTrue(result.Items[0].Properties[Props.Org.Key][0].GetValueMfType().GetProperty(Props.Name)[0] == "Mozilla Foundation");
-            Assert.IsTrue(result.Items[0].Properties[Props.Org.Key][0].GetValueMfType().GetProperty(Props.Url)[0] == "https://mozilla.org/");
+            Assert.IsTrue(result.Items[0].Properties[Props.Org.Key][0].Get<MfType>().GetProperty(Props.Name)[0] == "Mozilla Foundation");
+            Assert.IsTrue(result.Items[0].Properties[Props.Org.Key][0].Get<MfType>().GetProperty(Props.Url)[0] == "https://mozilla.org/");
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Properties.Count == 2);
             Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Joe Bloggs");
 
-            var address = (result.Items[0].Properties["adr"][0]).GetValueMfType();
+            var address = (result.Items[0].Properties["adr"][0]).Get<MfType>();
 
             Assert.IsTrue(address.Type.Length == 1);
             Assert.IsTrue(address.Type[0] == "h-adr");
@@ -223,9 +223,21 @@ namespace Microformats.Tests
 
             Assert.IsTrue(result.Items.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-entry");
-            Assert.IsTrue(result.Items[0].Properties.Count == 4);
+            Assert.IsTrue(result.Items[0].Properties.Count == 5);
             Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Microformats are amazing");
-            //Assert.IsTrue(result.Items[0].GetProperty(Props.Author)[0] == "Microformats are amazing");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Published)[0] == "2013-06-13 12:00:00");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Summary)[0] == "In which I extoll the virtues of using microformats.");
+
+            var embedded = result.Items[0].GetProperty<MfEmbedded>(Props.Content)[0];
+            Assert.IsTrue(embedded.Value == "Blah blah blah");
+            Assert.IsTrue(embedded.Html == "<p>Blah blah blah</p>");
+
+            var author = result.Items[0].GetProperty<MfType>(Props.Author)[0];
+            Assert.IsTrue(author.Value == "W. Developer");
+            Assert.IsTrue(author.Type[0] == "h-card");
+            Assert.IsTrue(author.Properties.Count == 2);
+            Assert.IsTrue(author.GetProperty(Props.Name)[0] == "W. Developer");
+            Assert.IsTrue(author.GetProperty(Props.Url)[0] == "http://example.com");
         }
     }
 }

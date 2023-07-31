@@ -47,5 +47,14 @@ namespace Microformats.Definitions
         public static ExtendedAddress ExtendedAddress { get; } = new ExtendedAddress();
         public static CountryName Country { get; } = new CountryName();
 
+        public static Author Author { get; } = new Author();
+        public static Content Content { get; } = new Content();
+        public static Location Location { get; } = new Location();
+        public static Rsvp Rsvp { get; } = new Rsvp();
+        public static Summary Summary { get; } = new Summary();
+        public static Published Published { get; } = new Published();
+        public static Updated Updated { get; } = new Updated();
+
+
     }
 }

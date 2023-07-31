@@ -153,12 +153,29 @@ namespace Microformats
             return resultSet;
         }
 
+        /// <summary>
+        /// Get all the child nodes that are properties
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        private HtmlNode[] GetChildPropertyNodes(HtmlNode node, IProperty property)
+        {
+            var propertyNodes = node.ChildNodes.Where(c => c.GetClasses().Contains(property.Name)).ToList();
+
+            foreach(var child in node.ChildNodes.Where(c => !c.GetClasses().Contains(property.Name) && !c.IsMicoformatEntity()))
+            {
+                propertyNodes.AddRange(GetChildPropertyNodes(child, property));
+            }
+
+            return propertyNodes.ToArray();
+        }
+
         private MfValue[] ParseChildrenForProperty(HtmlNode node, IProperty property)
         {
             var propertyValue = new List<MfValue>();
 
             //parse a child element for microformats (recurse)
-            foreach (var child in node.ChildNodes.Where(c => c.GetClasses().Contains(property.Name)))
+            foreach (var child in GetChildPropertyNodes(node, property))
             {
                 //if that child element itself has a microformat ("h-*" or backcompat roots) and is a property element, add it into the array of values for that property as a { } structure, add to that { } structure:
                 if (Vocabularies.Any(v => child.GetClasses().Contains(v.Name)))
@@ -311,10 +328,10 @@ namespace Microformats
             }
 
             //continue search for nested properties
-            foreach(var child in node.ChildNodes.Where(c => !c.GetClasses().Contains(property.Name)))
-            {
-                propertyValue.Add(new MfValue(ParseElementForMicroformat(child)));
-            }   
+            //foreach(var child in node.ChildNodes.Where(c => !c.GetClasses().Contains(property.Name)))
+            //{
+            //    propertyValue.AddRange(SearchElementTreeForMicroformat(child).Select(s => new MfValue(s)));
+            //}   
 
             //Implicit parsing for special properties
             if (!propertyValue.Any())

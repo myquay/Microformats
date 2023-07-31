@@ -27,6 +27,11 @@ namespace Microformats.Result
         /// </summary>
         public Dictionary<string, MfValue[]> Properties { get; set; } = new Dictionary<string, MfValue[]>();
 
+        public T[] GetProperty<T>(IProperty property) where T : class
+        {
+            return Properties[property.Key].Select(s => s.Get<T>()).ToArray();
+        }
+
         /// <summary>
         /// Get property values
         /// </summary>

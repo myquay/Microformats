@@ -33,11 +33,29 @@ namespace Microformats.Result
             _value = value;
         }
 
-        public MfType GetValueMfType()
+        public object Get()
         {
-            if(_value is MfType)
-                return (MfType)_value;
-            throw new ArgumentException("Value is not MfType");
+            return _value;
+        }
+
+        public bool TryGet<T>(out T value) where T : class
+        {
+            value = default;
+
+            if (_value is T)
+            {
+                value = _value as T;
+                return true;
+            }
+            
+            return false;
+        }
+
+        public T Get<T>() where T : class
+        {
+            if (TryGet<T>(out T value))
+                return value;
+            return default;
         }
 
         public string GetValue()
