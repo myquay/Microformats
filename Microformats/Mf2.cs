@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Xml.Linq;
 
 namespace Microformats
 {
@@ -132,8 +133,18 @@ namespace Microformats
                         if (urlItem != null)
                             resultSet.Properties.Add(property.Key, urlItem);
                         break;
-                    default:
+                    case MType.DateTime:
+                        var dateTimeItem = ParseChildrenForProperty(node, property);
+                        if (dateTimeItem != null)
+                            resultSet.Properties.Add(property.Key, dateTimeItem);
                         break;
+                    case MType.Embedded:
+                        var embedded = ParseChildrenForProperty(node, property);
+                        if (embedded != null)
+                            resultSet.Properties.Add(property.Key, embedded);
+                        break;
+                    default:
+                        throw new InvalidOperationException($"Unknown property type: {property.Type}");
                 }
             }
 
@@ -249,10 +260,50 @@ namespace Microformats
                             propertyValue.Add(new MfValue(child.InnerText.Trim()));
                         }
                     }
+                    else if (property.Type == MType.DateTime)
+                    {
+                        if (child.ChildNodes.Any(c => c.HasClass("value")))
+                        {
+                            propertyValue.Add(new MfValue(child.ChildNodes.Where(c => c.HasClass("value")).Select(s =>
+                            {
+                                if (s.Is("img", "area") && s.HasAttr("alt"))
+                                    return s.GetAttributeValue("alt", null);
+                                if (s.Is("data"))
+                                    return s.GetAttributeValue("value", null) ?? s.InnerText.Trim();
+                                if (s.Is("abbr"))
+                                    return s.GetAttributeValue("title", null) ?? s.InnerText.Trim();
+                                return s.InnerText.Trim();
+                            }).Aggregate((current, next) => current + next)));
+                        }
+                        else if (child.Is("time", "ins", "del") && child.HasAttr("datetime"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("datetime", null)));
+                        }
+                        else if (child.Is("abbr") && child.HasAttr("title"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("title", null)));
+                        }
+                        else if (child.Is("data", "input") && child.HasAttr("value"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("value", null)));
+                        }
+                        else
+                        {
+                            //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
+                            propertyValue.Add(new MfValue(child.InnerText.Trim()));
+                        }
+                    }
+                    else if (property.Type == MType.Embedded)
+                    {
+                        propertyValue.Add(new MfValue(new MfEmbedded
+                        {
+                            Value = child.InnerText.Trim(),
+                            Html = child.InnerHtml.Trim()
+                        }));
+                    }
                     else
                     {
-                        //TODO: ADD PROPER PARSING
-                        propertyValue.Add(new MfValue(child.InnerText.Trim()));
+                        throw new ArgumentException($"Invlaid property type: {property.Type}");
                     }
                 }
             }

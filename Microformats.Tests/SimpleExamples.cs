@@ -166,5 +166,30 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].GetProperty(Props.Note)[0] == "First American woman in space.");
         }
 
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-card"/>
+        /// </summary>
+        [TestMethod]
+        public void AddressExample()
+        {
+            var parser = new Mf2();
+            var html = "<div class=\"h-card\">\r\n  <p class=\"p-name\">Joe Bloggs</p>\r\n  <p class=\"p-adr h-adr\">\r\n    <span class=\"p-street-address\">17 Austerstræti</span>\r\n    <span class=\"p-locality\">Reykjavík</span>\r\n    <span class=\"p-country-name\">Iceland</span>\r\n  </p>\r\n</div>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-card");
+            Assert.IsTrue(result.Items[0].Properties.Count == 2);
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Joe Bloggs");
+
+            var address = (result.Items[0].Properties["adr"][0]).GetValueMfType();
+
+            Assert.IsTrue(address.Type.Length == 1);
+            Assert.IsTrue(address.Type[0] == "h-adr");
+            Assert.IsTrue(address.Properties.Count == 4);
+            Assert.IsTrue(address.GetProperty(Props.StreetAddress)[0] == "17 Austerstræti");
+            Assert.IsTrue(address.GetProperty(Props.Locality)[0] == "Reykjavík");
+            Assert.IsTrue(address.GetProperty(Props.CountryName)[0] == "Iceland");
+        }
+
     }
 }

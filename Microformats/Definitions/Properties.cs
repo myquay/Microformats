@@ -22,11 +22,6 @@ namespace Microformats.Definitions
         public static Nickname Nickname { get; } = new Nickname();
         public static Email Email { get; } = new Email();
         public static Tel Telephone { get; } = new Tel();
-        public static StreetAddress StreetAddress { get; } = new StreetAddress();
-        public static Locality Locality { get; } = new Locality();
-        public static Region Region { get; } = new Region();
-        public static PostalCode PostalCode { get; } = new PostalCode();
-        public static CountryName CountryName { get; } = new CountryName();
         public static Birthday Birthday { get; } = new Birthday();
 
         public static Category Category { get; } = new Category();
@@ -35,5 +30,22 @@ namespace Microformats.Definitions
         public static Org Org { get; } = new Org();
         public static Photo Photo { get; } = new Photo();
         public static Url Url { get; } = new Url();
+
+
+        public static StreetAddress StreetAddress { get; } = new StreetAddress();
+        public static Locality Locality { get; } = new Locality();
+        public static Region Region { get; } = new Region();
+        public static PostalCode PostalCode { get; } = new PostalCode();
+        public static CountryName CountryName { get; } = new CountryName();
+        public static Address Address { get; } = new Address();
+        public static Properties.Link.Geo GeoLink { get; } = new Properties.Link.Geo();
+        public static Properties.Standard.Address.Geo GeoAddress { get; } = new Properties.Standard.Address.Geo();
+        public static Label Label { get; } = new Label();
+        public static Latitude Latitude { get; } = new Latitude();
+        public static Longitude Longitude { get; } = new Longitude();
+        public static PostOfficeBox PostOfficeBox { get; } = new PostOfficeBox();
+        public static ExtendedAddress ExtendedAddress { get; } = new ExtendedAddress();
+        public static CountryName Country { get; } = new CountryName();
+
     }
 }

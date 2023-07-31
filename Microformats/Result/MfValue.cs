@@ -28,6 +28,11 @@ namespace Microformats.Result
         {
             _value = value;
         }
+        public MfValue(MfEmbedded value)
+        {
+            _value = value;
+        }
+
 
         public MfType GetValueMfType()
         {
@@ -46,6 +51,10 @@ namespace Microformats.Result
             {
                 return img.Value;
             }
+            else if (_value is MfEmbedded emb)
+            {
+                return emb.Value;
+            }
             else
             {
                 return ((MfType)_value).Value;
@@ -57,9 +66,14 @@ namespace Microformats.Result
             if(_value is  string v)
             {
                 return v;
-            }else if(_value is MfImage img)
+            }
+            else if (_value is MfImage img)
             {
                 return img.Value;
+            }
+            else if (_value is MfEmbedded emb)
+            {
+                return emb.Value;
             }
             else
             {
