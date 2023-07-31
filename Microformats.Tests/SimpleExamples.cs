@@ -239,5 +239,26 @@ namespace Microformats.Tests
             Assert.IsTrue(author.GetProperty(Props.Name)[0] == "W. Developer");
             Assert.IsTrue(author.GetProperty(Props.Url)[0] == "http://example.com");
         }
+
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-event"/>
+        /// </summary>
+        [TestMethod]
+        public void EventExample()
+        {
+            var parser = new Mf2();
+            var html = "<div class=\"h-event\">\r\n  <h1 class=\"p-name\">Microformats Meetup</h1>\r\n  <p>From \r\n    <time class=\"dt-start\" datetime=\"2013-06-30 12:00\">30<sup>th</sup> June 2013, 12:00</time>\r\n    to <time class=\"dt-end\" datetime=\"2013-06-30 18:00\">18:00</time>\r\n    at <span class=\"p-location\">Some bar in SF</span></p>\r\n  <p class=\"p-summary\">Get together and discuss all things microformats-related.</p>\r\n</div>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-event");
+            Assert.IsTrue(result.Items[0].Properties.Count == 5);
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Microformats Meetup");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Start)[0] == "2013-06-30 12:00");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.End)[0] == "2013-06-30 18:00");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Location)[0] == "Some bar in SF");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Summary)[0] == "Get together and discuss all things microformats-related.");
+
+        }
     }
 }

@@ -54,6 +54,11 @@ namespace Microformats.Definitions
         public static Published Published { get; } = new Published();
         public static Updated Updated { get; } = new Updated();
 
+        public static Start Start { get; } = new Start();
+        public static End End { get; } = new End();
+        public static Duration Duration { get; } = new Duration();
+        public static Description Description { get; } = new Description();
+
 
     }
 }

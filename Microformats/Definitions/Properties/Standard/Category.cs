@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard
     /// <summary>
     /// p-category - category/tag
     /// </summary>
-    [HCard, HEntry]
+    [HCard, HEntry, HEvent]
     public class Category : IProperty
     {
         public MType Type => MType.Property;

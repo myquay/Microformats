@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-geo (or u-geo with a RFC 5870 geo: URL), optionally embedded h-geo
+    /// p-description - description
     /// </summary>
-    [HAdr, HCard, HEvent]
-    public class Geo : IProperty
+    [HEvent]
+    public class Description : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-geo";
+        public string Name => "p-description";
 
-        public string Key => "geo";
+        public string Key => "description";
     }
 }
