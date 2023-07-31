@@ -3,8 +3,7 @@ using Microformats.Definitions.Properties.Link;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Microformats.Definitions.Properties.Standard.Card;
-using Microformats.Definitions.Properties.Standard.Address;
+using Microformats.Definitions.Properties.Embedded;
 
 namespace Microformats.Definitions
 {
@@ -39,7 +38,7 @@ namespace Microformats.Definitions
         public static CountryName CountryName { get; } = new CountryName();
         public static Address Address { get; } = new Address();
         public static Properties.Link.Geo GeoLink { get; } = new Properties.Link.Geo();
-        public static Properties.Standard.Address.Geo GeoAddress { get; } = new Properties.Standard.Address.Geo();
+        public static Properties.Standard.Geo GeoAddress { get; } = new Properties.Standard.Geo();
         public static Label Label { get; } = new Label();
         public static Latitude Latitude { get; } = new Latitude();
         public static Longitude Longitude { get; } = new Longitude();
