@@ -32,7 +32,7 @@ namespace Microformats.Tests
         /// From: <see href="https://microformats.org/wiki/microformats2#hyperlinked_person"/>
         /// </summary>
         [TestMethod]
-        public void HyperlinkedPersonExample()
+        public void PersonHyperlinkedExample()
         {
             var parser = new Mf2();
             var html = "<a class=\"h-card\" href=\"http://benward.me\">Ben Ward</a>";
@@ -50,7 +50,7 @@ namespace Microformats.Tests
         /// From: <see href="https://microformats.org/wiki/microformats2#hyperlinked_person_image"/>
         /// </summary>
         [TestMethod]
-        public void HyperlinkedPersonImageExample()
+        public void PersonHyperlinkedPersonImageExample()
         {
             var parser = new Mf2();
             var html = "<a class=\"h-card\" href=\"http://rohit.khare.org/\">\r\n <img alt=\"Rohit Khare\"\r\n      src=\"https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg\" />\r\n</a>";
@@ -69,7 +69,7 @@ namespace Microformats.Tests
         /// From: <see href="https://microformats.org/wiki/microformats2#detailed_person_example"/>
         /// </summary>
         [TestMethod]
-        public void DefailedPersonImageExample()
+        public void PersonDefailedImageExample()
         {
             var parser = new Mf2();
             var html = "<div class=\"h-card\">\r\n  <img class=\"u-photo\" alt=\"photo of Mitchell\"\r\n       src=\"https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg\"/>\r\n  <a class=\"p-name u-url\"\r\n     href=\"http://blog.lizardwrangler.com/\" \r\n    >Mitchell Baker</a>\r\n (<a class=\"u-url\" \r\n     href=\"https://twitter.com/MitchellBaker\"\r\n    >@MitchellBaker</a>)\r\n  <span class=\"p-org\">Mozilla Foundation</span>\r\n  <p class=\"p-note\">\r\n    Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities.\r\n  </p>\r\n  <span class=\"p-category\">Strategy</span>\r\n  <span class=\"p-category\">Leadership</span>\r\n</div>";
@@ -94,7 +94,7 @@ namespace Microformats.Tests
         /// From: <see href="https://microformats.org/wiki/h-card"/>
         /// </summary>
         [TestMethod]
-        public void MinimalOrgExample()
+        public void PersonOrgMinimalExample()
         {
             var parser = new Mf2();
             var html = "<span class=\"h-card\">\r\n  <a class=\"p-name p-org u-url\" href=\"https://microformats.org/\">microformats.org</a>\r\n</span>";
@@ -113,7 +113,7 @@ namespace Microformats.Tests
         /// From: <see href="https://microformats.org/wiki/h-card"/>
         /// </summary>
         [TestMethod]
-        public void NestedExample()
+        public void PersonNestedExample()
         {
             var parser = new Mf2();
             var html = "<div class=\"h-card\">\r\n  <a class=\"p-name u-url\"\r\n     href=\"https://blog.lizardwrangler.com/\" \r\n    >Mitchell Baker</a> \r\n  (<a class=\"p-org h-card\" \r\n      href=\"https://mozilla.org/\"\r\n     >Mozilla Foundation</a>)\r\n</div>";
@@ -134,7 +134,7 @@ namespace Microformats.Tests
         /// From: <see href="https://microformats.org/wiki/h-card"/>
         /// </summary>
         [TestMethod]
-        public void LotsOfPropertiesExample()
+        public void PersonLotsOfPropertiesExample()
         {
             var parser = new Mf2();
             var html = "<div class=\"h-card\">\r\n<span class=\"p-name\">Sally Ride</span>\r\n<span class=\"p-honorific-prefix\">Dr.</span>\r\n<span class=\"p-given-name\">Sally</span>\r\n<abbr class=\"p-additional-name\">K.</abbr>\r\n<span class=\"p-family-name\">Ride</span>\r\n<span class=\"p-honorific-suffix\">Ph.D.</span>,\r\n<span class=\"p-nickname\">sallykride</span> (IRC)\r\n<div class=\"p-org\">Sally Ride Science</div>\r\n<img class=\"u-photo\" src=\"http://example.com/sk.jpg\"/>\r\n<a class=\"u-url\" href=\"http://sally.example.com\">w</a>,\r\n<a class=\"u-email\" href=\"mailto:sally@example.com\">e</a>\r\n<div class=\"p-tel\">+1.818.555.1212</div>\r\n<div class=\"p-street-address\">123 Main st.</div>\r\n<span class=\"p-locality\">Los Angeles</span>,\r\n<abbr class=\"p-region\" title=\"California\">CA</abbr>,\r\n<span class=\"p-postal-code\">91316</span>\r\n<div class=\"p-country-name\">U.S.A</div>\r\n<time class=\"dt-bday\">1951-05-26</time> birthday\r\n<div class=\"p-category\">physicist</div>\r\n<div class=\"p-note\">First American woman in space.</div>\r\n</div>";
@@ -170,7 +170,7 @@ namespace Microformats.Tests
         /// From: <see href="https://microformats.org/wiki/h-card"/>
         /// </summary>
         [TestMethod]
-        public void AddressExample()
+        public void AddressNestedExample()
         {
             var parser = new Mf2();
             var html = "<div class=\"h-card\">\r\n  <p class=\"p-name\">Joe Bloggs</p>\r\n  <p class=\"p-adr h-adr\">\r\n    <span class=\"p-street-address\">17 Austerstræti</span>\r\n    <span class=\"p-locality\">Reykjavík</span>\r\n    <span class=\"p-country-name\">Iceland</span>\r\n  </p>\r\n</div>";
@@ -195,7 +195,7 @@ namespace Microformats.Tests
         /// From: <see href="https://microformats.org/wiki/h-adr"/>
         /// </summary>
         [TestMethod]
-        public void AdrExample()
+        public void AddressExample()
         {
             var parser = new Mf2();
             var html = "<p class=\"h-adr\">\r\n  <span class=\"p-street-address\">17 Austerstræti</span>\r\n  <span class=\"p-locality\">Reykjavík</span>\r\n  <span class=\"p-country-name\">Iceland</span>\r\n  <span class=\"p-postal-code\">107</span>\r\n</p>";
