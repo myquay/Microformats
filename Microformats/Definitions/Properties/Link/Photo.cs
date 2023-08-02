@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Link
     /// <summary>
     /// u-photo - a photo of the person or organization
     /// </summary>
-    [HCard, HFeed]
+    [HCard, HFeed, HItem]
     public class Photo : IProperty
     {
         public MType Type => MType.Url;

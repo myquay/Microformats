@@ -15,9 +15,13 @@ namespace Microformats
             return node != null && elements.Contains(node.Name.ToLowerInvariant());
         }
 
-        internal static bool HasAttr(this HtmlNode node, string attr)
+        internal static bool HasAttr(this HtmlNode node, string attr, bool ignoreEmpty = false)
         {
-            return node.GetAttributeValue(attr, null) != null;
+            var attribute = node.GetAttributeValue(attr, null);
+
+            if(ignoreEmpty && string.IsNullOrWhiteSpace(attribute))
+                return false;
+            return attribute != null;
         }
 
         internal static bool TrySelectSingleChild(this HtmlNode node, string element, out HtmlNode child)

@@ -344,24 +344,24 @@ namespace Microformats
                     if (node.Is("abbr") && node.HasAttr("title"))
                         return new[] { new MfValue(node.GetAttributeValue("title", null)) };
 
-                    if (node.TrySelectSingleChild("img", out HtmlNode imgChild) && imgChild.HasAttr("alt") && !imgChild.IsMicoformatEntity())
+                    if (node.TrySelectSingleChild("img", out HtmlNode imgChild) && imgChild.HasAttr("alt", ignoreEmpty: true) && !imgChild.IsMicoformatEntity())
                         return new[] { new MfValue(imgChild.GetAttributeValue("alt", null)) };
 
-                    if (node.TrySelectSingleChild("area", out HtmlNode areaChild) && areaChild.HasAttr("alt") && !areaChild.IsMicoformatEntity())
+                    if (node.TrySelectSingleChild("area", out HtmlNode areaChild) && areaChild.HasAttr("alt", ignoreEmpty: true) && !areaChild.IsMicoformatEntity())
                         return new[] { new MfValue(areaChild.GetAttributeValue("alt", null)) };
 
-                    if (node.TrySelectSingleChild("abbr", out HtmlNode abbrChild) && abbrChild.HasAttr("title") && !abbrChild.IsMicoformatEntity())
+                    if (node.TrySelectSingleChild("abbr", out HtmlNode abbrChild) && abbrChild.HasAttr("title", ignoreEmpty: true) && !abbrChild.IsMicoformatEntity())
                         return new[] { new MfValue(abbrChild.GetAttributeValue("title", null)) };
 
                     if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicoformatEntity())
                     {
-                        if (anyChild.TrySelectSingleChild("img", out HtmlNode imgNestedChild) && imgNestedChild.HasAttr("alt") && !imgNestedChild.IsMicoformatEntity())
+                        if (anyChild.TrySelectSingleChild("img", out HtmlNode imgNestedChild) && imgNestedChild.HasAttr("alt", ignoreEmpty: true) && !imgNestedChild.IsMicoformatEntity())
                             return new[] { new MfValue(imgNestedChild.GetAttributeValue("alt", null)) };
 
-                        if (anyChild.TrySelectSingleChild("area", out HtmlNode areaNestedChild) && areaNestedChild.HasAttr("alt") && !areaNestedChild.IsMicoformatEntity())
+                        if (anyChild.TrySelectSingleChild("area", out HtmlNode areaNestedChild) && areaNestedChild.HasAttr("alt", ignoreEmpty: true) && !areaNestedChild.IsMicoformatEntity())
                             return new[] { new MfValue(areaNestedChild.GetAttributeValue("alt", null)) };
 
-                        if (anyChild.TrySelectSingleChild("abbr", out HtmlNode abbrNestedChild) && abbrNestedChild.HasAttr("title") && !abbrNestedChild.IsMicoformatEntity())
+                        if (anyChild.TrySelectSingleChild("abbr", out HtmlNode abbrNestedChild) && abbrNestedChild.HasAttr("title", ignoreEmpty: true) && !abbrNestedChild.IsMicoformatEntity())
                             return new[] { new MfValue(abbrNestedChild.GetAttributeValue("title", null)) };
                     }
 

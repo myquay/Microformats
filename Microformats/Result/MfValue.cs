@@ -94,7 +94,7 @@ namespace Microformats.Result
             }
             else
             {
-                return ((MfType)_value).GetProperty<string>(Props.Name)?.First();
+                return ((MfType)_value)?.GetProperty<string>(Props.Name)?.First();
             }
         }
     }

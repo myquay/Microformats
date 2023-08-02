@@ -302,5 +302,23 @@ namespace Microformats.Tests
 
         }
 
+        /// <summary>
+        /// From: <see href="http://microformats.org/wiki/h-item"/>
+        /// </summary>
+        [TestMethod]
+        public void ItemExample()
+        {
+            var parser = new Mf2();
+            var html = "<a class=\"h-item\" href=\"http://example.org/items/1\">\r\n  <img src=\"http://example.org/items/1/photo.png\" alt=\"\" />\r\n  The Item Name\r\n</a>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-item");
+            Assert.IsTrue(result.Items[0].Properties.Count == 3);
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[0] == "http://example.org/items/1");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Photo)[0] == "http://example.org/items/1/photo.png");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "The Item Name");
+
+        }
     }
 }
