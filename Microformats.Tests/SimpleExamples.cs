@@ -318,7 +318,25 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[0] == "http://example.org/items/1");
             Assert.IsTrue(result.Items[0].GetProperty(Props.Photo)[0] == "http://example.org/items/1/photo.png");
             Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "The Item Name");
+        }
 
+        /// <summary>
+        /// From: <see href="http://microformats.org/wiki/h-product"/>
+        /// </summary>
+        [TestMethod]
+        public void ProductExample()
+        {
+            var parser = new Mf2();
+            var html = "<div class=\"h-product\">\r\n  <h1 class=\"p-name\">Microformats For Dummies</h1>\r\n  <img class=\"u-photo\" src=\"http://example.org/mfd.png\" alt=\"\" />\r\n  <div class=\"e-description\">\r\n    <p>Want to get started using microformats, but intimidated by hyphens and mediawiki? This book contains everything you need to know!</p>\r\n  </div>\r\n  <p>Yours today for only <data class=\"p-price\" value=\"20.00\">$20.00</data>\r\n     from <a class=\"p-brand h-card\" href=\"http://example.com/acme\">ACME Publishing inc.</a>\r\n  </p>\r\n</div>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-product");
+            Assert.IsTrue(result.Items[0].Properties.Count == 5);
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Microformats For Dummies");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Photo)[0] == "http://example.org/mfd.png");
+            Assert.IsTrue(result.Items[0].GetProperty<MfEmbedded>(Props.EmbeddedDescription)[0].Html == "<p>Want to get started using microformats, but intimidated by hyphens and mediawiki? This book contains everything you need to know!</p>");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Price)[0] == "20.00");
         }
     }
 }

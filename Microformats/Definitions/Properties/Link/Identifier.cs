@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
-    /// u-url - home page or other URL representing the person or organization
+    /// u-identifier - includes type (e.g. mpn, upc, isbn, issn, sn, vin, sku etc.) and value.
     /// </summary>
-    [HCard, HEntry, HEvent, HFeed, HItem, HListing, HProduct]
-    public class Url : IProperty
+    [HProduct]
+    public class Identifier : IProperty
     {
         public MType Type => MType.Url;
 
-        public string Name => "u-url";
+        public string Name => "u-identifier";
 
-        public string Key => "url";
+        public string Key => "identifier";
     }
 }

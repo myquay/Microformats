@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-category - category/tag
+    /// p-brand - manufacturer, can also be embedded h-card
     /// </summary>
-    [HCard, HEntry, HEvent, HListing, HProduct]
-    public class Category : IProperty
+    [HProduct]
+    public class Brand : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-category";
+        public string Name => "p-brand";
 
-        public string Key => "category";
+        public string Key => "brand";
     }
 }

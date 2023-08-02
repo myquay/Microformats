@@ -7,15 +7,16 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-category - category/tag
+    ///p-action: text, optional, one of the following values
+    ///sell, rent, trade, meet, announce, offer, wanted, event, service
     /// </summary>
-    [HCard, HEntry, HEvent, HListing, HProduct]
-    public class Category : IProperty
+    [HListing]
+    public class Action : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-category";
+        public string Name => "p-action";
 
-        public string Key => "category";
+        public string Key => "action";
     }
 }

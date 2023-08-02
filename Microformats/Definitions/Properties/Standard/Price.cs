@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-category - category/tag
+    /// p-price: text, optional (should include a floating-point number with optional ISO currency codes)
     /// </summary>
-    [HCard, HEntry, HEvent, HListing, HProduct]
-    public class Category : IProperty
+    [HListing, HProduct]
+    public class Price : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-category";
+        public string Name => "p-price";
 
-        public string Key => "category";
+        public string Key => "price";
     }
 }

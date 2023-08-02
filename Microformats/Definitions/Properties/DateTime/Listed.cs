@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Link
 {
     /// <summary>
-    /// u-photo - a photo of the person or organization
+    /// dt-listed: datetime, optional
     /// </summary>
-    [HCard, HFeed, HItem, HProduct]
-    public class Photo : IProperty
+    [HListing]
+    public class Listed : IProperty
     {
-        public MType Type => MType.Url;
+        public MType Type => MType.DateTime;
 
-        public string Name => "u-photo";
+        public string Name => "dt-listed";
 
-        public string Key => "photo";
+        public string Key => "listed";
     }
 }

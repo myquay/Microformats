@@ -57,9 +57,11 @@ namespace Microformats.Definitions
         public static Start Start { get; } = new Start();
         public static End End { get; } = new End();
         public static Duration Duration { get; } = new Duration();
-        public static Description Description { get; } = new Description();
+        public static Properties.Standard.Description Description { get; } = new Properties.Standard.Description();
 
-        public static Entry Entry { get; } = new Entry();   
+        public static Entry Entry { get; } = new Entry();
+        public static Properties.Embedded.Description EmbeddedDescription { get; } = new Properties.Embedded.Description();
+        public static Price Price { get; } = new Price();
 
 
     }
