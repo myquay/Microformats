@@ -1,5 +1,6 @@
 ﻿using Microformats.Definitions;
 using Microformats.Definitions.Properties;
+using Microformats.Definitions.Properties.Standard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,7 +95,7 @@ namespace Microformats.Result
             }
             else
             {
-                return ((MfType)_value)?.GetProperty<string>(Props.Name)?.First();
+                return ((MfType)_value)?.Get<PropertyName, String>()?.First();
             }
         }
     }

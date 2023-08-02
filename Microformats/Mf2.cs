@@ -181,7 +181,7 @@ namespace Microformats
                 if (Vocabularies.Any(v => child.GetClasses().Contains(v.Name)))
                 {
                     var value = ParseElementForMicroformat(child);
-                    value.Value = value.GetProperty(Props.Name)?.First();
+                    value.Value = value.Get<PropertyName>()?.First();
                     propertyValue.Add(new MfValue(value));
                 }
                 else
@@ -216,7 +216,7 @@ namespace Microformats
                         else
                         {
                             //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
-                            propertyValue.Add(new MfValue(child.InnerText.Trim()));
+                            propertyValue.Add(new MfValue(Regex.Replace(child.InnerText.Trim(), @"\s+", " ")));
                         }
                     }
                     else if (property.Type == MType.Url)
@@ -276,7 +276,7 @@ namespace Microformats
                         else
                         {
                             //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
-                            propertyValue.Add(new MfValue(child.InnerText.Trim()));
+                            propertyValue.Add(new MfValue(Regex.Replace(child.InnerText.Trim(), @"\s+", " ")));
                         }
                     }
                     else if (property.Type == MType.DateTime)
@@ -309,7 +309,7 @@ namespace Microformats
                         else
                         {
                             //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
-                            propertyValue.Add(new MfValue(child.InnerText.Trim()));
+                            propertyValue.Add(new MfValue(Regex.Replace(child.InnerText.Trim(), @"\s+", " ")));
                         }
                     }
                     else if (property.Type == MType.Embedded)
@@ -336,7 +336,7 @@ namespace Microformats
             //Implicit parsing for special properties
             if (!propertyValue.Any())
             {
-                if (property is PName)
+                if (property is PropertyName)
                 {
                     if (node.Is("img", "area") && node.HasAttr("alt"))
                         return new[] { new MfValue(node.GetAttributeValue("alt", null)) };

@@ -1,8 +1,12 @@
 ﻿using Microformats.Definitions;
 using Microformats.Definitions.Properties;
+using Microformats.Definitions.Properties.Embedded;
+using Microformats.Definitions.Properties.Link;
+using Microformats.Definitions.Properties.Standard;
 using Microformats.Definitions.Vocabularies;
 using Microformats.Result;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Concurrent;
 
 namespace Microformats.Tests
 {
@@ -26,7 +30,7 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Type.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-card");
             Assert.IsTrue(result.Items[0].Properties.Count == 1);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Frances Berriman");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Frances Berriman");
         }
 
         /// <summary>
@@ -43,8 +47,8 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Type.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-card");
             Assert.IsTrue(result.Items[0].Properties.Count == 2);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Ben Ward");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[0] == "http://benward.me");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Ben Ward");
+            Assert.IsTrue(result.Items[0].Get<Url>()[0] == "http://benward.me");
         }
 
         /// <summary>
@@ -61,9 +65,9 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Type.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-card");
             Assert.IsTrue(result.Items[0].Properties.Count == 3);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Rohit Khare");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[0] == "http://rohit.khare.org/");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Photo)[0] == "https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Rohit Khare");
+            Assert.IsTrue(result.Items[0].Get<Url>()[0] == "http://rohit.khare.org/");
+            Assert.IsTrue(result.Items[0].Get<Photo>()[0] == "https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg");
         }
 
         /// <summary>
@@ -80,14 +84,14 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Type.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-card");
             Assert.IsTrue(result.Items[0].Properties.Count == 6);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Mitchell Baker");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Org)[0] == "Mozilla Foundation");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Note)[0] == "Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities.");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Category)[0] == "Strategy"); 
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Category)[1] == "Leadership");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Photo)[0] == "https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[0] == "http://blog.lizardwrangler.com/");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[1] == "https://twitter.com/MitchellBaker");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Mitchell Baker");
+            Assert.IsTrue(result.Items[0].Get<Org>()[0] == "Mozilla Foundation");
+            Assert.IsTrue(result.Items[0].Get<Note>()[0] == "Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities.");
+            Assert.IsTrue(result.Items[0].Get<Category>()[0] == "Strategy"); 
+            Assert.IsTrue(result.Items[0].Get<Category>()[1] == "Leadership");
+            Assert.IsTrue(result.Items[0].Get<Photo>()[0] == "https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg");
+            Assert.IsTrue(result.Items[0].Get<Url>()[0] == "http://blog.lizardwrangler.com/");
+            Assert.IsTrue(result.Items[0].Get<Url>()[1] == "https://twitter.com/MitchellBaker");
 
         }
 
@@ -105,9 +109,9 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Type.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-card");
             Assert.IsTrue(result.Items[0].Properties.Count == 3);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "microformats.org");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[0] == "https://microformats.org/");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Org)[0] == "microformats.org");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "microformats.org");
+            Assert.IsTrue(result.Items[0].Get<Url>()[0] == "https://microformats.org/");
+            Assert.IsTrue(result.Items[0].Get<Org>()[0] == "microformats.org");
         }
 
         /// <summary>
@@ -124,11 +128,11 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Type.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-card");
             Assert.IsTrue(result.Items[0].Properties.Count == 3);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Mitchell Baker");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[0] == "https://blog.lizardwrangler.com/");
-            Assert.IsTrue(result.Items[0].Properties[Props.Org.Key][0].GetValue() == "Mozilla Foundation");
-            Assert.IsTrue(result.Items[0].Properties[Props.Org.Key][0].Get<MfType>().GetProperty(Props.Name)[0] == "Mozilla Foundation");
-            Assert.IsTrue(result.Items[0].Properties[Props.Org.Key][0].Get<MfType>().GetProperty(Props.Url)[0] == "https://mozilla.org/");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Mitchell Baker");
+            Assert.IsTrue(result.Items[0].Get<Url>()[0] == "https://blog.lizardwrangler.com/");
+            Assert.IsTrue(result.Items[0].Get<Org,MfType>()[0].Value == "Mozilla Foundation");
+            Assert.IsTrue(result.Items[0].Get<Org, MfType>()[0].Get<PropertyName>()[0] == "Mozilla Foundation");
+            Assert.IsTrue(result.Items[0].Get<Org, MfType>()[0].Get<Url>()[0] == "https://mozilla.org/");
         }
 
         /// <summary>
@@ -145,26 +149,26 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Type.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-card");
             Assert.IsTrue(result.Items[0].Properties.Count == 20);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Sally Ride");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.HonorificPrefix)[0] == "Dr.");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.GivenName)[0] == "Sally");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.AdditionalName)[0] == "K.");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.FamilyName)[0] == "Ride");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.HonorificSuffix)[0] == "Ph.D.");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Nickname)[0] == "sallykride");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Org)[0] == "Sally Ride Science");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Photo)[0] == "http://example.com/sk.jpg");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[0] == "http://sally.example.com");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Email)[0] == "mailto:sally@example.com");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Telephone)[0] == "+1.818.555.1212");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.StreetAddress)[0] == "123 Main st.");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Locality)[0] == "Los Angeles");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Region)[0] == "California");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.PostalCode)[0] == "91316");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.CountryName)[0] == "U.S.A");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Birthday)[0] == "1951-05-26");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Category)[0] == "physicist");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Note)[0] == "First American woman in space.");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Sally Ride");
+            Assert.IsTrue(result.Items[0].Get<HonorificPrefix>()[0] == "Dr.");
+            Assert.IsTrue(result.Items[0].Get<GivenName>()[0] == "Sally");
+            Assert.IsTrue(result.Items[0].Get<AdditionalName>()[0] == "K.");
+            Assert.IsTrue(result.Items[0].Get<FamilyName>()[0] == "Ride");
+            Assert.IsTrue(result.Items[0].Get<HonorificSuffix>()[0] == "Ph.D.");
+            Assert.IsTrue(result.Items[0].Get<Nickname>()[0] == "sallykride");
+            Assert.IsTrue(result.Items[0].Get<Org>()[0] == "Sally Ride Science");
+            Assert.IsTrue(result.Items[0].Get<Photo>()[0] == "http://example.com/sk.jpg");
+            Assert.IsTrue(result.Items[0].Get<Url>()[0] == "http://sally.example.com");
+            Assert.IsTrue(result.Items[0].Get<Email>()[0] == "mailto:sally@example.com");
+            Assert.IsTrue(result.Items[0].Get<Tel>()[0] == "+1.818.555.1212");
+            Assert.IsTrue(result.Items[0].Get<StreetAddress>()[0] == "123 Main st.");
+            Assert.IsTrue(result.Items[0].Get<Locality>()[0] == "Los Angeles");
+            Assert.IsTrue(result.Items[0].Get<Region>()[0] == "California");
+            Assert.IsTrue(result.Items[0].Get<PostalCode>()[0] == "91316");
+            Assert.IsTrue(result.Items[0].Get<CountryName>()[0] == "U.S.A");
+            Assert.IsTrue(result.Items[0].Get<Birthday>()[0] == "1951-05-26");
+            Assert.IsTrue(result.Items[0].Get<Category>()[0] == "physicist");
+            Assert.IsTrue(result.Items[0].Get<Note>()[0] == "First American woman in space.");
         }
 
         /// <summary>
@@ -180,16 +184,16 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-card");
             Assert.IsTrue(result.Items[0].Properties.Count == 2);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Joe Bloggs");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Joe Bloggs");
 
             var address = (result.Items[0].Properties["adr"][0]).Get<MfType>();
 
             Assert.IsTrue(address.Type.Length == 1);
             Assert.IsTrue(address.Type[0] == "h-adr");
             Assert.IsTrue(address.Properties.Count == 4);
-            Assert.IsTrue(address.GetProperty(Props.StreetAddress)[0] == "17 Austerstræti");
-            Assert.IsTrue(address.GetProperty(Props.Locality)[0] == "Reykjavík");
-            Assert.IsTrue(address.GetProperty(Props.CountryName)[0] == "Iceland");
+            Assert.IsTrue(address.Get<StreetAddress>()[0] == "17 Austerstræti");
+            Assert.IsTrue(address.Get<Locality>()[0] == "Reykjavík");
+            Assert.IsTrue(address.Get<CountryName>()[0] == "Iceland");
         }
 
         /// <summary>
@@ -205,11 +209,11 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-adr");
             Assert.IsTrue(result.Items[0].Properties.Count == 5);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.StreetAddress)[0] == "17 Austerstræti");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Locality)[0] == "Reykjavík");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.CountryName)[0] == "Iceland");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.PostalCode)[0] == "107");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "17 Austerstræti Reykjavík Iceland 107");
+            Assert.IsTrue(result.Items[0].Get<StreetAddress>()[0] == "17 Austerstræti");
+            Assert.IsTrue(result.Items[0].Get<Locality>()[0] == "Reykjavík");
+            Assert.IsTrue(result.Items[0].Get<CountryName>()[0] == "Iceland");
+            Assert.IsTrue(result.Items[0].Get<PostalCode>()[0] == "107");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "17 Austerstræti Reykjavík Iceland 107");
         }
 
         /// <summary>
@@ -225,20 +229,20 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-entry");
             Assert.IsTrue(result.Items[0].Properties.Count == 5);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Microformats are amazing");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Published)[0] == "2013-06-13 12:00:00");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Summary)[0] == "In which I extoll the virtues of using microformats.");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Microformats are amazing");
+            Assert.IsTrue(result.Items[0].Get<Published>()[0] == "2013-06-13 12:00:00");
+            Assert.IsTrue(result.Items[0].Get<Summary>()[0] == "In which I extoll the virtues of using microformats.");
 
-            var embedded = result.Items[0].GetProperty<MfEmbedded>(Props.Content)[0];
+            var embedded = result.Items[0].Get<Content, MfEmbedded>()[0];
             Assert.IsTrue(embedded.Value == "Blah blah blah");
             Assert.IsTrue(embedded.Html == "<p>Blah blah blah</p>");
 
-            var author = result.Items[0].GetProperty<MfType>(Props.Author)[0];
+            var author = result.Items[0].Get<Author, MfType>()[0];
             Assert.IsTrue(author.Value == "W. Developer");
             Assert.IsTrue(author.Type[0] == "h-card");
             Assert.IsTrue(author.Properties.Count == 2);
-            Assert.IsTrue(author.GetProperty(Props.Name)[0] == "W. Developer");
-            Assert.IsTrue(author.GetProperty(Props.Url)[0] == "http://example.com");
+            Assert.IsTrue(author.Get<PropertyName>()[0] == "W. Developer");
+            Assert.IsTrue(author.Get<Url>()[0] == "http://example.com");
         }
 
         /// <summary>
@@ -254,11 +258,11 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-event");
             Assert.IsTrue(result.Items[0].Properties.Count == 5);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Microformats Meetup");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Start)[0] == "2013-06-30 12:00");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.End)[0] == "2013-06-30 18:00");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Location)[0] == "Some bar in SF");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Summary)[0] == "Get together and discuss all things microformats-related.");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Microformats Meetup");
+            Assert.IsTrue(result.Items[0].Get<Start>()[0] == "2013-06-30 12:00");
+            Assert.IsTrue(result.Items[0].Get<End>()[0] == "2013-06-30 18:00");
+            Assert.IsTrue(result.Items[0].Get<Location>()[0] == "Some bar in SF");
+            Assert.IsTrue(result.Items[0].Get<Summary>()[0] == "Get together and discuss all things microformats-related.");
 
         }
 
@@ -275,11 +279,11 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-feed");
             Assert.IsTrue(result.Items[0].Properties.Count == 3);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "The Markup Blog");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Summary)[0] == "Stories of elements of their attributes.");
-            Assert.IsTrue(result.Items[0].GetProperty<MfType>(Props.Entry).Length == 2);
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "The Markup Blog");
+            Assert.IsTrue(result.Items[0].Get<Summary>()[0] == "Stories of elements of their attributes.");
+            Assert.IsTrue(result.Items[0].Get<Entry, MfType>().Length == 2);
 
-            var entry = result.Items[0].GetProperty<MfType>(Props.Entry)[0];
+            var entry = result.Items[0].Get<Entry, MfType>()[0];
             Assert.IsTrue(entry.Properties.Count == 6);
 
         }
@@ -297,8 +301,8 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-geo");
             Assert.IsTrue(result.Items[0].Properties.Count == 2);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Longitude)[0] == "-27.116667");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Latitude)[0] == "-109.366667");
+            Assert.IsTrue(result.Items[0].Get<Longitude>()[0] == "-27.116667");
+            Assert.IsTrue(result.Items[0].Get<Latitude>()[0] == "-109.366667");
 
         }
 
@@ -315,9 +319,9 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-item");
             Assert.IsTrue(result.Items[0].Properties.Count == 3);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Url)[0] == "http://example.org/items/1");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Photo)[0] == "http://example.org/items/1/photo.png");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "The Item Name");
+            Assert.IsTrue(result.Items[0].Get<Url>()[0] == "http://example.org/items/1");
+            Assert.IsTrue(result.Items[0].Get<Photo>()[0] == "http://example.org/items/1/photo.png");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "The Item Name");
         }
 
         /// <summary>
@@ -333,10 +337,10 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-product");
             Assert.IsTrue(result.Items[0].Properties.Count == 5);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Microformats For Dummies");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Photo)[0] == "http://example.org/mfd.png");
-            Assert.IsTrue(result.Items[0].GetProperty<MfEmbedded>(Props.EmbeddedDescription)[0].Html == "<p>Want to get started using microformats, but intimidated by hyphens and mediawiki? This book contains everything you need to know!</p>");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Price)[0] == "20.00");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Microformats For Dummies");
+            Assert.IsTrue(result.Items[0].Get<Photo>()[0] == "http://example.org/mfd.png");
+            Assert.IsTrue(result.Items[0].Get<DescriptionEmbedded, MfEmbedded>()[0].Html == "<p>Want to get started using microformats, but intimidated by hyphens and mediawiki? This book contains everything you need to know!</p>");
+            Assert.IsTrue(result.Items[0].Get<Price>()[0] == "20.00");
         }
 
         /// <summary>
@@ -352,14 +356,39 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-recipe");
             Assert.IsTrue(result.Items[0].Properties.Count == 5);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Bagels");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Ingredient).Length == 3);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Ingredient)[0] == "Flour");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Ingredient)[1] == "Sugar");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Ingredient)[2] == "Yeast");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Duration)[0] == "1H");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Yield)[0] == "4");
-            Assert.IsTrue(result.Items[0].GetProperty<MfEmbedded>(Props.Instructions)[0].Html == "<ol>\r\n      <li>Start by mixing all the ingredients together.</li>\r\n    </ol>");
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Bagels");
+            Assert.IsTrue(result.Items[0].Get<Ingredient>().Length == 3);
+            Assert.IsTrue(result.Items[0].Get<Ingredient>()[0] == "Flour");
+            Assert.IsTrue(result.Items[0].Get<Ingredient>()[1] == "Sugar");
+            Assert.IsTrue(result.Items[0].Get<Ingredient>()[2] == "Yeast");
+            Assert.IsTrue(result.Items[0].Get<Duration>()[0] == "1H");
+            Assert.IsTrue(result.Items[0].Get<Yield>()[0] == "4");
+            Assert.IsTrue(result.Items[0].Get<Instructions, MfEmbedded>()[0].Html == "<ol>\r\n      <li>Start by mixing all the ingredients together.</li>\r\n    </ol>");
+        }
+
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-resume"/>
+        /// </summary>
+        [TestMethod]
+        public void ResumeExample()
+        {
+            var parser = new Mf2();
+            var html = "<div class=\"h-resume\">\r\n  <span class=\"p-name\">\r\n   <a class=\"p-contact h-card\" href=\"http://example.org\">\r\n    <img src=\"http://example.org/photo.png\" alt=\"\" />\r\n    Joe Bloggs\r\n   </a>\r\n   resume\r\n  </span>\r\n  \r\n  <p class=\"p-summary\">Joe is a top-notch llama farmer with a degree in <span class=\"p-skill\">Llama husbandry</span> and a thirst to produce the finest wool known to man</p>\r\n</div>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-resume");
+            Assert.IsTrue(result.Items[0].Properties.Count == 4);
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Joe Bloggs resume");
+
+            var contactCard = result.Items[0].Get<Contact, MfType>()[0];
+            Assert.IsTrue(contactCard.Value == "Joe Bloggs");
+            Assert.IsTrue(contactCard.Get<PropertyName>()[0] == "Joe Bloggs");
+            Assert.IsTrue(contactCard.Get<Photo>()[0] == "http://example.org/photo.png");
+            Assert.IsTrue(contactCard.Get<Url>()[0] == "http://example.org");
+
+            Assert.IsTrue(result.Items[0].Get<Summary>()[0] == "Joe is a top-notch llama farmer with a degree in Llama husbandry and a thirst to produce the finest wool known to man");
+            Assert.IsTrue(result.Items[0].Get<Skill>()[0] == "Llama husbandry");
         }
     }
 }

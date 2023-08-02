@@ -10,7 +10,7 @@ namespace Microformats.Definitions.Properties.Embedded
     /// e-description
     /// </summary>
     [HProduct]
-    public class Description : IProperty
+    public class DescriptionEmbedded : IProperty
     {
         public MType Type => MType.Embedded;
 

@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-name - The full/formatted name of the person or organization
+    /// p-skill - a skill or ability, optionally including level and/or duration of experience
     /// </summary>
-    [HCard, HAdr, HEntry, HEvent, HFeed, HItem, HProduct, HRecipe]
-    public class PName : IProperty
+    [HResume]
+    public class Skill : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-name";
+        public string Name => "p-skill";
 
-        public string Key => "name";
+        public string Key => "skill";
     }
 }

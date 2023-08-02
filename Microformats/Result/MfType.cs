@@ -27,9 +27,33 @@ namespace Microformats.Result
         /// </summary>
         public Dictionary<string, MfValue[]> Properties { get; set; } = new Dictionary<string, MfValue[]>();
 
-        public T[] GetProperty<T>(IProperty property) where T : class
+        public bool TryGet<P, T>(out T[] result)
+            where T : class
+            where P : IProperty, new()
         {
-            return Properties[property.Key].Select(s => s.Get<T>()).ToArray();
+            var property = new P();
+            result = default;
+
+            var results = Properties[property.Key].Select(s =>
+            {
+                var successful = s.TryGet<T>(out T value);
+                return new
+                {
+                    value,
+                    successful
+                };
+            });
+
+            result = results.Where(s => s.successful).Select(s => s.value).ToArray();
+
+            return results.Any(a => !a.successful);
+        }
+
+        public T[] Get<P, T>() 
+            where T : class 
+            where P : IProperty, new()
+        {
+            return Properties[new P().Key].Select(s => s.Get<T>()).ToArray();
         }
 
         /// <summary>
@@ -37,9 +61,11 @@ namespace Microformats.Result
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public string[] GetProperty(IProperty property)
+        public string[] Get<P>()
+            where P : IProperty, new()
         {
-            //TODO: ADD SUPPORT FOR e-*, and dt-* properties
+            var property = new P();
+
             if (property.Type == MType.Property)
             {
                 if (Properties.ContainsKey(property.Key))

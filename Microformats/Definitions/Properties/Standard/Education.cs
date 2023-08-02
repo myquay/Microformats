@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-summary - short entry summary
+    /// p-education - an education h-event event, years, embedded h-card of the school, location.
     /// </summary>
-    [HEntry, HEvent, HFeed, HRecipe, HResume]
-    public class Summary : IProperty
+    [HResume]
+    public class Education : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-summary";
+        public string Name => "p-education";
 
-        public string Key => "summary";
+        public string Key => "education";
     }
 }
