@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard
     /// <summary>
     /// p-author - who wrote the entry, optionally embedded h-card(s)
     /// </summary>
-    [HEntry, HFeed, HRecipe]
+    [HEntry, HFeed, HRecipe, HReview]
     public class Author : IProperty
     {
         public MType Type => MType.Property;

@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Link
     /// <summary>
     /// u-url - home page or other URL representing the person or organization
     /// </summary>
-    [HCard, HEntry, HEvent, HFeed, HItem, HListing, HProduct]
+    [HCard, HEntry, HEvent, HFeed, HItem, HListing, HProduct, HReview]
     public class Url : IProperty
     {
         public MType Type => MType.Url;

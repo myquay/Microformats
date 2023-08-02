@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Embedded
     /// <summary>
     /// e-content - full content of the entry
     /// </summary>
-    [HEntry]
+    [HEntry, HReview]
     public class Content : IProperty
     {
         public MType Type => MType.Embedded;

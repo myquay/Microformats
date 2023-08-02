@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard
     /// <summary>
     /// p-location - location the entry was posted from, optionally embed h-card, h-adr, or h-geo
     /// </summary>
-    [HEntry, HEvent]
+    [HEntry, HEvent, HReview]
     public class Location : IProperty
     {
         public MType Type => MType.Property;

@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-name - The full/formatted name of the person or organization
+    /// p-rating - value from 1-5 indicating a rating for the item (5 best).
     /// </summary>
-    [HCard, HAdr, HEntry, HEvent, HFeed, HItem, HProduct, HRecipe, HResume, HReview]
-    public class PropertyName : IProperty
+    [HReview]
+    public class Rating : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-name";
+        public string Name => "p-rating";
 
-        public string Key => "name";
+        public string Key => "p-rating";
     }
 }

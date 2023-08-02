@@ -390,5 +390,37 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Get<Summary>()[0] == "Joe is a top-notch llama farmer with a degree in Llama husbandry and a thirst to produce the finest wool known to man");
             Assert.IsTrue(result.Items[0].Get<Skill>()[0] == "Llama husbandry");
         }
+
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-review"/>
+        /// </summary>
+        [TestMethod]
+        public void ReviewExample()
+        {
+            var parser = new Mf2();
+            var html = "<div class=\"h-review\">\r\n  <h1 class=\"p-name\">Microformats: is structured data worth it?</h1>\r\n  \r\n  <blockquote>\r\n    <a class=\"p-item h-item\" href=\"http://microformats.org\">Microformats</a> are the simplest way to publish structured data on the web.\r\n  </blockquote>\r\n  \r\n  <p>\r\n    <data class=\"p-rating\" value=\"5\">★★★★★</data>\r\n    Published <time class=\"dt-published\" datetime=\"2013-06-12 12:00:00\">12<sup>th</sup> June 2013</time>\r\n    by <a class=\"p-author h-card\" href=\"http://example.com\">Joe Bloggs</a>.\r\n  </p>\r\n  \r\n  <div class=\"e-content\">\r\n    <p>Yes, microformats are undoubtedly great. They are the simplest way to markup structured data in HTML and reap the benefits thereof, including using your web page as your API by automatic conversion to JSON. The alternatives of microdata/schema and RDFa are much more work, require more markup, and are more complicated (harder to get right, more likely to break).</p>\r\n  </div>\r\n</div>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-review");
+            Assert.IsTrue(result.Items[0].Properties.Count == 6);
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Microformats: is structured data worth it?");
+
+            var item = result.Items[0].Get<Item, MfType>()[0];
+            Assert.IsTrue(item.Value == "Microformats");
+            Assert.IsTrue(item.Get<PropertyName>()[0] == "Microformats");
+            Assert.IsTrue(item.Get<Url>()[0] == "http://microformats.org");
+
+            Assert.IsTrue(result.Items[0].Get<Rating>()[0] == "5");
+            Assert.IsTrue(result.Items[0].Get<Published>()[0] == "2013-06-12 12:00:00");
+
+            var author = result.Items[0].Get<Author, MfType>()[0];
+            Assert.IsTrue(author.Value == "Joe Bloggs");
+            Assert.IsTrue(author.Get<PropertyName>()[0] == "Joe Bloggs");
+            Assert.IsTrue(author.Get<Url>()[0] == "http://example.com");
+
+
+            Assert.IsTrue(result.Items[0].Get<Content, MfEmbedded>()[0].Html == "<p>Yes, microformats are undoubtedly great. They are the simplest way to markup structured data in HTML and reap the benefits thereof, including using your web page as your API by automatic conversion to JSON. The alternatives of microdata/schema and RDFa are much more work, require more markup, and are more complicated (harder to get right, more likely to break).</p>");
+        }
     }
 }

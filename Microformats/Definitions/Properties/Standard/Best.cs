@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-name - The full/formatted name of the person or organization
+    /// p-best - define best rating value. can be numerically lower than worst.
     /// </summary>
-    [HCard, HAdr, HEntry, HEvent, HFeed, HItem, HProduct, HRecipe, HResume, HReview]
-    public class PropertyName : IProperty
+    [HReview]
+    public class Best : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-name";
+        public string Name => "p-best";
 
-        public string Key => "name";
+        public string Key => "p-best";
     }
 }
