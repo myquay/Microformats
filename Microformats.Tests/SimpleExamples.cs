@@ -1,5 +1,6 @@
-using Microformats.Definitions;
+ï»¿using Microformats.Definitions;
 using Microformats.Definitions.Properties;
+using Microformats.Definitions.Vocabularies;
 using Microformats.Result;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -173,7 +174,7 @@ namespace Microformats.Tests
         public void AddressNestedExample()
         {
             var parser = new Mf2();
-            var html = "<div class=\"h-card\">\r\n  <p class=\"p-name\">Joe Bloggs</p>\r\n  <p class=\"p-adr h-adr\">\r\n    <span class=\"p-street-address\">17 Austerstræti</span>\r\n    <span class=\"p-locality\">Reykjavík</span>\r\n    <span class=\"p-country-name\">Iceland</span>\r\n  </p>\r\n</div>";
+            var html = "<div class=\"h-card\">\r\n  <p class=\"p-name\">Joe Bloggs</p>\r\n  <p class=\"p-adr h-adr\">\r\n    <span class=\"p-street-address\">17 AusterstrÃ¦ti</span>\r\n    <span class=\"p-locality\">ReykjavÃ­k</span>\r\n    <span class=\"p-country-name\">Iceland</span>\r\n  </p>\r\n</div>";
             var result = parser.Parse(html);
 
             Assert.IsTrue(result.Items.Length == 1);
@@ -186,8 +187,8 @@ namespace Microformats.Tests
             Assert.IsTrue(address.Type.Length == 1);
             Assert.IsTrue(address.Type[0] == "h-adr");
             Assert.IsTrue(address.Properties.Count == 4);
-            Assert.IsTrue(address.GetProperty(Props.StreetAddress)[0] == "17 Austerstræti");
-            Assert.IsTrue(address.GetProperty(Props.Locality)[0] == "Reykjavík");
+            Assert.IsTrue(address.GetProperty(Props.StreetAddress)[0] == "17 AusterstrÃ¦ti");
+            Assert.IsTrue(address.GetProperty(Props.Locality)[0] == "ReykjavÃ­k");
             Assert.IsTrue(address.GetProperty(Props.CountryName)[0] == "Iceland");
         }
 
@@ -198,17 +199,17 @@ namespace Microformats.Tests
         public void AddressExample()
         {
             var parser = new Mf2();
-            var html = "<p class=\"h-adr\">\r\n  <span class=\"p-street-address\">17 Austerstræti</span>\r\n  <span class=\"p-locality\">Reykjavík</span>\r\n  <span class=\"p-country-name\">Iceland</span>\r\n  <span class=\"p-postal-code\">107</span>\r\n</p>";
+            var html = "<p class=\"h-adr\">\r\n  <span class=\"p-street-address\">17 AusterstrÃ¦ti</span>\r\n  <span class=\"p-locality\">ReykjavÃ­k</span>\r\n  <span class=\"p-country-name\">Iceland</span>\r\n  <span class=\"p-postal-code\">107</span>\r\n</p>";
             var result = parser.Parse(html);
 
             Assert.IsTrue(result.Items.Length == 1);
             Assert.IsTrue(result.Items[0].Type[0] == "h-adr");
             Assert.IsTrue(result.Items[0].Properties.Count == 5);
-            Assert.IsTrue(result.Items[0].GetProperty(Props.StreetAddress)[0] == "17 Austerstræti");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Locality)[0] == "Reykjavík");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.StreetAddress)[0] == "17 AusterstrÃ¦ti");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Locality)[0] == "ReykjavÃ­k");
             Assert.IsTrue(result.Items[0].GetProperty(Props.CountryName)[0] == "Iceland");
             Assert.IsTrue(result.Items[0].GetProperty(Props.PostalCode)[0] == "107");
-            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "17 Austerstræti Reykjavík Iceland 107");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "17 AusterstrÃ¦ti ReykjavÃ­k Iceland 107");
         }
 
         /// <summary>
@@ -260,5 +261,46 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].GetProperty(Props.Summary)[0] == "Get together and discuss all things microformats-related.");
 
         }
+
+        /// <summary>
+        /// From: <see href="http://microformats.org/wiki/h-feed"/>
+        /// </summary>
+        [TestMethod]
+        public void FeedExample()
+        {
+            var parser = new Mf2();
+            var html = "<div class=\"h-feed hfeed\">\r\n  <h1 class=\"p-name site-title\">The Markup Blog</h1>\r\n  <p class=\"p-summary site-description\">Stories of elements of their attributes.</p>\r\n\r\n  <article class=\"h-entry hentry\">\r\n    <a class=\"u-url\" rel=\"bookmark\" href=\"2020/06/22/balanced-divisive-complementary\">\r\n      <h2 class=\"p-name entry-title\">A Tale Of Two Tags: Part 2</h2>\r\n    </a>\r\n    <address class=\"p-author author h-card vcard\">\r\n      <a href=\"https://chandra.example.com/\" class=\"u-url url p-name fn\" rel=\"author\">Chandra</a>\r\n    </address>\r\n    <time class=\"dt-published published\" datetime=\"2012-06-22T09:45:57-07:00\">June 21, 2012</time>\r\n    <div class=\"p-summary entry-summary\">\r\n      <p>From balanced harmony, to divisive misunderstandings, to complementary roles.</p>\r\n    </div>\r\n    <a href=\"/category/uncategorized/\" rel=\"category tag\" class=\"p-category\">General</a>\r\n  </article>\r\n\r\n  <article class=\"h-entry hentry\">\r\n    <a class=\"u-url\" rel=\"bookmark\" href=\"2020/06/20/best-visible-alternative-invisible\">\r\n      <h2 class=\"p-name entry-title\">A Tale Of Two Tags: Part 1</h2>\r\n    </a>\r\n    <address class=\"p-author author h-card vcard\">\r\n      <a href=\"https://chandra.example.com/\" class=\"u-url url p-name fn\" rel=\"author\">Chandra</a>\r\n    </address>\r\n    <time class=\"dt-published published\" datetime=\"2012-06-20T08:34:46-07:00\">June 20, 2012</time>\r\n    <div class=\"p-summary entry-summary\">\r\n      <p>It was the best of visible tags, it was the alternative invisible tags.</p>\r\n    </div>\r\n    <a href=\"/category/uncategorized/\" rel=\"category tag\" class=\"p-category\">General</a>\r\n  </article>\r\n\r\n</div>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-feed");
+            Assert.IsTrue(result.Items[0].Properties.Count == 3);
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "The Markup Blog");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Summary)[0] == "Stories of elements of their attributes.");
+            Assert.IsTrue(result.Items[0].GetProperty<MfType>(Props.Entry).Length == 2);
+
+            var entry = result.Items[0].GetProperty<MfType>(Props.Entry)[0];
+            Assert.IsTrue(entry.Properties.Count == 6);
+
+        }
+
+        /// <summary>
+        /// From: <see href="http://microformats.org/wiki/h-geo"/>
+        /// </summary>
+        [TestMethod]
+        public void GeoExample()
+        {
+            var parser = new Mf2();
+            var html = "<p class=\"h-geo\">\r\n  <data class=\"p-longitude\" value=\"-27.116667\">27Â° 7â€² 0â€³ S</data>,\r\n  <data class=\"p-latitude\" value=\"-109.366667\">109Â° 22â€² 0â€³ W</data>\r\n</p>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-geo");
+            Assert.IsTrue(result.Items[0].Properties.Count == 2);
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Longitude)[0] == "-27.116667");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Latitude)[0] == "-109.366667");
+
+        }
+
     }
 }

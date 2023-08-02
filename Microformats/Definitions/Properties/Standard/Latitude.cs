@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard
     /// <summary>
     /// p-latitude - decimal latitude
     /// </summary>
-    [HAdr, HCard, HEvent]
+    [HAdr, HCard, HEvent, HGeo]
     public class Latitude : IProperty
     {
         public MType Type => MType.Property;

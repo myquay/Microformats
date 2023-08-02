@@ -59,6 +59,8 @@ namespace Microformats.Definitions
         public static Duration Duration { get; } = new Duration();
         public static Description Description { get; } = new Description();
 
+        public static Entry Entry { get; } = new Entry();   
+
 
     }
 }
