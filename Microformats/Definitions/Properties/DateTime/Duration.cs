@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Link
     /// <summary>
     /// dt-duration - the duration of the event
     /// </summary>
-    [HEvent]
+    [HEvent, HRecipe]
     public class Duration : IProperty
     {
         public MType Type => MType.DateTime;

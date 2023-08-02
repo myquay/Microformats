@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-category - category/tag
+    /// p-yield - Specifies the quantity produced by the recipe, like how many persons it satisfies
     /// </summary>
-    [HCard, HEntry, HEvent, HListing, HProduct, HRecipe]
-    public class Category : IProperty
+    [HRecipe]
+    public class Yield : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-category";
+        public string Name => "p-yield";
 
-        public string Key => "category";
+        public string Key => "yield";
     }
 }

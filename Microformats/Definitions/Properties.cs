@@ -63,6 +63,10 @@ namespace Microformats.Definitions
         public static Properties.Embedded.Description EmbeddedDescription { get; } = new Properties.Embedded.Description();
         public static Price Price { get; } = new Price();
 
+        public static Ingredient Ingredient { get; } = new Ingredient();
+        public static Instructions Instructions { get; } = new Instructions();
+        public static Yield Yield { get; } = new Yield();
+
 
     }
 }

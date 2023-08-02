@@ -338,5 +338,28 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].GetProperty<MfEmbedded>(Props.EmbeddedDescription)[0].Html == "<p>Want to get started using microformats, but intimidated by hyphens and mediawiki? This book contains everything you need to know!</p>");
             Assert.IsTrue(result.Items[0].GetProperty(Props.Price)[0] == "20.00");
         }
+
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-recipe"/>
+        /// </summary>
+        [TestMethod]
+        public void RecipeExample()
+        {
+            var parser = new Mf2();
+            var html = "<article class=\"h-recipe\">\r\n  <h1 class=\"p-name\">Bagels</h1>\r\n  \r\n  <ul>\r\n    <li class=\"p-ingredient\">Flour</li>\r\n    <li class=\"p-ingredient\">Sugar</li>\r\n    <li class=\"p-ingredient\">Yeast</li>\r\n  </ul>\r\n \r\n  <p>Takes <time class=\"dt-duration\" datetime=\"1H\">1 hour</time>,\r\n     serves <data class=\"p-yield\" value=\"4\">four people</data>.</p>\r\n  \r\n  <div class=\"e-instructions\">\r\n    <ol>\r\n      <li>Start by mixing all the ingredients together.</li>\r\n    </ol>\r\n  </div>\r\n</article>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-recipe");
+            Assert.IsTrue(result.Items[0].Properties.Count == 5);
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Name)[0] == "Bagels");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Ingredient).Length == 3);
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Ingredient)[0] == "Flour");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Ingredient)[1] == "Sugar");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Ingredient)[2] == "Yeast");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Duration)[0] == "1H");
+            Assert.IsTrue(result.Items[0].GetProperty(Props.Yield)[0] == "4");
+            Assert.IsTrue(result.Items[0].GetProperty<MfEmbedded>(Props.Instructions)[0].Html == "<ol>\r\n      <li>Start by mixing all the ingredients together.</li>\r\n    </ol>");
+        }
     }
 }

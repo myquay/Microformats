@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Link
     /// <summary>
     /// dt-published - when the entry was published
     /// </summary>
-    [HEntry]
+    [HEntry, HRecipe]
     public class Published : IProperty
     {
         public MType Type => MType.DateTime;

@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-category - category/tag
+    /// p-ingredient - describes one or more ingredients used in the recipe.
     /// </summary>
-    [HCard, HEntry, HEvent, HListing, HProduct, HRecipe]
-    public class Category : IProperty
+    [HRecipe]
+    public class Ingredient : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-category";
+        public string Name => "p-ingredient";
 
-        public string Key => "category";
+        public string Key => "ingredient";
     }
 }

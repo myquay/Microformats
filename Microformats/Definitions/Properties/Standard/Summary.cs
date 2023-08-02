@@ -9,7 +9,7 @@ namespace Microformats.Definitions.Properties.Standard
     /// <summary>
     /// p-summary - short entry summary
     /// </summary>
-    [HEntry, HEvent, HFeed]
+    [HEntry, HEvent, HFeed, HRecipe]
     public class Summary : IProperty
     {
         public MType Type => MType.Property;
