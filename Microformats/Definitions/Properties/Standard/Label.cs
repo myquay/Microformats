@@ -16,6 +16,6 @@ namespace Microformats.Definitions.Properties.Standard
 
         public string Name => "p-label";
 
-        public string Key => "p-label";
+        public string Key => "label";
     }
 }

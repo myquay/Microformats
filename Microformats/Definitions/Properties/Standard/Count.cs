@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-rating - value from 1-5 indicating a rating for the item (5 best).
+    /// p-count - the total number of reviews
     /// </summary>
-    [HReview]
-    public class Rating : IProperty
+    [HReviewAggregate]
+    public class Count : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-rating";
+        public string Name => "p-count";
 
-        public string Key => "rating";
+        public string Key => "count";
     }
 }

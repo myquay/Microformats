@@ -9,13 +9,13 @@ namespace Microformats.Definitions.Properties.Standard
     /// <summary>
     /// p-worst - define worst rating value. can be numerically higher than best.
     /// </summary>
-    [HReview]
+    [HReview, HReviewAggregate]
     public class Worst : IProperty
     {
         public MType Type => MType.Property;
 
         public string Name => "p-worst";
 
-        public string Key => "p-worst";
+        public string Key => "worst";
     }
 }

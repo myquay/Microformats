@@ -7,15 +7,15 @@ using System.Text;
 namespace Microformats.Definitions.Properties.Standard
 {
     /// <summary>
-    /// p-rating - value from 1-5 indicating a rating for the item (5 best).
+    /// p-average - Required: the fixed point integer [1.0-5.0] of the average rating (5.0 best)
     /// </summary>
-    [HReview]
-    public class Rating : IProperty
+    [HReviewAggregate]
+    public class Average : IProperty
     {
         public MType Type => MType.Property;
 
-        public string Name => "p-rating";
+        public string Name => "p-average";
 
-        public string Key => "rating";
+        public string Key => "average";
     }
 }

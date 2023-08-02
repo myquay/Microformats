@@ -422,5 +422,26 @@ namespace Microformats.Tests
 
             Assert.IsTrue(result.Items[0].Get<Content, MfEmbedded>()[0].Html == "<p>Yes, microformats are undoubtedly great. They are the simplest way to markup structured data in HTML and reap the benefits thereof, including using your web page as your API by automatic conversion to JSON. The alternatives of microdata/schema and RDFa are much more work, require more markup, and are more complicated (harder to get right, more likely to break).</p>");
         }
+
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-review-aggregate"/>
+        /// </summary>
+        [TestMethod]
+        public void ReviewAggregateExample()
+        {
+            var parser = new Mf2();
+            var html = "<article class=\"h-review-aggregate\">\r\n <h1 class=\"p-item\">Mediterranean Wraps</h1>\r\n <p class=\"p-name\">Customers flock to this small restaurant for their \r\n tasty falafel and shawerma wraps and welcoming staff.</p>\r\n <span class=\"p-average\">4.5</span> out of 5 \r\n based on <span class=\"p-count\">17</span> reviews\r\n</article>";
+            var result = parser.Parse(html);
+
+            Assert.IsTrue(result.Items.Length == 1);
+            Assert.IsTrue(result.Items[0].Type[0] == "h-review-aggregate");
+            Assert.IsTrue(result.Items[0].Properties.Count == 4);
+            
+            Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Customers flock to this small restaurant for their tasty falafel and shawerma wraps and welcoming staff.");
+            Assert.IsTrue(result.Items[0].Get<Item>()[0] == "Mediterranean Wraps");
+            Assert.IsTrue(result.Items[0].Get<Average>()[0] == "4.5");
+            Assert.IsTrue(result.Items[0].Get<Count>()[0] == "17");
+
+        }
     }
 }
