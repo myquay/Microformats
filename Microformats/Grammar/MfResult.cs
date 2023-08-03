@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 
-namespace Microformats.Result
+namespace Microformats.Grammar
 {
     /// <summary>
     /// Result of parsing a document for microformats

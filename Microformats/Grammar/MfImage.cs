@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microformats.Result
+namespace Microformats.Grammar
 {
     /// <summary>
     /// To parse an img element for src and alt attributes:

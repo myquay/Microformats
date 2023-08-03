@@ -2,7 +2,7 @@
 using Microformats.Definitions;
 using Microformats.Definitions.Properties.Link;
 using Microformats.Definitions.Properties.Standard;
-using Microformats.Result;
+using Microformats.Grammar;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,11 +17,15 @@ namespace Microformats
     public class Mf2
     {
 
+        private readonly Mf2Options options = new Mf2Options();
+
         /// <summary>
         /// Create a new parser
         /// </summary>
-        public Mf2()
+        public Mf2(Func<Mf2Options> options = null)
         {
+            if (options != null)
+                this.options = options();
             Load(Assembly.GetExecutingAssembly());
         }
 

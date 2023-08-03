@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microformats.Result
+namespace Microformats.Grammar
 {
     public class MfType
     {

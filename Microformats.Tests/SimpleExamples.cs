@@ -5,7 +5,7 @@ using Microformats.Definitions.Properties.Embedded;
 using Microformats.Definitions.Properties.Link;
 using Microformats.Definitions.Properties.Standard;
 using Microformats.Definitions.Vocabularies;
-using Microformats.Result;
+using Microformats.Grammar;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Concurrent;
 

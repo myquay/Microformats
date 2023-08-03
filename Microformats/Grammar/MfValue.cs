@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Microformats.Result
+namespace Microformats.Grammar
 {
     /// <summary>
     /// Value of a property
