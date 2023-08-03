@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microformats.Definitions.Properties.Link
+namespace Microformats.Definitions.Properties.DateTime
 {
     /// <summary>
     /// dt-published - when the entry was published

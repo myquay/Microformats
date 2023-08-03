@@ -199,7 +199,7 @@ namespace Microformats
                                 if (s.Is("abbr"))
                                     return s.GetAttributeValue("title", null) ?? s.InnerText.Trim();
                                 return s.InnerText.Trim();
-                            }).Aggregate((current, next) => current + next)));
+                            }).Aggregate((current, next) => $"{current} {next}")));
                         }
                         else if (child.Is("abbr", "link") && child.HasAttr("title"))
                         {
@@ -263,7 +263,7 @@ namespace Microformats
                                 if (s.Is("abbr"))
                                     return s.GetAttributeValue("title", null) ?? s.InnerText.Trim();
                                 return s.InnerText.Trim();
-                            }).Aggregate((current, next) => current + next)));
+                            }).Aggregate((current, next) => $"{current} {next}")));
                         }
                         else if (child.Is("abbr") && child.HasAttr("title"))
                         {
@@ -292,11 +292,15 @@ namespace Microformats
                                 if (s.Is("abbr"))
                                     return s.GetAttributeValue("title", null) ?? s.InnerText.Trim();
                                 return s.InnerText.Trim();
-                            }).Aggregate((current, next) => current + next)));
+                            }).Aggregate((current, next) => $"{current} {next}")));
                         }
                         else if (child.Is("time", "ins", "del") && child.HasAttr("datetime"))
                         {
                             propertyValue.Add(new MfValue(child.GetAttributeValue("datetime", null)));
+                        }
+                        else if (child.Is("img", "area") && child.HasAttr("alt"))
+                        {
+                            propertyValue.Add(new MfValue(child.GetAttributeValue("alt", null)));
                         }
                         else if (child.Is("abbr") && child.HasAttr("title"))
                         {

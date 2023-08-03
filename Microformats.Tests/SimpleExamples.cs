@@ -1,5 +1,6 @@
 ﻿using Microformats.Definitions;
 using Microformats.Definitions.Properties;
+using Microformats.Definitions.Properties.DateTime;
 using Microformats.Definitions.Properties.Embedded;
 using Microformats.Definitions.Properties.Link;
 using Microformats.Definitions.Properties.Standard;
@@ -11,6 +12,7 @@ using System.Collections.Concurrent;
 namespace Microformats.Tests
 {
     /// <summary>
+    /// Tests from the microformats2 wiki specification.
     /// From: <see href="http://microformats.org/wiki/microformats2#simple_microformats2_examples" />
     /// </summary>
     [TestClass]
