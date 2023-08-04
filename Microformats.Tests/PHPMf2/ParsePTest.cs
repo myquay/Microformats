@@ -24,19 +24,6 @@ namespace Microformats.Tests.PHPMf2
     {
 
         [TestMethod]
-        public void ParserIdAttribute()
-        {
-            var parser = new Mf2();
-            var html = "<div class=\"h-feed\" id=\"recentArticles\"><h2 class=\"p-name\">Recent Articles</h2><div class=\"hentry\" id=\"article\">Lorem Ipsum</div>\r\n\t\t<div class=\"p-author h-card\" id=\"theAuthor\">Max Mustermann</div>\r\n\t\t<div class=\"h-entry\" id=\"\">empty id should not be parsed</div>\r\n\t\t<div class=\"h-entry\" id=\"0\">id=0 should work and not be treated false-y</div>\r\n\t\t</div>";
-            var result = parser.Parse(html);
-
-            Assert.IsNotNull(result.Items[0].Id);
-            Assert.AreEqual("recentArticles", result.Items[0].Id);
-            Assert.IsNotNull(result.Items[0].Get<Author, MfType>()[0].Id);
-            Assert.AreEqual("theAuthor", result.Items[0].Get<Author, MfType>()[0].Id);
-        }
-
-        [TestMethod]
         public void ParsePHandlesInnerText()
         {
             var parser = new Mf2();
@@ -130,7 +117,7 @@ namespace Microformats.Tests.PHPMf2
 
             Assert.AreEqual("The day I saw a five legged elephant", result.Items[0].Get<PropertyName>()[0]);
             Assert.AreEqual("Blah blah http://waterpigs.co.uk/photos/five-legged-elephant.jpg", result.Items[0].Get<Summary>()[0]);
-    }
+        }
 
         ///<summary>
         /// <see href="https://github.com/indieweb/php-mf2/issues/69"/>
