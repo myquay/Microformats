@@ -261,8 +261,8 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Type[0] == "h-event");
             Assert.IsTrue(result.Items[0].Properties.Count == 5);
             Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Microformats Meetup");
-            Assert.IsTrue(result.Items[0].Get<Start>()[0] == "2013-06-30 12:00");
-            Assert.IsTrue(result.Items[0].Get<End>()[0] == "2013-06-30 18:00");
+            Assert.IsTrue(result.Items[0].Get<Start>()[0] == "2013-06-30 12:00:00");
+            Assert.IsTrue(result.Items[0].Get<End>()[0] == "2013-06-30 18:00:00");
             Assert.IsTrue(result.Items[0].Get<Location>()[0] == "Some bar in SF");
             Assert.IsTrue(result.Items[0].Get<Summary>()[0] == "Get together and discuss all things microformats-related.");
 
