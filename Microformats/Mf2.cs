@@ -22,10 +22,10 @@ namespace Microformats
         /// <summary>
         /// Create a new parser
         /// </summary>
-        public Mf2(Func<Mf2Options> options = null)
+        public Mf2(Func<Mf2Options, Mf2Options> options = null)
         {
             if (options != null)
-                this.options = options();
+                this.options = options(this.options);
             Load(Assembly.GetExecutingAssembly());
         }
 
