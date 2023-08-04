@@ -372,7 +372,12 @@ namespace Microformats.Tests.PHPMf2
         [TestMethod]
         public void BackcompatNoImpliedName()
         {
-            var parser = new Mf2();
+            var parser = new Mf2().WithOptions(o =>
+            {
+                o.UpgradeClassicMicroformats = true;
+                return o;
+            });
+
             var html = "<div class=\"hentry\"> <div class=\"entry-content\"> <p> blah blah blah </p> </div> </div>";
             var result = parser.Parse(html);
 
@@ -387,7 +392,11 @@ namespace Microformats.Tests.PHPMf2
         [TestMethod]
         public void BackcompatNoImpliedPhoto()
         {
-            var parser = new Mf2();
+            var parser = new Mf2().WithOptions(o =>
+            {
+                o.UpgradeClassicMicroformats = true;
+                return o;
+            });
             var html = "<div class=\"hentry\"> <img src=\"https://example.com/photo.jpg\" alt=\"photo\" /> </div>";
             var result = parser.Parse(html);
 
@@ -401,7 +410,11 @@ namespace Microformats.Tests.PHPMf2
         [TestMethod]
         public void BackcompatNoImpliedUrl()
         {
-            var parser = new Mf2();
+            var parser = new Mf2().WithOptions(o =>
+            {
+                o.UpgradeClassicMicroformats = true;
+                return o;
+            });
             var html = "<div class=\"hentry\"> <a href=\"https://example.com/this-post\" class=\"entry-title\">Title</a> <div class=\"entry-content\"> <p> blah blah blah </p> </div> </div>";
             var result = parser.Parse(html);
 

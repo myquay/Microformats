@@ -119,7 +119,7 @@ namespace Microformats.Tests.PHPMf2
         [TestMethod]
         public void ConvertsNestedImgElementToAltOrSrc()
         {
-            var parser = new Mf2((o) =>
+            var parser = new Mf2().WithOptions((o) =>
             {
                 o.BaseUri = new Uri("http://waterpigs.co.uk/articles/five-legged-elephant");
                 return o;

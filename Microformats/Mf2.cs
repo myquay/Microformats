@@ -17,16 +17,24 @@ namespace Microformats
     public class Mf2
     {
 
-        private readonly Mf2Options options = new Mf2Options();
+        private Mf2Options options = new Mf2Options();
 
         /// <summary>
         /// Create a new parser
         /// </summary>
-        public Mf2(Func<Mf2Options, Mf2Options> options = null)
+        public Mf2()
         {
-            if (options != null)
-                this.options = options(this.options);
             Load(Assembly.GetExecutingAssembly());
+        }
+
+        public Mf2 WithOptions(Func<Mf2Options, Mf2Options> config = null)
+        {
+
+            if (config != null)
+                options = config(options);
+            foreach(var assembly in options.AdditionalVocabularies)
+                Load(assembly);
+            return this;
         }
 
         /// <summary>
