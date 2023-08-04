@@ -51,10 +51,13 @@ namespace Microformats
         {
             child = null;
 
-            if (node == null || !node.ChildNodes.Any(c => c.Is(element) && (!onlyOfType || !c.Descendants().Any(d => d.Is(element)))))
+            if (node == null || !node.ChildNodes.Any(c => c.Is(element)))
                 return false;
 
-            child = node.ChildNodes.First(c => c.Is(element) && (!onlyOfType || !c.Descendants().Any(d => d.Is(element))));
+            if(onlyOfType && node.ChildNodes.Count(c => c.Is(element)) > 1)
+                return false;
+
+            child = onlyOfType ? node.ChildNodes.Single(c => c.Is(element)) : node.ChildNodes.First(c => c.Is(element));
 
             return true;
         }
