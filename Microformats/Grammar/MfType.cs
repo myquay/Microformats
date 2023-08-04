@@ -18,6 +18,11 @@ namespace Microformats.Grammar
         public string Value { get; set; }
 
         /// <summary>
+        /// Language of the value
+        /// </summary>
+        public string Lang { get; set; }
+
+        /// <summary>
         /// The Value
         /// </summary>
         public string[] Type { get; set; }
