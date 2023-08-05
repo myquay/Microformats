@@ -1,7 +1,5 @@
 ﻿using HtmlAgilityPack;
 using Microformats.Definitions;
-using Microformats.Definitions.Properties.Link;
-using Microformats.Definitions.Properties.Standard;
 using Microformats.Grammar;
 using System;
 using System.Collections.Generic;
@@ -11,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using static Microformats.Definitions.Constants;
 
 namespace Microformats
 {
@@ -19,53 +18,11 @@ namespace Microformats
 
         private Mf2Options options = new Mf2Options();
 
-        /// <summary>
-        /// Create a new parser
-        /// </summary>
-        public Mf2()
-        {
-            Load(Assembly.GetExecutingAssembly());
-        }
-
         public Mf2 WithOptions(Func<Mf2Options, Mf2Options> config = null)
         {
-
             if (config != null)
                 options = config(options);
-            foreach(var assembly in options.AdditionalVocabularies)
-                Load(assembly);
             return this;
-        }
-
-        /// <summary>
-        /// Supported vocabularies
-        /// </summary>
-        private List<IVocabulary> Vocabularies { get; set; } = new List<IVocabulary>();
-
-        /// <summary>
-        /// Add a new vocabulary
-        /// </summary>
-        /// <param name="vocabulary"></param>
-        /// <exception cref="ArgumentException"></exception>
-        public void AddVocabulary(IVocabulary vocabulary)
-        {
-            if (Vocabularies.Any(v => v.Name == vocabulary.Name))
-                throw new ArgumentException($"The vocabulary '{vocabulary.Name}' has already been added");
-            Vocabularies.Add(vocabulary);
-        }
-
-        /// <summary>
-        /// Load all vocabularies from assembly
-        /// </summary>
-        /// <param name="assembly"></param>
-        public void Load(Assembly assembly)
-        {
-            foreach (var vocabulary in assembly.GetTypes().Where(t => typeof(IVocabulary).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract))
-            {
-                var newVocab = (IVocabulary)Activator.CreateInstance(vocabulary);
-                if (!Vocabularies.Any(v => v.Name == vocabulary.Name))
-                    Vocabularies.Add(newVocab);
-            }
         }
 
         /// <summary>
@@ -94,10 +51,10 @@ namespace Microformats
         /// </summary>
         /// <param name="nodes"></param>
         /// <returns></returns>
-        private MfType[] SearchElementTreeForMicroformat(HtmlNode node)
+        private MfSpec[] SearchElementTreeForMicroformat(HtmlNode node)
         {
             //if none found, parse child elements for microformats (depth first, doc order)
-            if (!Vocabularies.Any(v => node.GetClasses().Contains(v.Name)))
+            if (!node.GetClasses().Any(n => MfProperty.IsOfType(n, MfType.Specification)))
             {
                 return node.ChildNodes.SelectMany(n => SearchElementTreeForMicroformat(n)).ToArray();
             }
@@ -113,76 +70,86 @@ namespace Microformats
         /// <param name="node"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        private MfType ParseElementForMicroformat(HtmlNode node)
+        private MfSpec ParseElementForMicroformat(HtmlNode node)
         {
-            //keep track of whether the root class name(s) was from backcompat
-            var vocab = Vocabularies.Where(v => node.GetClasses().Contains(v.Name));
-            if (vocab.Any(c => c.Version == MicroformatsVersion.Two))
-                vocab = vocab.Where(c => c.Version == MicroformatsVersion.Two);
+            //Get the specs we are attemting to load
+            var specs = node.GetClasses().Select(s => MfProperty.TryFromName(s, out MfProperty property) ? property : null)
+                .Where(s => s != null)
+                .Where(s => s.Type == MfType.Specification)
+                .ToArray();
 
-            if (!vocab.Any())
-                throw new ArgumentException("No micoformat found on supplied node");
-
-            var resultSet = new MfType
+            var resultSet = new MfSpec
             {
-                Type = vocab.Select(c => c.Name).OrderBy(s => s).ToArray(),
+                Type = specs.Select(c => c.Name).OrderBy(s => s).ToArray(),
                 Id = !String.IsNullOrEmpty(node.Id) ? node.Id : null,
             };
 
-            var properties = vocab.SelectMany(c => c.Properties).GroupBy(p => p.Name)
-             .Select(g => g.First())
-             .ToList();
+            //Get all childnodes that are properties
+            var properties = GetAllPropertiesForSpecification(node)
+                .GroupBy(p => p.Name)
+                .Select(g => g.First())
+                .ToList();
 
+            
             foreach (var property in properties)
             {
-                switch (property.Type)
-                {
-                    case MType.Property:
-                        var propertyItem = ParseChildrenForProperty(node, property);
-                        if (propertyItem != null)
-                            resultSet.Properties.Add(property.Key, propertyItem);
-                        break;
-                    case MType.Url:
-                        var urlItem = ParseChildrenForProperty(node, property);
-                        if (urlItem != null)
-                            resultSet.Properties.Add(property.Key, urlItem);
-                        break;
-                    case MType.DateTime:
-                        var dateTimeItem = ParseChildrenForProperty(node, property);
-                        if (dateTimeItem != null)
-                            resultSet.Properties.Add(property.Key, dateTimeItem);
-                        break;
-                    case MType.Embedded:
-                        var embedded = ParseChildrenForProperty(node, property);
-                        if (embedded != null)
-                            resultSet.Properties.Add(property.Key, embedded);
-                        break;
-                    default:
-                        throw new InvalidOperationException($"Unknown property type: {property.Type}");
-                }
+                var propertyValue = ParseChildrenForProperty(node, property);
+                if (propertyValue != null)
+                    resultSet.Properties.Add(property.Key, propertyValue);
             }
 
             return resultSet;
         }
 
         /// <summary>
-        /// Get all the child nodes that are properties
+        /// Get all the possbile properties for implemented specification
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
-        private HtmlNode[] GetChildPropertyNodes(HtmlNode node, IProperty property)
+        private MfProperty[] GetAllPropertiesForSpecification(HtmlNode node)
         {
-            var propertyNodes = node.ChildNodes.Where(c => c.GetClasses().Contains(property.Name)).ToList();
+            var possibleProperties = node.ChildNodes.SelectMany(c => c.GetClasses())
+                .Where(n => MfProperty.TryFromName(n, out MfProperty result))
+                .Select(n => MfProperty.TryFromName(n, out MfProperty result) ? result : null)
+                .Where(s => s != null)
+                .ToList();
 
-            foreach(var child in node.ChildNodes.Where(c => !c.GetClasses().Contains(property.Name) && !c.IsMicoformatEntity()))
+            foreach(var child in node.ChildNodes.Where(c => !c.GetClasses().Any(n => MfProperty.TryFromName(n, out MfProperty result)) && !c.IsMicoformatEntity()))
             {
-                propertyNodes.AddRange(GetChildPropertyNodes(child, property));
+                possibleProperties.AddRange(GetAllPropertiesForSpecification(child));
             }
 
-            return propertyNodes.ToArray();
+            //Add default possible properties
+            if (MfProperty.TryFromName(Props.NAME, out MfProperty nameResult))
+                possibleProperties.Add(nameResult);
+            if (MfProperty.TryFromName(Props.PHOTO, out MfProperty photoResult))
+                possibleProperties.Add(photoResult);
+            if (MfProperty.TryFromName(Props.URL, out MfProperty urlResult))
+                possibleProperties.Add(urlResult);
+
+            return possibleProperties.ToArray();
         }
 
-        private MfValue[] ParseChildrenForProperty(HtmlNode node, IProperty property)
+        /// <summary>
+        /// Get all child elements for property
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        private HtmlNode[] GetChildPropertyNodes(HtmlNode node, MfProperty property)
+        {
+            var nodesWithProperty = node.ChildNodes.Where(c => c.GetClasses().Any(a => MfProperty.TryFromName(a, out MfProperty parsedProperty) && parsedProperty.Name == property.Name)).ToList();
+
+            var nodesForSearch = node.ChildNodes.Where(c => !c.GetClasses().Any(a => MfProperty.TryFromName(a, out MfProperty parsedProperty)) && !c.IsMicoformatEntity()).ToList();
+
+            foreach(var nodeToAdd in nodesForSearch){
+                nodesWithProperty.AddRange(GetChildPropertyNodes(nodeToAdd, property));
+            }
+
+            return nodesWithProperty.ToArray();
+        }
+
+        private MfValue[] ParseChildrenForProperty(HtmlNode node, MfProperty property)
         {
             var propertyValue = new List<MfValue>();
 
@@ -190,15 +157,15 @@ namespace Microformats
             foreach (var child in GetChildPropertyNodes(node, property))
             {
                 //if that child element itself has a microformat ("h-*" or backcompat roots) and is a property element, add it into the array of values for that property as a { } structure, add to that { } structure:
-                if (Vocabularies.Any(v => child.GetClasses().Contains(v.Name)))
+                if (child.GetClasses().Any(c => MfProperty.TryFromName(c, out property) && property.Type == MfType.Specification))
                 {
                     var value = ParseElementForMicroformat(child);
-                    value.Value = value.Get<PropertyName>()?.First();
+                    value.Value = value.Get(Props.NAME)?.First();
                     propertyValue.Add(new MfValue(value));
                 }
                 else
                 {
-                    if (property.Type == MType.Property)
+                    if (property.Type == MfType.Property)
                     {
                         if (child.ChildNodes.Any(c => c.HasClass("value")))
                         {
@@ -231,7 +198,7 @@ namespace Microformats
                             propertyValue.Add(new MfValue(Regex.Replace(child.InnerText.Trim(), @"\s+", " ")));
                         }
                     }
-                    else if (property.Type == MType.Url)
+                    else if (property.Type == MfType.Url)
                     {
                         if (child.Is("a", "area", "link") && child.HasAttr("href"))
                         {
@@ -291,7 +258,7 @@ namespace Microformats
                             propertyValue.Add(new MfValue(Regex.Replace(child.InnerText.Trim(), @"\s+", " ")));
                         }
                     }
-                    else if (property.Type == MType.DateTime)
+                    else if (property.Type == MfType.DateTime)
                     {
                         if (child.ChildNodes.Any(c => c.HasClass("value")))
                         {
@@ -328,7 +295,7 @@ namespace Microformats
                             propertyValue.Add(new MfValue(Regex.Replace(child.InnerText.Trim(), @"\s+", " ")));
                         }
                     }
-                    else if (property.Type == MType.Embedded)
+                    else if (property.Type == MfType.Embedded)
                     {
                         propertyValue.Add(new MfValue(new MfEmbedded
                         {
@@ -343,16 +310,10 @@ namespace Microformats
                 }
             }
 
-            //continue search for nested properties
-            //foreach(var child in node.ChildNodes.Where(c => !c.GetClasses().Contains(property.Name)))
-            //{
-            //    propertyValue.AddRange(SearchElementTreeForMicroformat(child).Select(s => new MfValue(s)));
-            //}   
-
             //Implicit parsing for special properties
             if (!propertyValue.Any())
             {
-                if (property is PropertyName)
+                if (property.Name == Props.NAME)
                 {
                     if (node.Is("img", "area") && node.HasAttr("alt"))
                         return new[] { new MfValue(node.GetAttributeValue("alt", null)) };
@@ -385,7 +346,7 @@ namespace Microformats
                     return new[] { new MfValue(Regex.Replace(node.InnerText.Trim(), @"\s+", " ")) };
 
                 }
-                else if (property is Photo)
+                else if (property.Name == Props.PHOTO)
                 {
 
                     //TODO: if there is a gotten photo value, return the normalized absolute URL of it, following the containing document's language's rules for resolving relative URLs (e.g. in HTML, use the current URL context as determined by the page, and first <base> element, if any).
@@ -451,7 +412,7 @@ namespace Microformats
 
                     return null;
                 }
-                else if (property is Url)
+                else if (property.Name == Props.URL)
                 {
 
                     //TODO: if there is a gotten url value, return the normalized absolute URL of it, following the containing document's language's rules for resolving relative URLs (e.g. in HTML, use the current URL context as determined by the page, and first <base> element, if any).

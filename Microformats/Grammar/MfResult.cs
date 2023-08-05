@@ -13,7 +13,7 @@ namespace Microformats.Grammar
         /// <summary>
         /// Items present
         /// </summary>
-        public MfType[] Items { get; set; } = Array.Empty<MfType>();
+        public MfSpec[] Items { get; set; } = Array.Empty<MfSpec>();
 
         /// <summary>
         /// Rel values present

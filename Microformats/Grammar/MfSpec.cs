@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Microformats.Grammar
 {
-    public class MfType
+    public class MfSpec
     {
         /// <summary>
         /// Id of the value (if specified)
@@ -32,14 +32,15 @@ namespace Microformats.Grammar
         /// </summary>
         public Dictionary<string, MfValue[]> Properties { get; set; } = new Dictionary<string, MfValue[]>();
 
-        public bool TryGet<P, T>(out T[] result)
+        public bool TryGet<T>(string property, out T[] result)
             where T : class
-            where P : IProperty, new()
         {
-            var property = new P();
-            result = default;
 
-            var results = Properties[property.Key].Select(s =>
+            result = default;
+            if (!MfProperty.TryFromName(property, out MfProperty parsedProperty))
+                return false;
+
+            var results = Properties[parsedProperty.Key].Select(s =>
             {
                 var successful = s.TryGet<T>(out T value);
                 return new
@@ -51,14 +52,16 @@ namespace Microformats.Grammar
 
             result = results.Where(s => s.successful).Select(s => s.value).ToArray();
 
-            return results.Any(a => !a.successful);
+            return results.All(a => !a.successful);
         }
 
-        public T[] Get<P, T>() 
+        public T[] Get<T>(string property) 
             where T : class 
-            where P : IProperty, new()
         {
-            return Properties[new P().Key].Select(s => s.Get<T>()).ToArray();
+            if (!MfProperty.TryFromName(property, out MfProperty parsedProperty))
+                return default;
+
+            return Properties[parsedProperty.Key].Select(s => s.Get<T>()).ToArray();
         }
 
         /// <summary>
@@ -66,21 +69,21 @@ namespace Microformats.Grammar
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public string[] Get<P>()
-            where P : IProperty, new()
+        public string[] Get(string property)
         {
-            var property = new P();
+            if (!MfProperty.TryFromName(property, out MfProperty parsedProperty))
+                return default;
 
-            if (property.Type == MType.Property)
+            if (parsedProperty.Type == MfType.Property)
             {
-                if (Properties.ContainsKey(property.Key))
-                    return Properties[property.Key].Select(s => s.GetName()).ToArray();
+                if (Properties.ContainsKey(parsedProperty.Key))
+                    return Properties[parsedProperty.Key].Select(s => s.GetName()).ToArray();
             }else
             {
-                if (Properties.ContainsKey(property.Key))
-                    return Properties[property.Key].Select(s => s.GetValue()).ToArray();
+                if (Properties.ContainsKey(parsedProperty.Key))
+                    return Properties[parsedProperty.Key].Select(s => s.GetValue()).ToArray();
             }
-            return null;
+            return Array.Empty<string>();
         }
 
     }

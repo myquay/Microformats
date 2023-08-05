@@ -1,10 +1,9 @@
 ﻿using Microformats.Definitions;
-using Microformats.Definitions.Properties;
-using Microformats.Definitions.Properties.Standard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static Microformats.Definitions.Constants;
 
 namespace Microformats.Grammar
 {
@@ -20,7 +19,7 @@ namespace Microformats.Grammar
             _value = value;
         }
 
-        public MfValue(MfType value)
+        public MfValue(MfSpec value)
         {
             _value = value;
         }
@@ -75,7 +74,7 @@ namespace Microformats.Grammar
             }
             else
             {
-                return ((MfType)_value).Value;
+                return ((MfSpec)_value).Value;
             }
         }
 
@@ -95,7 +94,7 @@ namespace Microformats.Grammar
             }
             else
             {
-                return ((MfType)_value)?.Get<PropertyName, String>()?.First();
+                return ((MfSpec)_value)?.Get<String>(Props.NAME)?.First();
             }
         }
     }
