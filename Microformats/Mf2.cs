@@ -111,7 +111,7 @@ namespace Microformats
             var possibleProperties = node.ChildNodes.SelectMany(c => c.GetClasses())
                 .Where(n => MfProperty.TryFromName(n, out MfProperty result))
                 .Select(n => MfProperty.TryFromName(n, out MfProperty result) ? result : null)
-                .Where(s => s != null)
+                .Where(s => s != null && s.Type != MfType.Specification)
                 .ToList();
 
             foreach(var child in node.ChildNodes.Where(c => !c.GetClasses().Any(n => MfProperty.TryFromName(n, out MfProperty result)) && !c.IsMicoformatEntity()))
@@ -157,7 +157,7 @@ namespace Microformats
             foreach (var child in GetChildPropertyNodes(node, property))
             {
                 //if that child element itself has a microformat ("h-*" or backcompat roots) and is a property element, add it into the array of values for that property as a { } structure, add to that { } structure:
-                if (child.GetClasses().Any(c => MfProperty.TryFromName(c, out property) && property.Type == MfType.Specification))
+                if (child.GetClasses().Any(c => MfProperty.TryFromName(c, out MfProperty specProp) && specProp.Type == MfType.Specification))
                 {
                     var value = ParseElementForMicroformat(child);
                     value.Value = value.Get(Props.NAME)?.First();

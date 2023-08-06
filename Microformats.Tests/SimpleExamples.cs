@@ -46,199 +46,198 @@ namespace Microformats.Tests
             Assert.AreEqual("http://benward.me", result.Items[0].Get(Props.URL)[0]);
         }
 
-        ///// <summary>
-        ///// From: <see href="https://microformats.org/wiki/microformats2#hyperlinked_person_image"/>
-        ///// </summary>
-        //[TestMethod]
-        //public void PersonHyperlinkedPersonImageExample()
-        //{
-        //    var parser = new Mf2();
-        //    var html = "<a class=\"h-card\" href=\"http://rohit.khare.org/\">\r\n <img alt=\"Rohit Khare\"\r\n      src=\"https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg\" />\r\n</a>";
-        //    var result = parser.Parse(html);
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/microformats2#hyperlinked_person_image"/>
+        /// </summary>
+        [TestMethod]
+        public void PersonHyperlinkedPersonImageExample()
+        {
+            var parser = new Mf2();
+            var html = "<a class=\"h-card\" href=\"http://rohit.khare.org/\">\r\n <img alt=\"Rohit Khare\"\r\n      src=\"https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg\" />\r\n</a>";
+            var result = parser.Parse(html);
 
-        //    Assert.IsTrue(result.Items.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type[0] == "h-card");
-        //    Assert.IsTrue(result.Items[0].Properties.Count == 3);
-        //    Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Rohit Khare");
-        //    Assert.IsTrue(result.Items[0].Get<Url>()[0] == "http://rohit.khare.org/");
-        //    Assert.IsTrue(result.Items[0].Get<Photo>()[0] == "https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg");
-        //}
+            Assert.AreEqual(1, result.Items.Length);
+            Assert.AreEqual(1, result.Items[0].Type.Length);
+            Assert.IsTrue(result.Items[0].Type.Contains("h-card"));
+            Assert.AreEqual(3, result.Items[0].Properties.Count);
+            Assert.AreEqual("Rohit Khare", result.Items[0].Get(Props.NAME)[0]);
+            Assert.AreEqual("http://rohit.khare.org/", result.Items[0].Get(Props.URL)[0]);
+            Assert.AreEqual("https://s3.amazonaws.com/twitter_production/profile_images/53307499/180px-Rohit-sq_bigger.jpg", result.Items[0].Get(Props.PHOTO)[0]);
+        }
 
-        ///// <summary>
-        ///// From: <see href="https://microformats.org/wiki/microformats2#detailed_person_example"/>
-        ///// </summary>
-        //[TestMethod]
-        //public void PersonDefailedImageExample()
-        //{
-        //    var parser = new Mf2();
-        //    var html = "<div class=\"h-card\">\r\n  <img class=\"u-photo\" alt=\"photo of Mitchell\"\r\n       src=\"https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg\"/>\r\n  <a class=\"p-name u-url\"\r\n     href=\"http://blog.lizardwrangler.com/\" \r\n    >Mitchell Baker</a>\r\n (<a class=\"u-url\" \r\n     href=\"https://twitter.com/MitchellBaker\"\r\n    >@MitchellBaker</a>)\r\n  <span class=\"p-org\">Mozilla Foundation</span>\r\n  <p class=\"p-note\">\r\n    Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities.\r\n  </p>\r\n  <span class=\"p-category\">Strategy</span>\r\n  <span class=\"p-category\">Leadership</span>\r\n</div>";
-        //    var result = parser.Parse(html);
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/microformats2#detailed_person_example"/>
+        /// </summary>
+        [TestMethod]
+        public void PersonDefailedImageExample()
+        {
+            var parser = new Mf2();
+            var html = "<div class=\"h-card\">\r\n  <img class=\"u-photo\" alt=\"photo of Mitchell\"\r\n       src=\"https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg\"/>\r\n  <a class=\"p-name u-url\"\r\n     href=\"http://blog.lizardwrangler.com/\" \r\n    >Mitchell Baker</a>\r\n (<a class=\"u-url\" \r\n     href=\"https://twitter.com/MitchellBaker\"\r\n    >@MitchellBaker</a>)\r\n  <span class=\"p-org\">Mozilla Foundation</span>\r\n  <p class=\"p-note\">\r\n    Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities.\r\n  </p>\r\n  <span class=\"p-category\">Strategy</span>\r\n  <span class=\"p-category\">Leadership</span>\r\n</div>";
+            var result = parser.Parse(html);
 
-        //    Assert.IsTrue(result.Items.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type[0] == "h-card");
-        //    Assert.IsTrue(result.Items[0].Properties.Count == 6);
-        //    Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Mitchell Baker");
-        //    Assert.IsTrue(result.Items[0].Get<Org>()[0] == "Mozilla Foundation");
-        //    Assert.IsTrue(result.Items[0].Get<Note>()[0] == "Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities.");
-        //    Assert.IsTrue(result.Items[0].Get<Category>()[0] == "Strategy"); 
-        //    Assert.IsTrue(result.Items[0].Get<Category>()[1] == "Leadership");
-        //    Assert.IsTrue(result.Items[0].Get<Photo>()[0] == "https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg");
-        //    Assert.IsTrue(result.Items[0].Get<Url>()[0] == "http://blog.lizardwrangler.com/");
-        //    Assert.IsTrue(result.Items[0].Get<Url>()[1] == "https://twitter.com/MitchellBaker");
+            Assert.AreEqual(1, result.Items.Length);
+            Assert.AreEqual(1, result.Items[0].Type.Length);
+            Assert.IsTrue(result.Items[0].Type.Contains("h-card"));
+            Assert.AreEqual(6, result.Items[0].Properties.Count);
+            Assert.AreEqual("Mitchell Baker", result.Items[0].Get(Props.NAME)[0]);
+            Assert.AreEqual("Mozilla Foundation", result.Items[0].Get(Props.ORGANIZATION)[0]);
+            Assert.AreEqual("Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities.", result.Items[0].Get(Props.NOTE)[0]);
+            Assert.AreEqual("Strategy", result.Items[0].Get(Props.CATEGORY)[0]);
+            Assert.AreEqual("Leadership", result.Items[0].Get(Props.CATEGORY)[1]);
+            Assert.AreEqual("https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg", result.Items[0].Get(Props.PHOTO)[0]);
+            Assert.AreEqual("http://blog.lizardwrangler.com/", result.Items[0].Get(Props.URL)[0]);
+            Assert.AreEqual("https://twitter.com/MitchellBaker", result.Items[0].Get(Props.URL)[1]);
+        }
 
-        //}
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-card"/>
+        /// </summary>
+        [TestMethod]
+        public void PersonOrgMinimalExample()
+        {
+            var parser = new Mf2();
+            var html = "<span class=\"h-card\">\r\n  <a class=\"p-name p-org u-url\" href=\"https://microformats.org/\">microformats.org</a>\r\n</span>";
+            var result = parser.Parse(html);
 
-        ///// <summary>
-        ///// From: <see href="https://microformats.org/wiki/h-card"/>
-        ///// </summary>
-        //[TestMethod]
-        //public void PersonOrgMinimalExample()
-        //{
-        //    var parser = new Mf2();
-        //    var html = "<span class=\"h-card\">\r\n  <a class=\"p-name p-org u-url\" href=\"https://microformats.org/\">microformats.org</a>\r\n</span>";
-        //    var result = parser.Parse(html);
+            Assert.AreEqual(1, result.Items.Length);
+            Assert.AreEqual(1, result.Items[0].Type.Length);
+            Assert.IsTrue(result.Items[0].Type.Contains("h-card"));
+            Assert.AreEqual(3, result.Items[0].Properties.Count);
+            Assert.AreEqual("microformats.org", result.Items[0].Get(Props.NAME)[0]);
+            Assert.AreEqual("https://microformats.org/", result.Items[0].Get(Props.URL)[0]);
+            Assert.AreEqual("microformats.org", result.Items[0].Get(Props.ORGANIZATION)[0]);
+        }
 
-        //    Assert.IsTrue(result.Items.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type[0] == "h-card");
-        //    Assert.IsTrue(result.Items[0].Properties.Count == 3);
-        //    Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "microformats.org");
-        //    Assert.IsTrue(result.Items[0].Get<Url>()[0] == "https://microformats.org/");
-        //    Assert.IsTrue(result.Items[0].Get<Org>()[0] == "microformats.org");
-        //}
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-card"/>
+        /// </summary>
+        [TestMethod]
+        public void PersonNestedExample()
+        {
+            var parser = new Mf2();
+            var html = "<div class=\"h-card\">\r\n  <a class=\"p-name u-url\"\r\n     href=\"https://blog.lizardwrangler.com/\" \r\n    >Mitchell Baker</a> \r\n  (<a class=\"p-org h-card\" \r\n      href=\"https://mozilla.org/\"\r\n     >Mozilla Foundation</a>)\r\n</div>";
+            var result = parser.Parse(html);
 
-        ///// <summary>
-        ///// From: <see href="https://microformats.org/wiki/h-card"/>
-        ///// </summary>
-        //[TestMethod]
-        //public void PersonNestedExample()
-        //{
-        //    var parser = new Mf2();
-        //    var html = "<div class=\"h-card\">\r\n  <a class=\"p-name u-url\"\r\n     href=\"https://blog.lizardwrangler.com/\" \r\n    >Mitchell Baker</a> \r\n  (<a class=\"p-org h-card\" \r\n      href=\"https://mozilla.org/\"\r\n     >Mozilla Foundation</a>)\r\n</div>";
-        //    var result = parser.Parse(html);
+            Assert.AreEqual(1, result.Items.Length);
+            Assert.AreEqual(1, result.Items[0].Type.Length);
+            Assert.IsTrue(result.Items[0].Type[0].Contains("h-card"));
+            Assert.AreEqual(3, result.Items[0].Properties.Count);
+            Assert.AreEqual("Mitchell Baker", result.Items[0].Get(Props.NAME)[0]);
+            Assert.AreEqual("https://blog.lizardwrangler.com/", result.Items[0].Get(Props.URL)[0]);
+            Assert.AreEqual("Mozilla Foundation", result.Items[0].Get<MfSpec>(Props.ORGANIZATION)[0].Value);
+            Assert.AreEqual("Mozilla Foundation", result.Items[0].Get<MfSpec>(Props.ORGANIZATION)[0].Get(Props.NAME)[0]);
+            Assert.AreEqual("https://mozilla.org/", result.Items[0].Get<MfSpec>(Props.ORGANIZATION)[0].Get(Props.URL)[0]);
+        }
 
-        //    Assert.IsTrue(result.Items.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type[0] == "h-card");
-        //    Assert.IsTrue(result.Items[0].Properties.Count == 3);
-        //    Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Mitchell Baker");
-        //    Assert.IsTrue(result.Items[0].Get<Url>()[0] == "https://blog.lizardwrangler.com/");
-        //    Assert.IsTrue(result.Items[0].Get<Org,MfType>()[0].Value == "Mozilla Foundation");
-        //    Assert.IsTrue(result.Items[0].Get<Org, MfType>()[0].Get<PropertyName>()[0] == "Mozilla Foundation");
-        //    Assert.IsTrue(result.Items[0].Get<Org, MfType>()[0].Get<Url>()[0] == "https://mozilla.org/");
-        //}
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-card"/>
+        /// </summary>
+        [TestMethod]
+        public void PersonLotsOfPropertiesExample()
+        {
+            var parser = new Mf2();
+            var html = "<div class=\"h-card\">\r\n<span class=\"p-name\">Sally Ride</span>\r\n<span class=\"p-honorific-prefix\">Dr.</span>\r\n<span class=\"p-given-name\">Sally</span>\r\n<abbr class=\"p-additional-name\">K.</abbr>\r\n<span class=\"p-family-name\">Ride</span>\r\n<span class=\"p-honorific-suffix\">Ph.D.</span>,\r\n<span class=\"p-nickname\">sallykride</span> (IRC)\r\n<div class=\"p-org\">Sally Ride Science</div>\r\n<img class=\"u-photo\" src=\"http://example.com/sk.jpg\"/>\r\n<a class=\"u-url\" href=\"http://sally.example.com\">w</a>,\r\n<a class=\"u-email\" href=\"mailto:sally@example.com\">e</a>\r\n<div class=\"p-tel\">+1.818.555.1212</div>\r\n<div class=\"p-street-address\">123 Main st.</div>\r\n<span class=\"p-locality\">Los Angeles</span>,\r\n<abbr class=\"p-region\" title=\"California\">CA</abbr>,\r\n<span class=\"p-postal-code\">91316</span>\r\n<div class=\"p-country-name\">U.S.A</div>\r\n<time class=\"dt-bday\">1951-05-26</time> birthday\r\n<div class=\"p-category\">physicist</div>\r\n<div class=\"p-note\">First American woman in space.</div>\r\n</div>";
+            var result = parser.Parse(html);
 
-        ///// <summary>
-        ///// From: <see href="https://microformats.org/wiki/h-card"/>
-        ///// </summary>
-        //[TestMethod]
-        //public void PersonLotsOfPropertiesExample()
-        //{
-        //    var parser = new Mf2();
-        //    var html = "<div class=\"h-card\">\r\n<span class=\"p-name\">Sally Ride</span>\r\n<span class=\"p-honorific-prefix\">Dr.</span>\r\n<span class=\"p-given-name\">Sally</span>\r\n<abbr class=\"p-additional-name\">K.</abbr>\r\n<span class=\"p-family-name\">Ride</span>\r\n<span class=\"p-honorific-suffix\">Ph.D.</span>,\r\n<span class=\"p-nickname\">sallykride</span> (IRC)\r\n<div class=\"p-org\">Sally Ride Science</div>\r\n<img class=\"u-photo\" src=\"http://example.com/sk.jpg\"/>\r\n<a class=\"u-url\" href=\"http://sally.example.com\">w</a>,\r\n<a class=\"u-email\" href=\"mailto:sally@example.com\">e</a>\r\n<div class=\"p-tel\">+1.818.555.1212</div>\r\n<div class=\"p-street-address\">123 Main st.</div>\r\n<span class=\"p-locality\">Los Angeles</span>,\r\n<abbr class=\"p-region\" title=\"California\">CA</abbr>,\r\n<span class=\"p-postal-code\">91316</span>\r\n<div class=\"p-country-name\">U.S.A</div>\r\n<time class=\"dt-bday\">1951-05-26</time> birthday\r\n<div class=\"p-category\">physicist</div>\r\n<div class=\"p-note\">First American woman in space.</div>\r\n</div>";
-        //    var result = parser.Parse(html);
+            Assert.AreEqual(1, result.Items.Length);
+            Assert.AreEqual(1, result.Items[0].Type.Length);
+            Assert.IsTrue(result.Items[0].Type.Contains("h-card"));
+            Assert.AreEqual(20, result.Items[0].Properties.Count);
+            Assert.AreEqual("Sally Ride", result.Items[0].Get(Props.NAME)[0]);
+            Assert.AreEqual("Dr.", result.Items[0].Get(Props.HONORIFIC_PREFIX)[0]);
+            Assert.AreEqual("Sally", result.Items[0].Get(Props.GIVEN_NAME)[0]);
+            Assert.AreEqual("K.", result.Items[0].Get(Props.ADDITIONAL_NAME)[0]);
+            Assert.AreEqual("Ride", result.Items[0].Get(Props.FAMILY_NAME)[0]);
+            Assert.AreEqual("Ph.D.", result.Items[0].Get(Props.HONORIFIC_SUFFIX)[0]);
+            Assert.AreEqual("sallykride", result.Items[0].Get(Props.NICKNAME)[0]);
+            Assert.AreEqual("Sally Ride Science", result.Items[0].Get(Props.ORGANIZATION)[0]);
+            Assert.AreEqual("http://example.com/sk.jpg", result.Items[0].Get(Props.PHOTO)[0]);
+            Assert.AreEqual("http://sally.example.com", result.Items[0].Get(Props.URL)[0]);
+            Assert.AreEqual("mailto:sally@example.com", result.Items[0].Get(Props.EMAIL)[0]);
+            Assert.AreEqual("+1.818.555.1212", result.Items[0].Get(Props.TELEPHONE)[0]);
+            Assert.AreEqual("123 Main st.", result.Items[0].Get(Props.STREET_ADDRESS)[0]);
+            Assert.AreEqual("Los Angeles", result.Items[0].Get(Props.LOCALITY)[0]);
+            Assert.AreEqual("California", result.Items[0].Get(Props.REGION)[0]);
+            Assert.AreEqual("91316", result.Items[0].Get(Props.POSTAL_CODE)[0]);
+            Assert.AreEqual("U.S.A", result.Items[0].Get(Props.COUNTRY_NAME)[0]);
+            Assert.AreEqual("1951-05-26", result.Items[0].Get(Props.BIRTHDAY)[0]);
+            Assert.AreEqual("physicist", result.Items[0].Get(Props.CATEGORY)[0]);
+            Assert.AreEqual("First American woman in space.", result.Items[0].Get(Props.NOTE)[0]);
+        }
 
-        //    Assert.IsTrue(result.Items.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type[0] == "h-card");
-        //    Assert.IsTrue(result.Items[0].Properties.Count == 20);
-        //    Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Sally Ride");
-        //    Assert.IsTrue(result.Items[0].Get<HonorificPrefix>()[0] == "Dr.");
-        //    Assert.IsTrue(result.Items[0].Get<GivenName>()[0] == "Sally");
-        //    Assert.IsTrue(result.Items[0].Get<AdditionalName>()[0] == "K.");
-        //    Assert.IsTrue(result.Items[0].Get<FamilyName>()[0] == "Ride");
-        //    Assert.IsTrue(result.Items[0].Get<HonorificSuffix>()[0] == "Ph.D.");
-        //    Assert.IsTrue(result.Items[0].Get<Nickname>()[0] == "sallykride");
-        //    Assert.IsTrue(result.Items[0].Get<Org>()[0] == "Sally Ride Science");
-        //    Assert.IsTrue(result.Items[0].Get<Photo>()[0] == "http://example.com/sk.jpg");
-        //    Assert.IsTrue(result.Items[0].Get<Url>()[0] == "http://sally.example.com");
-        //    Assert.IsTrue(result.Items[0].Get<Email>()[0] == "mailto:sally@example.com");
-        //    Assert.IsTrue(result.Items[0].Get<Tel>()[0] == "+1.818.555.1212");
-        //    Assert.IsTrue(result.Items[0].Get<StreetAddress>()[0] == "123 Main st.");
-        //    Assert.IsTrue(result.Items[0].Get<Locality>()[0] == "Los Angeles");
-        //    Assert.IsTrue(result.Items[0].Get<Region>()[0] == "California");
-        //    Assert.IsTrue(result.Items[0].Get<PostalCode>()[0] == "91316");
-        //    Assert.IsTrue(result.Items[0].Get<CountryName>()[0] == "U.S.A");
-        //    Assert.IsTrue(result.Items[0].Get<Birthday>()[0] == "1951-05-26");
-        //    Assert.IsTrue(result.Items[0].Get<Category>()[0] == "physicist");
-        //    Assert.IsTrue(result.Items[0].Get<Note>()[0] == "First American woman in space.");
-        //}
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-card"/>
+        /// </summary>
+        [TestMethod]
+        public void AddressNestedExample()
+        {
+            var parser = new Mf2();
+            var html = "<div class=\"h-card\">\r\n  <p class=\"p-name\">Joe Bloggs</p>\r\n  <p class=\"p-adr h-adr\">\r\n    <span class=\"p-street-address\">17 Austerstræti</span>\r\n    <span class=\"p-locality\">Reykjavík</span>\r\n    <span class=\"p-country-name\">Iceland</span>\r\n  </p>\r\n</div>";
+            var result = parser.Parse(html);
 
-        ///// <summary>
-        ///// From: <see href="https://microformats.org/wiki/h-card"/>
-        ///// </summary>
-        //[TestMethod]
-        //public void AddressNestedExample()
-        //{
-        //    var parser = new Mf2();
-        //    var html = "<div class=\"h-card\">\r\n  <p class=\"p-name\">Joe Bloggs</p>\r\n  <p class=\"p-adr h-adr\">\r\n    <span class=\"p-street-address\">17 Austerstræti</span>\r\n    <span class=\"p-locality\">Reykjavík</span>\r\n    <span class=\"p-country-name\">Iceland</span>\r\n  </p>\r\n</div>";
-        //    var result = parser.Parse(html);
+            Assert.AreEqual(1, result.Items.Length);
+            Assert.IsTrue(result.Items[0].Type.Contains("h-card"));
+            Assert.AreEqual(2, result.Items[0].Properties.Count);
+            Assert.AreEqual("Joe Bloggs", result.Items[0].Get(Props.NAME)[0]);
 
-        //    Assert.IsTrue(result.Items.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type[0] == "h-card");
-        //    Assert.IsTrue(result.Items[0].Properties.Count == 2);
-        //    Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Joe Bloggs");
+            var address = result.Items[0].Get<MfSpec>(Props.ADDRESS)[0];
 
-        //    var address = (result.Items[0].Properties["adr"][0]).Get<MfType>();
+            Assert.AreEqual(1, address.Type.Length);
+            Assert.IsTrue(address.Type.Contains("h-adr"));
+            Assert.AreEqual(4, address.Properties.Count);
+            Assert.AreEqual("17 Austerstræti", address.Get(Props.STREET_ADDRESS)[0]);
+            Assert.AreEqual("Reykjavík", address.Get(Props.LOCALITY)[0]);
+            Assert.AreEqual("Iceland", address.Get(Props.COUNTRY_NAME)[0]);
+        }
 
-        //    Assert.IsTrue(address.Type.Length == 1);
-        //    Assert.IsTrue(address.Type[0] == "h-adr");
-        //    Assert.IsTrue(address.Properties.Count == 4);
-        //    Assert.IsTrue(address.Get<StreetAddress>()[0] == "17 Austerstræti");
-        //    Assert.IsTrue(address.Get<Locality>()[0] == "Reykjavík");
-        //    Assert.IsTrue(address.Get<CountryName>()[0] == "Iceland");
-        //}
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-adr"/>
+        /// </summary>
+        [TestMethod]
+        public void AddressExample()
+        {
+            var parser = new Mf2();
+            var html = "<p class=\"h-adr\">\r\n  <span class=\"p-street-address\">17 Austerstræti</span>\r\n  <span class=\"p-locality\">Reykjavík</span>\r\n  <span class=\"p-country-name\">Iceland</span>\r\n  <span class=\"p-postal-code\">107</span>\r\n</p>";
+            var result = parser.Parse(html);
 
-        ///// <summary>
-        ///// From: <see href="https://microformats.org/wiki/h-adr"/>
-        ///// </summary>
-        //[TestMethod]
-        //public void AddressExample()
-        //{
-        //    var parser = new Mf2();
-        //    var html = "<p class=\"h-adr\">\r\n  <span class=\"p-street-address\">17 Austerstræti</span>\r\n  <span class=\"p-locality\">Reykjavík</span>\r\n  <span class=\"p-country-name\">Iceland</span>\r\n  <span class=\"p-postal-code\">107</span>\r\n</p>";
-        //    var result = parser.Parse(html);
+            Assert.AreEqual(1, result.Items.Length);
+            Assert.IsTrue(result.Items[0].Type.Contains("h-adr"));
+            Assert.AreEqual(5, result.Items[0].Properties.Count);
+            Assert.AreEqual("17 Austerstræti", result.Items[0].Get(Props.STREET_ADDRESS)[0]);
+            Assert.AreEqual("Reykjavík", result.Items[0].Get(Props.LOCALITY)[0]);
+            Assert.AreEqual("Iceland", result.Items[0].Get(Props.COUNTRY_NAME)[0]);
+            Assert.AreEqual("107", result.Items[0].Get(Props.POSTAL_CODE)[0]);
+            Assert.AreEqual("17 Austerstræti Reykjavík Iceland 107", result.Items[0].Get(Props.NAME)[0]);
+        }
 
-        //    Assert.IsTrue(result.Items.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type[0] == "h-adr");
-        //    Assert.IsTrue(result.Items[0].Properties.Count == 5);
-        //    Assert.IsTrue(result.Items[0].Get<StreetAddress>()[0] == "17 Austerstræti");
-        //    Assert.IsTrue(result.Items[0].Get<Locality>()[0] == "Reykjavík");
-        //    Assert.IsTrue(result.Items[0].Get<CountryName>()[0] == "Iceland");
-        //    Assert.IsTrue(result.Items[0].Get<PostalCode>()[0] == "107");
-        //    Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "17 Austerstræti Reykjavík Iceland 107");
-        //}
+        /// <summary>
+        /// From: <see href="https://microformats.org/wiki/h-entry"/>
+        /// </summary>
+        [TestMethod]
+        public void EntryExample()
+        {
+            var parser = new Mf2();
+            var html = "<article class=\"h-entry\">\r\n  <h1 class=\"p-name\">Microformats are amazing</h1>\r\n  <p>Published by <a class=\"p-author h-card\" href=\"http://example.com\">W. Developer</a>\r\n     on <time class=\"dt-published\" datetime=\"2013-06-13 12:00:00\">13<sup>th</sup> June 2013</time></p>\r\n  \r\n  <p class=\"p-summary\">In which I extoll the virtues of using microformats.</p>\r\n  \r\n  <div class=\"e-content\">\r\n    <p>Blah blah blah</p>\r\n  </div>\r\n</article>";
+            var result = parser.Parse(html);
 
-        ///// <summary>
-        ///// From: <see href="https://microformats.org/wiki/h-entry"/>
-        ///// </summary>
-        //[TestMethod]
-        //public void EntryExample()
-        //{
-        //    var parser = new Mf2();
-        //    var html = "<article class=\"h-entry\">\r\n  <h1 class=\"p-name\">Microformats are amazing</h1>\r\n  <p>Published by <a class=\"p-author h-card\" href=\"http://example.com\">W. Developer</a>\r\n     on <time class=\"dt-published\" datetime=\"2013-06-13 12:00:00\">13<sup>th</sup> June 2013</time></p>\r\n  \r\n  <p class=\"p-summary\">In which I extoll the virtues of using microformats.</p>\r\n  \r\n  <div class=\"e-content\">\r\n    <p>Blah blah blah</p>\r\n  </div>\r\n</article>";
-        //    var result = parser.Parse(html);
+            Assert.AreEqual(1, result.Items.Length);
+            Assert.IsTrue(result.Items[0].Type[0].Contains("h-entry"));
+            Assert.AreEqual(5, result.Items[0].Properties.Count);
+            Assert.AreEqual("Microformats are amazing", result.Items[0].Get(Props.NAME)[0]);
+            Assert.AreEqual("2013-06-13 12:00:00", result.Items[0].Get(Props.PUBLISHED)[0]);
+            Assert.AreEqual("In which I extoll the virtues of using microformats.", result.Items[0].Get(Props.SUMMARY)[0]);
 
-        //    Assert.IsTrue(result.Items.Length == 1);
-        //    Assert.IsTrue(result.Items[0].Type[0] == "h-entry");
-        //    Assert.IsTrue(result.Items[0].Properties.Count == 5);
-        //    Assert.IsTrue(result.Items[0].Get<PropertyName>()[0] == "Microformats are amazing");
-        //    Assert.IsTrue(result.Items[0].Get<Published>()[0] == "2013-06-13 12:00:00");
-        //    Assert.IsTrue(result.Items[0].Get<Summary>()[0] == "In which I extoll the virtues of using microformats.");
+            var embedded = result.Items[0].Get<MfEmbedded>(Props.CONTENT)[0];
+            Assert.AreEqual("Blah blah blah", embedded.Value);
+            Assert.AreEqual("<p>Blah blah blah</p>", embedded.Html);
 
-        //    var embedded = result.Items[0].Get<Content, MfEmbedded>()[0];
-        //    Assert.IsTrue(embedded.Value == "Blah blah blah");
-        //    Assert.IsTrue(embedded.Html == "<p>Blah blah blah</p>");
-
-        //    var author = result.Items[0].Get<Author, MfType>()[0];
-        //    Assert.IsTrue(author.Value == "W. Developer");
-        //    Assert.IsTrue(author.Type[0] == "h-card");
-        //    Assert.IsTrue(author.Properties.Count == 2);
-        //    Assert.IsTrue(author.Get<PropertyName>()[0] == "W. Developer");
-        //    Assert.IsTrue(author.Get<Url>()[0] == "http://example.com");
-        //}
+            var author = result.Items[0].Get<MfSpec>(Props.AUTHOR)[0];
+            Assert.AreEqual("W. Developer", author.Value);
+            Assert.IsTrue(author.Type.Contains("h-card"));
+            Assert.AreEqual(2, author.Properties.Count);
+            Assert.AreEqual("W. Developer", author.Get(Props.NAME)[0]);
+            Assert.AreEqual("http://example.com", author.Get(Props.URL)[0]);
+        }
 
         ///// <summary>
         ///// From: <see href="https://microformats.org/wiki/h-event"/>
