@@ -286,7 +286,7 @@ namespace Microformats.Tests
         /// From: <see href="http://microformats.org/wiki/h-geo"/>
         /// </summary>
         [TestMethod]
-        public void GeoExample()
+        public void GeoValueExample()
         {
             var parser = new Mf2();
             var html = "<p class=\"h-geo\">\r\n  <data class=\"p-longitude\" value=\"-27.116667\">27° 7′ 0″ S</data>,\r\n  <data class=\"p-latitude\" value=\"-109.366667\">109° 22′ 0″ W</data>\r\n</p>";
@@ -294,9 +294,27 @@ namespace Microformats.Tests
 
             Assert.AreEqual(1, result.Items.Length);
             Assert.IsTrue(result.Items[0].Type.Contains("h-geo"));
-            Assert.AreEqual(2, result.Items[0].Properties.Count);
+            Assert.AreEqual(3, result.Items[0].Properties.Count);
             Assert.AreEqual("-27.116667", result.Items[0].Get(Props.LONGITUDE)[0]);
             Assert.AreEqual("-109.366667", result.Items[0].Get(Props.LATITUDE)[0]);
+        }
+
+        /// <summary>
+        /// From: <see href="http://microformats.org/wiki/h-geo"/>
+        /// </summary>
+        [TestMethod]
+        public void GeoExample()
+        {
+            var parser = new Mf2();
+            var html = "<p class=\"h-geo\">\r\n  <span class=\"p-latitude\">-27.116667</span>,\r\n  <span class=\"p-longitude\">-109.366667</span>\r\n</p>";
+            var result = parser.Parse(html);
+
+            Assert.AreEqual(1, result.Items.Length);
+            Assert.IsTrue(result.Items[0].Type.Contains("h-geo"));
+            Assert.AreEqual(3, result.Items[0].Properties.Count);
+            Assert.AreEqual("-109.366667", result.Items[0].Get(Props.LONGITUDE)[0]);
+            Assert.AreEqual("-27.116667", result.Items[0].Get(Props.LATITUDE)[0]);
+            Assert.AreEqual("-27.116667, -109.366667", result.Items[0].Get(Props.NAME)[0]);
         }
 
         /// <summary>
