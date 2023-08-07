@@ -38,6 +38,15 @@ namespace Microformats
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
+            //Support implicit h-entry for h-feed elements
+            foreach (var node in doc.DocumentNode.Descendants().Where(n => n.GetClasses().Contains(Specs.FEED)))
+            {
+                foreach (var entry in node.Descendants().Where(n => n.GetClasses().Contains(Specs.ENTRY) && !n.GetClasses().Contains(Props.ENTRY)))
+                    entry.AddClass(Props.ENTRY);
+            }
+
+            
+
             var result = new MfResult()
             {
                 Items = doc.DocumentNode.ChildNodes.SelectMany(m => SearchElementTreeForMicroformat(m)).Where(m => m != null).ToArray()
