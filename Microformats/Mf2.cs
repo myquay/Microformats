@@ -114,7 +114,7 @@ namespace Microformats
                 .Where(s => s != null && s.Type != MfType.Specification)
                 .ToList();
 
-            foreach(var child in node.ChildNodes.Where(c => !c.GetClasses().Any(n => MfProperty.TryFromName(n, out MfProperty result)) && !c.IsMicoformatEntity()))
+            foreach(var child in node.ChildNodes.Where(c => !c.IsMicoformatEntity()))
             {
                 possibleProperties.AddRange(GetAllPropertiesForSpecification(child));
             }
@@ -140,7 +140,7 @@ namespace Microformats
         {
             var nodesWithProperty = node.ChildNodes.Where(c => c.GetClasses().Any(a => MfProperty.TryFromName(a, out MfProperty parsedProperty) && parsedProperty.Name == property.Name)).ToList();
 
-            var nodesForSearch = node.ChildNodes.Where(c => !c.GetClasses().Any(a => MfProperty.TryFromName(a, out MfProperty parsedProperty)) && !c.IsMicoformatEntity()).ToList();
+            var nodesForSearch = node.ChildNodes.Where(c => !c.IsMicoformatEntity()).ToList();
 
             foreach(var nodeToAdd in nodesForSearch){
                 nodesWithProperty.AddRange(GetChildPropertyNodes(nodeToAdd, property));
