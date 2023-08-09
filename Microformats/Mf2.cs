@@ -19,6 +19,7 @@ namespace Microformats
         private Mf2Options options = new Mf2Options();
 
         private string REGEX_TIMEZONE = @"(([+-]\d{1,2}:\d{2})|([+-]\d)|([+-]\d{3,4}))$";
+        private string REGEX_DATE = @"^[0-9]{4}";
 
         public Mf2 WithOptions(Func<Mf2Options, Mf2Options> config = null)
         {
@@ -101,18 +102,21 @@ namespace Microformats
                 .Select(g => g.First())
                 .ToList();
 
+            //TODO: IMPROVE IMPLICT TIMEZONE/ DATE SEARCHING
             var context = new ParseContext();
-
             foreach (var property in properties)
             {
-                var propertyValue = ParseChildrenForProperty(node, property, context, (c) =>
-                {
-                    context.MostRecentDate = c.MostRecentDate ?? context.MostRecentDate;
-                    context.MostRecentTimezone = c.MostRecentTimezone ?? context.MostRecentTimezone;
-                });
+                var propertyValue = ParseChildrenForProperty(node, property, context);
+                if (propertyValue != null && property.Type != MfType.DateTime) //Search for implicit timezones
+                    resultSet.Properties.Add(property.Key, propertyValue);
+            }
+            foreach (var property in properties.Where(t => t.Type == MfType.DateTime))
+            {
+                var propertyValue = ParseChildrenForProperty(node, property, context); //Set with timezones
                 if (propertyValue != null)
                     resultSet.Properties.Add(property.Key, propertyValue);
             }
+
 
             return resultSet;
         }
@@ -166,7 +170,7 @@ namespace Microformats
             return nodesWithProperty.ToArray();
         }
 
-        private MfValue[] ParseChildrenForProperty(HtmlNode node, MfProperty property, ParseContext context, Action<ParseContext> setContext = null)
+        private MfValue[] ParseChildrenForProperty(HtmlNode node, MfProperty property, ParseContext context = null)
         {
             var propertyValue = new List<MfValue>();
 
@@ -292,21 +296,24 @@ namespace Microformats
                                 if (s.Is("abbr"))
                                     return s.GetAttributeValue("title", null) ?? s.InnerText.Trim();
                                 return s.InnerText.Trim();
-                            }).Select(a => new
+                            }).Select(a => Regex.Replace(Regex.Replace(a, @"([+-])(\d{1,2}):(\d{1,2})", "$1$2$3"), @"^\d{4}-\d{3}", match =>
                             {
-                                //Remove ':' from the timezone offset
-                                Part = Regex.Replace(a, @"([+-])(\d{1,2}):(\d{1,2})", "$1$2$3"),
-                                IsDate = Regex.IsMatch(a, @"^[0-9]{4}"),
+                                return new DateTime(int.Parse(match.Value.Substring(0, 4)), 1, 1).AddDays(int.Parse(match.Value.Substring(5)) - 1).ToString("yyyy-MM-dd");
+                            })).Select(a => new
+                            {
+                                //Remove ':' from the timezone offset, normalise ordinal
+                                Part = a,
+                                IsDate = Regex.IsMatch(a,REGEX_DATE),
                                 IsTimezone = Regex.IsMatch(a, REGEX_TIMEZONE)
                             });
 
                             parsedDate = $"{dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part} {dateTimeParts.FirstOrDefault(a => !a.IsDate && !a.IsTimezone)?.Part}{dateTimeParts.FirstOrDefault(a => a.IsTimezone)?.Part}".Trim();
 
-                            setContext?.Invoke(new ParseContext
+                            if(context != null)
                             {
-                                 MostRecentDate = dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part,
-                                 MostRecentTimezone =dateTimeParts.FirstOrDefault(a => a.IsTimezone)?.Part
-                            });
+                                context.ImpliedTimezone = context.ImpliedTimezone ?? dateTimeParts.FirstOrDefault(a => a.IsTimezone)?.Part;
+                                context.ImpliedDate = context.ImpliedDate ?? dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part;
+                            }
 
                         }
                         else if (child.Is("time", "ins", "del") && child.HasAttr("datetime"))
@@ -334,12 +341,12 @@ namespace Microformats
                         if (parsedDate != null)
                         {
                             //Ensure the date part is present
-                            if(!Regex.IsMatch(parsedDate, @"^[0-9]{4}"))
-                                parsedDate = $"{context.MostRecentDate} {parsedDate}".Trim();
+                            if (!Regex.IsMatch(parsedDate, REGEX_DATE))
+                                parsedDate = $"{context.ImpliedDate} {parsedDate}".Trim();
 
                             //Ensure the timezone part is present
                             if (!Regex.IsMatch(parsedDate, REGEX_TIMEZONE))
-                                parsedDate = $"{parsedDate}{context.MostRecentTimezone}".Trim();
+                                parsedDate = $"{parsedDate}{context.ImpliedTimezone}".Trim();
 
                             //Ensure standard timezone
                             parsedDate = Regex.Replace(parsedDate, @"(?<prefix>[+-])(?<offset>\d{3})$", delegate (Match m)
@@ -365,6 +372,14 @@ namespace Microformats
                             parsedDate = Regex.Replace(parsedDate, @"(?<hour>\s\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?", delegate (Match m) {
                                 return $"{m.Groups["hour"].Value}{(m.Groups["minute"].Success ? m.Groups["minute"].Value : ":00")}{(m.Groups["second"].Value)}";
                             });
+
+                            //Set implied timezone if required
+                            if (context.ImpliedTimezone == null && Regex.IsMatch(parsedDate, REGEX_TIMEZONE))
+                                context.ImpliedTimezone = Regex.Match(parsedDate, REGEX_TIMEZONE).Value;
+
+                            //Set implied timezone if required
+                            if (context.ImpliedDate == null &&  Regex.IsMatch(parsedDate, @"^[0-9]{4}-[0-9]{2}-[0-9]{2}"))
+                                context.ImpliedDate = Regex.Match(parsedDate, @"^[0-9]{4}-[0-9]{2}-[0-9]{2}").Value;
 
                             propertyValue.Add(new MfValue(parsedDate));
                         }
@@ -524,4 +539,15 @@ namespace Microformats
             }
         }
     }
+
+    /// <summary>
+    /// Context of parse action
+    /// </summary>
+    internal class ParseContext
+    {
+        public string ImpliedDate { get; set; }
+
+        public string ImpliedTimezone { get; set; }
+    }
+
 }

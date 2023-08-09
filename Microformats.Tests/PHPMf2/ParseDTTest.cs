@@ -483,7 +483,6 @@ namespace Microformats.Tests.PHPMf2
             var html = "<div class=\"h-event\">\r\n\t<h1 class=\"p-name\">Ordinal date</h1>\r\n\t<p> When:\r\n\t\t<span class=\"dt-start\">\r\n\t\t\t<span class=\"value\">2016-062</span>\r\n\t\t\t<span class=\"value\">12:30AM</span>\r\n\t\t\t(UTC<span class=\"value\">-06:00</span>)\r\n\t</p>\r\n</div>";
             var result = parser.Parse(html);
 
-            Assert.IsTrue(result.Items[0].Properties.ContainsKey("bday"));
             Assert.AreEqual("2016-03-02 12:30-0600", result.Items[0].Get(Props.START)[0]);
         }
 
