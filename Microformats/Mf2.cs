@@ -18,6 +18,8 @@ namespace Microformats
 
         private Mf2Options options = new Mf2Options();
 
+        private string REGEX_TIMEZONE = @"(([+-]\d{1,2}:\d{2})|([+-]\d)|([+-]\d{3,4}))$";
+
         public Mf2 WithOptions(Func<Mf2Options, Mf2Options> config = null)
         {
             if (config != null)
@@ -99,10 +101,15 @@ namespace Microformats
                 .Select(g => g.First())
                 .ToList();
 
+            var context = new ParseContext();
 
             foreach (var property in properties)
             {
-                var propertyValue = ParseChildrenForProperty(node, property);
+                var propertyValue = ParseChildrenForProperty(node, property, context, (c) =>
+                {
+                    context.MostRecentDate = c.MostRecentDate ?? context.MostRecentDate;
+                    context.MostRecentTimezone = c.MostRecentTimezone ?? context.MostRecentTimezone;
+                });
                 if (propertyValue != null)
                     resultSet.Properties.Add(property.Key, propertyValue);
             }
@@ -159,7 +166,7 @@ namespace Microformats
             return nodesWithProperty.ToArray();
         }
 
-        private MfValue[] ParseChildrenForProperty(HtmlNode node, MfProperty property)
+        private MfValue[] ParseChildrenForProperty(HtmlNode node, MfProperty property, ParseContext context, Action<ParseContext> setContext = null)
         {
             var propertyValue = new List<MfValue>();
 
@@ -287,15 +294,19 @@ namespace Microformats
                                 return s.InnerText.Trim();
                             }).Select(a => new
                             {
-                                Part = a,
+                                //Remove ':' from the timezone offset
+                                Part = Regex.Replace(a, @"([+-])(\d{1,2}):(\d{1,2})", "$1$2$3"),
                                 IsDate = Regex.IsMatch(a, @"^[0-9]{4}"),
-                                IsTimeZone = Regex.IsMatch(a, @"^[+-]\d{2}:\d{2}")
+                                IsTimezone = Regex.IsMatch(a, REGEX_TIMEZONE)
                             });
 
-                            parsedDate = $"{dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part} {dateTimeParts.FirstOrDefault(a => !a.IsDate && !a.IsTimeZone)?.Part}{dateTimeParts.FirstOrDefault(a => a.IsTimeZone)?.Part}".Trim();
+                            parsedDate = $"{dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part} {dateTimeParts.FirstOrDefault(a => !a.IsDate && !a.IsTimezone)?.Part}{dateTimeParts.FirstOrDefault(a => a.IsTimezone)?.Part}".Trim();
 
-                            //Remove ':' from the timezone offset
-                            parsedDate = Regex.Replace(parsedDate, @"([+-])(\d{2}):(\d{2})", "$1$2$3");
+                            setContext?.Invoke(new ParseContext
+                            {
+                                 MostRecentDate = dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part,
+                                 MostRecentTimezone =dateTimeParts.FirstOrDefault(a => a.IsTimezone)?.Part
+                            });
 
                         }
                         else if (child.Is("time", "ins", "del") && child.HasAttr("datetime"))
@@ -322,6 +333,24 @@ namespace Microformats
 
                         if (parsedDate != null)
                         {
+                            //Ensure the date part is present
+                            if(!Regex.IsMatch(parsedDate, @"^[0-9]{4}"))
+                                parsedDate = $"{context.MostRecentDate} {parsedDate}".Trim();
+
+                            //Ensure the timezone part is present
+                            if (!Regex.IsMatch(parsedDate, REGEX_TIMEZONE))
+                                parsedDate = $"{parsedDate}{context.MostRecentTimezone}".Trim();
+
+                            //Ensure standard timezone
+                            parsedDate = Regex.Replace(parsedDate, @"(?<prefix>[+-])(?<offset>\d{3})$", delegate (Match m)
+                            {
+                                return $"{m.Groups["prefix"].Value}0{m.Groups["offset"].Value}";
+                            });
+                            parsedDate = Regex.Replace(parsedDate, @"(?<prefix>[+-])(?<offset>\d)$", delegate (Match m)
+                            {
+                                return $"{m.Groups["prefix"].Value}0{m.Groups["offset"].Value}00";
+                            });
+
                             //Extract the am and pm parts
                             parsedDate = Regex.Replace(parsedDate, @"(?<hour>\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?[ap]\.?m\.?", delegate (Match m) {
                                 
