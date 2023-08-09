@@ -286,10 +286,10 @@ namespace Microformats
                             }).Select(a => new
                             {
                                 Part = a,
-                                IsDate = Regex.Match(a, @"/^[0-9]{4}/").Success
+                                IsDate = Regex.IsMatch(a, @"^[0-9]{4}")
                             });
 
-                            parsedDate = $"{dateTimeParts.First(a => a.IsDate)} {dateTimeParts.FirstOrDefault(a => !a.IsDate)}".Trim();
+                            parsedDate = $"{dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part} {dateTimeParts.FirstOrDefault(a => !a.IsDate)?.Part}".Trim();
 
                         }
                         else if (child.Is("time", "ins", "del") && child.HasAttr("datetime"))
@@ -317,10 +317,10 @@ namespace Microformats
                         if (parsedDate != null)
                         {
                             //Remove ':' from the timezone offset
-                            parsedDate = Regex.Replace(parsedDate, @"([+-])(\d{2}):(\d{2})", "$1$2$3");
+                            //parsedDate = Regex.Replace(parsedDate, @"([+-])(\d{2}):(\d{2})", "$1$2$3");
 
                             //Extract the am and pm parts
-                            parsedDate = Regex.Replace(parsedDate, @"(?<hour>\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?[ap]\.?m\.?.*$", delegate (Match m) {
+                            parsedDate = Regex.Replace(parsedDate, @"(?<hour>\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?[ap]\.?m\.?", delegate (Match m) {
                                 
                                 var isAm = m.Value.ToLower().EndsWith("am");
                                 var hour = isAm ? $"{int.Parse(m.Groups["hour"].Value):D2}" :
@@ -331,7 +331,7 @@ namespace Microformats
 
                             //Ensure standard time format
                             parsedDate = Regex.Replace(parsedDate, @"(?<hour>\s\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?", delegate (Match m) {
-                                return $"{m.Groups["hour"].Value}{(m.Groups["minute"].Success ? m.Groups["minute"].Value : ":00")}{(m.Groups["second"].Success ? m.Groups["second"].Value : ":00")}";
+                                return $"{m.Groups["hour"].Value}{(m.Groups["minute"].Success ? m.Groups["minute"].Value : ":00")}{(m.Groups["second"].Value)}";
                             });
 
                             propertyValue.Add(new MfValue(parsedDate));

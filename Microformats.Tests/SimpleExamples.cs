@@ -253,8 +253,8 @@ namespace Microformats.Tests
             Assert.IsTrue(result.Items[0].Type.Contains("h-event"));
             Assert.AreEqual(5, result.Items[0].Properties.Count);
             Assert.AreEqual("Microformats Meetup", result.Items[0].Get(Props.NAME)[0]);
-            Assert.AreEqual("2013-06-30 12:00:00", result.Items[0].Get(Props.START)[0]);
-            Assert.AreEqual("2013-06-30 18:00:00", result.Items[0].Get(Props.END)[0]);
+            Assert.AreEqual("2013-06-30 12:00", result.Items[0].Get(Props.START)[0]);
+            Assert.AreEqual("2013-06-30 18:00", result.Items[0].Get(Props.END)[0]);
             Assert.AreEqual("Some bar in SF", result.Items[0].Get(Props.LOCATION)[0]);
             Assert.AreEqual("Get together and discuss all things microformats-related.", result.Items[0].Get(Props.SUMMARY)[0]);
 
