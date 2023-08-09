@@ -276,9 +276,11 @@ namespace Microformats
                         {
                             var dateTimeParts = child.ChildNodes.Where(c => c.HasClass("value")).Select(s =>
                             {
+                                if (s.Is("time", "ins", "del") && s.HasAttr("datetime"))
+                                    return s.GetAttributeValue("datetime", null);
                                 if (s.Is("img", "area") && s.HasAttr("alt"))
                                     return s.GetAttributeValue("alt", null);
-                                if (s.Is("data"))
+                                if (s.Is("data", "input"))
                                     return s.GetAttributeValue("value", null) ?? s.InnerText.Trim();
                                 if (s.Is("abbr"))
                                     return s.GetAttributeValue("title", null) ?? s.InnerText.Trim();
@@ -286,10 +288,14 @@ namespace Microformats
                             }).Select(a => new
                             {
                                 Part = a,
-                                IsDate = Regex.IsMatch(a, @"^[0-9]{4}")
+                                IsDate = Regex.IsMatch(a, @"^[0-9]{4}"),
+                                IsTimeZone = Regex.IsMatch(a, @"^[+-]\d{2}:\d{2}")
                             });
 
-                            parsedDate = $"{dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part} {dateTimeParts.FirstOrDefault(a => !a.IsDate)?.Part}".Trim();
+                            parsedDate = $"{dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part} {dateTimeParts.FirstOrDefault(a => !a.IsDate && !a.IsTimeZone)?.Part}{dateTimeParts.FirstOrDefault(a => a.IsTimeZone)?.Part}".Trim();
+
+                            //Remove ':' from the timezone offset
+                            parsedDate = Regex.Replace(parsedDate, @"([+-])(\d{2}):(\d{2})", "$1$2$3");
 
                         }
                         else if (child.Is("time", "ins", "del") && child.HasAttr("datetime"))
@@ -316,18 +322,15 @@ namespace Microformats
 
                         if (parsedDate != null)
                         {
-                            //Remove ':' from the timezone offset
-                            //parsedDate = Regex.Replace(parsedDate, @"([+-])(\d{2}):(\d{2})", "$1$2$3");
-
                             //Extract the am and pm parts
                             parsedDate = Regex.Replace(parsedDate, @"(?<hour>\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?[ap]\.?m\.?", delegate (Match m) {
                                 
-                                var isAm = m.Value.ToLower().EndsWith("am");
+                                var isAm = Regex.IsMatch(m.Value, @"[a]\.?m\.?", RegexOptions.IgnoreCase);
                                 var hour = isAm ? $"{int.Parse(m.Groups["hour"].Value):D2}" :
                                  $"{(int.Parse(m.Groups["hour"].Value)+12):D2}";
 
                                 return $"{hour}{m.Groups["minute"].Value??":00"}{m.Groups["second"].Value ?? ":00"}";
-                            });
+                            }, RegexOptions.IgnoreCase);
 
                             //Ensure standard time format
                             parsedDate = Regex.Replace(parsedDate, @"(?<hour>\s\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?", delegate (Match m) {
