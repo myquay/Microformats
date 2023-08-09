@@ -45,7 +45,7 @@ namespace Microformats
                     entry.AddClass(Props.ENTRY);
             }
 
-            
+
 
             var result = new MfResult()
             {
@@ -99,7 +99,7 @@ namespace Microformats
                 .Select(g => g.First())
                 .ToList();
 
-            
+
             foreach (var property in properties)
             {
                 var propertyValue = ParseChildrenForProperty(node, property);
@@ -123,7 +123,7 @@ namespace Microformats
                 .Where(s => s != null && s.Type != MfType.Specification)
                 .ToList();
 
-            foreach(var child in node.ChildNodes.Where(c => !c.IsMicoformatEntity()))
+            foreach (var child in node.ChildNodes.Where(c => !c.IsMicoformatEntity()))
             {
                 possibleProperties.AddRange(GetAllPropertiesForSpecification(child));
             }
@@ -151,7 +151,8 @@ namespace Microformats
 
             var nodesForSearch = node.ChildNodes.Where(c => !c.IsMicoformatEntity()).ToList();
 
-            foreach(var nodeToAdd in nodesForSearch){
+            foreach (var nodeToAdd in nodesForSearch)
+            {
                 nodesWithProperty.AddRange(GetChildPropertyNodes(nodeToAdd, property));
             }
 
@@ -269,9 +270,11 @@ namespace Microformats
                     }
                     else if (property.Type == MfType.DateTime)
                     {
+                        string parsedDate = null;
+
                         if (child.ChildNodes.Any(c => c.HasClass("value")))
                         {
-                            propertyValue.Add(new MfValue(child.ChildNodes.Where(c => c.HasClass("value")).Select(s =>
+                            var dateTimeParts = child.ChildNodes.Where(c => c.HasClass("value")).Select(s =>
                             {
                                 if (s.Is("img", "area") && s.HasAttr("alt"))
                                     return s.GetAttributeValue("alt", null);
@@ -280,28 +283,58 @@ namespace Microformats
                                 if (s.Is("abbr"))
                                     return s.GetAttributeValue("title", null) ?? s.InnerText.Trim();
                                 return s.InnerText.Trim();
-                            }).Aggregate((current, next) => $"{current} {next}")));
+                            }).Select(a => new
+                            {
+                                Part = a,
+                                IsDate = Regex.Match(a, @"/^[0-9]{4}/").Success
+                            });
+
+                            parsedDate = $"{dateTimeParts.First(a => a.IsDate)} {dateTimeParts.FirstOrDefault(a => !a.IsDate)}".Trim();
+
                         }
                         else if (child.Is("time", "ins", "del") && child.HasAttr("datetime"))
                         {
-                            propertyValue.Add(new MfValue(child.GetAttributeValue("datetime", null)));
+                            parsedDate = child.GetAttributeValue("datetime", null);
                         }
                         else if (child.Is("img", "area") && child.HasAttr("alt"))
                         {
-                            propertyValue.Add(new MfValue(child.GetAttributeValue("alt", null)));
+                            parsedDate = child.GetAttributeValue("alt", null);
                         }
                         else if (child.Is("abbr") && child.HasAttr("title"))
                         {
-                            propertyValue.Add(new MfValue(child.GetAttributeValue("title", null)));
+                            parsedDate = child.GetAttributeValue("title", null);
                         }
                         else if (child.Is("data", "input") && child.HasAttr("value"))
                         {
-                            propertyValue.Add(new MfValue(child.GetAttributeValue("value", null)));
+                            parsedDate = child.GetAttributeValue("value", null);
                         }
                         else
                         {
                             //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
-                            propertyValue.Add(new MfValue(Regex.Replace(child.InnerText.Trim(), @"\s+", " ")));
+                            parsedDate = Regex.Replace(child.InnerText.Trim(), @"\s+", " ");
+                        }
+
+                        if (parsedDate != null)
+                        {
+                            //Remove ':' from the timezone offset
+                            parsedDate = Regex.Replace(parsedDate, @"([+-])(\d{2}):(\d{2})", "$1$2$3");
+
+                            //Extract the am and pm parts
+                            parsedDate = Regex.Replace(parsedDate, @"(?<hour>\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?[ap]\.?m\.?.*$", delegate (Match m) {
+                                
+                                var isAm = m.Value.ToLower().EndsWith("am");
+                                var hour = isAm ? $"{int.Parse(m.Groups["hour"].Value):D2}" :
+                                 $"{(int.Parse(m.Groups["hour"].Value)+12):D2}";
+
+                                return $"{hour}{m.Groups["minute"].Value??":00"}{m.Groups["second"].Value ?? ":00"}";
+                            });
+
+                            //Ensure standard time format
+                            parsedDate = Regex.Replace(parsedDate, @"(?<hour>\s\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?", delegate (Match m) {
+                                return $"{m.Groups["hour"].Value}{(m.Groups["minute"].Success ? m.Groups["minute"].Value : ":00")}{(m.Groups["second"].Success ? m.Groups["second"].Value : ":00")}";
+                            });
+
+                            propertyValue.Add(new MfValue(parsedDate));
                         }
                     }
                     else if (property.Type == MfType.Embedded)
