@@ -41,16 +41,35 @@ namespace Microformats
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
+            if (options.UpgradeClassicMicroformats)
+            {
+                foreach (var classicSpec in ClassicMappings.Mapping)
+                {
+                    foreach (var node in doc.DocumentNode.Descendants()
+                        .Where(n => n.GetClasses().Contains(classicSpec.ClassicType))
+                        .Where(n => !n.GetClasses().Contains(classicSpec.Type)))
+                    {
+                        node.AddClass(classicSpec.Type);
+                        node.AddClass(ClassicMappings.DISABLE_IMPLIED_PROPS);
+
+                        foreach (var childNode in node.Descendants())
+                        {
+                            foreach (var property in classicSpec.Properties
+                                .Where(p => childNode.GetClasses().Contains(p.classic))
+                                .Where(p => !childNode.GetClasses().Contains(p.modern)).Select(p => p.modern))
+                            {
+                                childNode.AddClass(property);
+                            }
+                        }
+                    }
+                }
+            }
+
             //Support implicit h-entry for h-feed elements
             foreach (var node in doc.DocumentNode.Descendants().Where(n => n.GetClasses().Contains(Specs.FEED)))
             {
                 foreach (var entry in node.Descendants().Where(n => n.GetClasses().Contains(Specs.ENTRY) && !n.GetClasses().Contains(Props.ENTRY)))
                     entry.AddClass(Props.ENTRY);
-            }
-
-            if (options.UpgradeClassicMicroformats)
-            {
-
             }
 
             var result = new MfResult()
@@ -105,7 +124,7 @@ namespace Microformats
                 .Select(g => g.First())
                 .ToList();
 
-            //TODO: IMPROVE IMPLICT TIMEZONE/ DATE SEARCHING
+            //TODO: INSTEAD OF PARSING TWICE, PREFORM A SEARCH TO BUILD IMPLICT DATETIME/ TIMEZONE PROPERTIES
             var context = new ParseContext();
             foreach (var property in properties)
             {
@@ -129,8 +148,10 @@ namespace Microformats
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
-        private MfProperty[] GetAllPropertiesForSpecification(HtmlNode node)
+        private MfProperty[] GetAllPropertiesForSpecification(HtmlNode node, bool disableImpliedProps = false)
         {
+            disableImpliedProps = disableImpliedProps || node.GetClasses().Contains(ClassicMappings.DISABLE_IMPLIED_PROPS);
+
             var possibleProperties = node.ChildNodes.SelectMany(c => c.GetClasses())
                 .Where(n => MfProperty.TryFromName(n, out MfProperty result))
                 .Select(n => MfProperty.TryFromName(n, out MfProperty result) ? result : null)
@@ -139,16 +160,19 @@ namespace Microformats
 
             foreach (var child in node.ChildNodes.Where(c => !c.IsMicoformatEntity()))
             {
-                possibleProperties.AddRange(GetAllPropertiesForSpecification(child));
+                possibleProperties.AddRange(GetAllPropertiesForSpecification(child, disableImpliedProps));
             }
 
-            //Add default possible properties
-            if (MfProperty.TryFromName(Props.NAME, out MfProperty nameResult))
-                possibleProperties.Add(nameResult);
-            if (MfProperty.TryFromName(Props.PHOTO, out MfProperty photoResult))
-                possibleProperties.Add(photoResult);
-            if (MfProperty.TryFromName(Props.URL, out MfProperty urlResult))
-                possibleProperties.Add(urlResult);
+            //Add default possible properties if not a classic mapping
+            if (!disableImpliedProps)
+            {
+                if (MfProperty.TryFromName(Props.NAME, out MfProperty nameResult))
+                    possibleProperties.Add(nameResult);
+                if (MfProperty.TryFromName(Props.PHOTO, out MfProperty photoResult))
+                    possibleProperties.Add(photoResult);
+                if (MfProperty.TryFromName(Props.URL, out MfProperty urlResult))
+                    possibleProperties.Add(urlResult);
+            }
 
             return possibleProperties.ToArray();
         }
@@ -184,7 +208,7 @@ namespace Microformats
                 if (child.GetClasses().Any(c => MfProperty.TryFromName(c, out MfProperty specProp) && specProp.Type == MfType.Specification))
                 {
                     var value = ParseElementForMicroformat(child);
-                    value.Value = value.Get(Props.NAME)?.First();
+                    value.Value = value.Get(Props.NAME)?.FirstOrDefault();
                     propertyValue.Add(new MfValue(value));
                 }
                 else
@@ -306,13 +330,13 @@ namespace Microformats
                             {
                                 //Remove ':' from the timezone offset, normalise ordinal
                                 Part = a,
-                                IsDate = Regex.IsMatch(a,REGEX_DATE),
+                                IsDate = Regex.IsMatch(a, REGEX_DATE),
                                 IsTimezone = Regex.IsMatch(a, REGEX_TIMEZONE)
                             });
 
                             parsedDate = $"{dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part} {dateTimeParts.FirstOrDefault(a => !a.IsDate && !a.IsTimezone)?.Part}{dateTimeParts.FirstOrDefault(a => a.IsTimezone)?.Part}".Trim();
 
-                            if(context != null)
+                            if (context != null)
                             {
                                 context.ImpliedTimezone = context.ImpliedTimezone ?? dateTimeParts.FirstOrDefault(a => a.IsTimezone)?.Part;
                                 context.ImpliedDate = context.ImpliedDate ?? dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part;
@@ -362,17 +386,19 @@ namespace Microformats
                             });
 
                             //Extract the am and pm parts
-                            parsedDate = Regex.Replace(parsedDate, @"(?<hour>\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?[ap]\.?m\.?", delegate (Match m) {
-                                
+                            parsedDate = Regex.Replace(parsedDate, @"(?<hour>\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?[ap]\.?m\.?", delegate (Match m)
+                            {
+
                                 var isAm = Regex.IsMatch(m.Value, @"[a]\.?m\.?", RegexOptions.IgnoreCase);
                                 var hour = isAm ? $"{int.Parse(m.Groups["hour"].Value):D2}" :
-                                 $"{(int.Parse(m.Groups["hour"].Value)+12):D2}";
+                                 $"{(int.Parse(m.Groups["hour"].Value) + 12):D2}";
 
-                                return $"{hour}{m.Groups["minute"].Value??":00"}{m.Groups["second"].Value ?? ":00"}";
+                                return $"{hour}{m.Groups["minute"].Value ?? ":00"}{m.Groups["second"].Value ?? ":00"}";
                             }, RegexOptions.IgnoreCase);
 
                             //Ensure standard time format
-                            parsedDate = Regex.Replace(parsedDate, @"(?<hour>\s\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?", delegate (Match m) {
+                            parsedDate = Regex.Replace(parsedDate, @"(?<hour>\s\d{1,2})(?<minute>:\d{2})?(?<second>:\d{2})?", delegate (Match m)
+                            {
                                 return $"{m.Groups["hour"].Value}{(m.Groups["minute"].Success ? m.Groups["minute"].Value : ":00")}{(m.Groups["second"].Value)}";
                             });
 
@@ -381,7 +407,7 @@ namespace Microformats
                                 context.ImpliedTimezone = Regex.Match(parsedDate, REGEX_TIMEZONE).Value;
 
                             //Set implied timezone if required
-                            if (context.ImpliedDate == null &&  Regex.IsMatch(parsedDate, @"^[0-9]{4}-[0-9]{2}-[0-9]{2}"))
+                            if (context.ImpliedDate == null && Regex.IsMatch(parsedDate, @"^[0-9]{4}-[0-9]{2}-[0-9]{2}"))
                                 context.ImpliedDate = Regex.Match(parsedDate, @"^[0-9]{4}-[0-9]{2}-[0-9]{2}").Value;
 
                             propertyValue.Add(new MfValue(parsedDate));
@@ -402,8 +428,8 @@ namespace Microformats
                 }
             }
 
-            //Implicit parsing for special properties
-            if (!propertyValue.Any())
+            //Implicit parsing for special properties (no implict mapping for backcompt properties)
+            if (!propertyValue.Any() && !node.GetClasses().Contains(ClassicMappings.DISABLE_IMPLIED_PROPS))
             {
                 if (property.Name == Props.NAME)
                 {

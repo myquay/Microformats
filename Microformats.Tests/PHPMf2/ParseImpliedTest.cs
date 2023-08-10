@@ -378,7 +378,7 @@ namespace Microformats.Tests.PHPMf2
             var result = parser.Parse(html);
 
             Assert.IsFalse(result.Items[0].Properties.ContainsKey("name"));
-            Assert.IsFalse(result.Items[0].Properties.ContainsKey("content"));
+            Assert.IsTrue(result.Items[0].Properties.ContainsKey("content"));
         }
 
         /// <summary>
