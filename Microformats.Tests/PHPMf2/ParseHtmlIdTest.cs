@@ -1,15 +1,6 @@
-﻿using Microformats.Definitions;
-using Microformats.Grammar;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
+﻿using Microformats.Grammar;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading.Tasks;
 using static Microformats.Definitions.Constants;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Microformats.Tests.PHPMf2
 {
