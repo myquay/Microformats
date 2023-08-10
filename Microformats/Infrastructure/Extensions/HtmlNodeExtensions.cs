@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microformats.Definitions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,16 +63,25 @@ namespace Microformats
             return true;
         }
 
-        internal static bool IsMicoformatEntity(this HtmlNode node, bool includeProperties = false)
+        internal static bool IsMicoformatEntity(this HtmlNode node, params MfType[] includeProperties)
         {
-            if (!includeProperties)
+            includeProperties = includeProperties ?? new MfType[0];
+            var classesToCheck = includeProperties.Select(p =>
             {
-                return node.GetClasses().Any(c => c.StartsWith("h-"));
-            }
-            else
-            {
-                return node.GetClasses().Any(c => c.StartsWith("h-") || c.StartsWith("p-") || c.StartsWith("e-") || c.StartsWith("u-") || c.StartsWith("dt-"));
-            }
+                if(p == MfType.Property)                     
+                    return "p-";
+                if(p == MfType.Embedded)
+                    return "e-";
+                if(p == MfType.Url)
+                    return "u-";
+                if (p == MfType.Specification)
+                    return "h-";
+                if (p == MfType.DateTime)
+                    return "dt-";
+                return "unknown";
+            });
+
+            return node.GetClasses().Any(c => c.StartsWith("h-") || classesToCheck.Any(p => c.StartsWith(p)));
         }
     }
 }
