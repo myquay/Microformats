@@ -62,9 +62,16 @@ namespace Microformats
             return true;
         }
 
-        internal static bool IsMicoformatEntity(this HtmlNode node)
+        internal static bool IsMicoformatEntity(this HtmlNode node, bool includeProperties = false)
         {
-            return node.GetClasses().Any(c => c.StartsWith("h-"));
+            if (!includeProperties)
+            {
+                return node.GetClasses().Any(c => c.StartsWith("h-"));
+            }
+            else
+            {
+                return node.GetClasses().Any(c => c.StartsWith("h-") || c.StartsWith("p-") || c.StartsWith("e-") || c.StartsWith("u-") || c.StartsWith("dt-"));
+            }
         }
     }
 }

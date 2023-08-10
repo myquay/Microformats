@@ -458,45 +458,50 @@ namespace Microformats
                     if (node.Is("object") && node.HasAttr("data"))
                         return new[] { new MfValue(node.GetAttributeValue("data", null)) };
 
-                    if (node.TrySelectFirstChild("img", out HtmlNode imgChild, onlyOfType: true) && !imgChild.IsMicoformatEntity())
-                    {
-                        if (imgChild.HasAttr("alt"))
-                        {
-                            return new[] { new MfValue(new MfImage{
-                                  Value = imgChild.GetAttributeValue("src", null),
-                                  Alt = imgChild.GetAttributeValue("alt", null)
-                            }) };
-                        }
-                        else
-                        {
-                            return new[] { new MfValue(imgChild.GetAttributeValue("src", null)) };
-                        }
-                    }
-
-                    if (node.TrySelectFirstChild("object", out HtmlNode objChild, onlyOfType: true) && objChild.HasAttr("data") && !objChild.IsMicoformatEntity())
-                        return new[] { new MfValue(objChild.GetAttributeValue("data", null)) };
-
-                    if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicoformatEntity())
+                    //No implicit if there are any nested microformats
+                    if (!node.Descendants().Any(d => d.IsMicoformatEntity()))
                     {
 
-                        if (anyChild.TrySelectFirstChild("img", out HtmlNode nestedImgChild, onlyOfType: true) && !nestedImgChild.IsMicoformatEntity())
+                        if (node.TrySelectFirstChild("img", out HtmlNode imgChild, onlyOfType: true) && !imgChild.IsMicoformatEntity(includeProperties: true))
                         {
-                            if (nestedImgChild.HasAttr("alt"))
+                            if (imgChild.HasAttr("alt"))
                             {
                                 return new[] { new MfValue(new MfImage{
-                                  Value = nestedImgChild.GetAttributeValue("src", null),
-                                  Alt = nestedImgChild.GetAttributeValue("alt", null)
+                                  Value = imgChild.GetAttributeValue("src", null),
+                                  Alt = imgChild.GetAttributeValue("alt", null)
                             }) };
                             }
                             else
                             {
-                                return new[] { new MfValue(nestedImgChild.GetAttributeValue("src", null)) };
+                                return new[] { new MfValue(imgChild.GetAttributeValue("src", null)) };
                             }
                         }
 
-                        if (anyChild.TrySelectFirstChild("object", out HtmlNode objNestedChild, onlyOfType: true) && objNestedChild.HasAttr("data") && !objNestedChild.IsMicoformatEntity())
-                            return new[] { new MfValue(objNestedChild.GetAttributeValue("data", null)) };
+                        if (node.TrySelectFirstChild("object", out HtmlNode objChild, onlyOfType: true) && objChild.HasAttr("data") && !objChild.IsMicoformatEntity(includeProperties: true))
+                            return new[] { new MfValue(objChild.GetAttributeValue("data", null)) };
 
+                        if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicoformatEntity())
+                        {
+
+                            if (anyChild.TrySelectFirstChild("img", out HtmlNode nestedImgChild, onlyOfType: true) && !nestedImgChild.IsMicoformatEntity(includeProperties: true))
+                            {
+                                if (nestedImgChild.HasAttr("alt"))
+                                {
+                                    return new[] { new MfValue(new MfImage{
+                                  Value = nestedImgChild.GetAttributeValue("src", null),
+                                  Alt = nestedImgChild.GetAttributeValue("alt", null)
+                            }) };
+                                }
+                                else
+                                {
+                                    return new[] { new MfValue(nestedImgChild.GetAttributeValue("src", null)) };
+                                }
+                            }
+
+                            if (anyChild.TrySelectFirstChild("object", out HtmlNode objNestedChild, onlyOfType: true) && objNestedChild.HasAttr("data") && !objNestedChild.IsMicoformatEntity(includeProperties: true))
+                                return new[] { new MfValue(objNestedChild.GetAttributeValue("data", null)) };
+
+                        }
                     }
 
                     return null;
