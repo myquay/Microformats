@@ -19,5 +19,11 @@ namespace Microformats
         /// Whether to upgrade classic microformats for parsing
         /// </summary>
         public bool UpgradeClassicMicroformats { get; set; } = true;
+
+        /// <summary>
+        /// Whether to discover language from HTML
+        /// </summary>
+        public bool DiscoverLang { get; set; } = true;  
+
     }
 }

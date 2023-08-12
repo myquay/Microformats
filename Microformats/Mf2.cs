@@ -118,6 +118,9 @@ namespace Microformats
                 Id = !String.IsNullOrEmpty(node.Id) ? node.Id : null,
             };
 
+            if(options.DiscoverLang)
+                resultSet.Lang = DiscoverLanguage(node);
+
             //Get all childnodes that are properties
             var properties = GetAllPropertiesForSpecification(node)
                 .GroupBy(p => p.Name)
@@ -197,6 +200,14 @@ namespace Microformats
             return nodesWithProperty.ToArray();
         }
 
+        /// <summary>
+        /// Parse a child element for microformats (recurse)
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="property"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         private MfValue[] ParseChildrenForProperty(HtmlNode node, MfProperty property, ParseContext context = null)
         {
             var propertyValue = new List<MfValue>();
@@ -571,6 +582,30 @@ namespace Microformats
             {
                 return propertyValue.ToArray();
             }
+        }
+
+        /// <summary>
+        /// Discover language of node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private string DiscoverLanguage(HtmlNode node)
+        {
+            if (node.HasAttr("lang"))
+                return node.GetAttributeValue("lang", null);
+
+            if (node.Name == "html") {
+                var language = node.SelectNodes(".//meta[@http-equiv]")
+                    .Where(n => n.HasAttr("http-equiv") && n.HasAttr("content") && n.GetAttributeValue("http-equiv", null).ToLower() == "content-language")
+                    .Select(n =>n.GetAttributeValue("content", null)?.Trim())
+                    .FirstOrDefault();
+                if(language != null)
+                    return language;
+            }
+
+            if(node.ParentNode != null)
+                return DiscoverLanguage(node.ParentNode);
+            return null;
         }
     }
 

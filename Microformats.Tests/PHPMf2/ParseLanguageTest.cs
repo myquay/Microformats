@@ -48,7 +48,7 @@ namespace Microformats.Tests.PHPMf2
             var html = "<html lang=\"en\"> <div class=\"h-entry\" lang=\"es\">Esta prueba está en español.</div> </html>";
             var result = parser.Parse(html);
 
-            Assert.AreEqual("en", result.Items[0].Lang);
+            Assert.AreEqual("es", result.Items[0].Lang);
         }
 
         /// <summary>
