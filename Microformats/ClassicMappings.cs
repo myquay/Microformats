@@ -18,8 +18,6 @@ namespace Microformats
 
     public static class ClassicMappings
     {
-        public static string DISABLE_IMPLIED_PROPS = "disable-implied-properties";
-
         public static List<ClassicMapping> Mapping = new List<ClassicMapping>
         {
             new ClassicMapping

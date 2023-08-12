@@ -9,13 +9,49 @@ using System.Xml.Linq;
 
 namespace Microformats
 {
+    /// <summary>
+    /// HTML Node helpers
+    /// </summary>
     internal static class HtmlNodeExtensions
     {
+        /// <summary>
+        /// Set if this node is in backwards compatible mode
+        /// </summary>
+        /// <param name="node">HtmlNode to operate on</param>
+        /// <param name="value">If backwards compatible or not</param>
+        internal static void SetBackcompat(this HtmlNode node, bool value)
+        {
+            node.SetAttributeValue("data-backcompat", value.ToString().ToLowerInvariant());
+        }
+
+        /// <summary>
+        /// Checks to see if node is in backwards compatible mode
+        /// </summary>
+        /// <param name="node">HtmlNode to check</param>
+        /// <returns></returns>
+        internal static bool IsBackcompat(this HtmlNode node)
+        {
+            return node.GetAttributeValue("data-backcompat", null) == "true";
+        }
+
+        /// <summary>
+        /// Checks if node is one of the listed types
+        /// </summary>
+        /// <param name="node">HtmlNode to check</param>
+        /// <param name="elements">List of elements to check the node against</param>
+        /// <returns></returns>
         internal static bool Is(this HtmlNode node, params string[] elements)
         {
             return node != null && elements.Contains(node.Name.ToLowerInvariant());
         }
 
+        /// <summary>
+        /// Checks if node has the specified attribute
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="attr"></param>
+        /// <param name="ignoreEmpty"></param>
+        /// <returns></returns>
         internal static bool HasAttr(this HtmlNode node, string attr, bool ignoreEmpty = false)
         {
             var attribute = node.GetAttributeValue(attr, null);
@@ -25,6 +61,13 @@ namespace Microformats
             return attribute != null;
         }
 
+        /// <summary>
+        /// Tries to get the single child of type
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="element"></param>
+        /// <param name="child"></param>
+        /// <returns></returns>
         internal static bool TrySelectSingleChild(this HtmlNode node, string element, out HtmlNode child)
         {
             child = null;
@@ -37,6 +80,12 @@ namespace Microformats
             return true;
         }
 
+        /// <summary>
+        /// Tries to get single child element
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="child"></param>
+        /// <returns></returns>
         internal static bool TrySelectSingleChild(this HtmlNode node, out HtmlNode child)
         {
             child = null;
@@ -48,6 +97,14 @@ namespace Microformats
             return true;
         }
 
+        /// <summary>
+        /// Tries to get first element of type
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="element"></param>
+        /// <param name="child"></param>
+        /// <param name="onlyOfType"></param>
+        /// <returns></returns>
         internal static bool TrySelectFirstChild(this HtmlNode node, string element, out HtmlNode child, bool onlyOfType = false)
         {
             child = null;
@@ -63,7 +120,23 @@ namespace Microformats
             return true;
         }
 
-        internal static bool IsMicoformatEntity(this HtmlNode node, params MfType[] includeProperties)
+        /// <summary>
+        /// Checks to see if this is a microformat root
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        internal static bool IsMicroformatRoot(this HtmlNode node)
+        {
+            return node.IsPropertyElement(MfType.Specification);
+        }
+
+        /// <summary>
+        /// Checks to see if node is a microformat entity
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="includeProperties"></param>
+        /// <returns></returns>
+        internal static bool IsPropertyElement(this HtmlNode node, params MfType[] includeProperties)
         {
             includeProperties = includeProperties ?? new MfType[0];
             var classesToCheck = includeProperties.Select(p =>
@@ -81,7 +154,7 @@ namespace Microformats
                 return "unknown";
             });
 
-            return node.GetClasses().Any(c => c.StartsWith("h-") || classesToCheck.Any(p => c.StartsWith(p)));
+            return node.GetClasses().Any(c => classesToCheck.Any(p => c.StartsWith(p)));
         }
     }
 }

@@ -14,14 +14,22 @@ using static Microformats.Definitions.Constants;
 
 namespace Microformats
 {
+    /// <summary>
+    /// Microformats2 parser
+    /// </summary>
     public class Mf2
     {
 
         private Mf2Options options = new Mf2Options();
 
-        private string REGEX_TIMEZONE = @"(([+-]\d{1,2}:\d{2})|([+-]\d)|([+-]\d{3,4}))$";
-        private string REGEX_DATE = @"^[0-9]{4}";
+        private readonly string REGEX_TIMEZONE = @"(([+-]\d{1,2}:\d{2})|([+-]\d)|([+-]\d{3,4}))$";
+        private readonly string REGEX_DATE = @"^[0-9]{4}";
 
+        /// <summary>
+        /// Set options for the parser
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
         public Mf2 WithOptions(Func<Mf2Options, Mf2Options> config = null)
         {
             if (config != null)
@@ -42,6 +50,7 @@ namespace Microformats
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
+            //Upgrade classic microformats to v2
             if (options.UpgradeClassicMicroformats)
             {
                 foreach (var classicSpec in ClassicMappings.Mapping)
@@ -51,7 +60,7 @@ namespace Microformats
                         .Where(n => !n.GetClasses().Contains(classicSpec.Type)))
                     {
                         node.AddClass(classicSpec.Type);
-                        node.AddClass(ClassicMappings.DISABLE_IMPLIED_PROPS);
+                        node.SetBackcompat(true);
 
                         foreach (var childNode in node.Descendants())
                         {
@@ -154,7 +163,7 @@ namespace Microformats
         /// <returns></returns>
         private MfProperty[] GetAllPropertiesForSpecification(HtmlNode node, bool disableImpliedProps = false)
         {
-            disableImpliedProps = disableImpliedProps || node.GetClasses().Contains(ClassicMappings.DISABLE_IMPLIED_PROPS);
+            disableImpliedProps = disableImpliedProps || node.IsBackcompat();
 
             var possibleProperties = node.ChildNodes.SelectMany(c => c.GetClasses())
                 .Where(n => MfProperty.TryFromName(n, out MfProperty result))
@@ -162,7 +171,7 @@ namespace Microformats
                 .Where(s => s != null && s.Type != MfType.Specification)
                 .ToList();
 
-            foreach (var child in node.ChildNodes.Where(c => !c.IsMicoformatEntity()))
+            foreach (var child in node.ChildNodes.Where(c => !c.IsMicroformatRoot()))
             {
                 possibleProperties.AddRange(GetAllPropertiesForSpecification(child, disableImpliedProps || child.GetClasses().Any(c => c.StartsWith("p-"))));
             }
@@ -191,7 +200,7 @@ namespace Microformats
         {
             var nodesWithProperty = node.ChildNodes.Where(c => c.GetClasses().Any(a => MfProperty.TryFromName(a, out MfProperty parsedProperty) && parsedProperty.Name == property.Name)).ToList();
 
-            var nodesForSearch = node.ChildNodes.Where(c => !c.IsMicoformatEntity()).ToList();
+            var nodesForSearch = node.ChildNodes.Where(c => !c.IsMicroformatRoot()).ToList();
 
             foreach (var nodeToAdd in nodesForSearch)
             {
@@ -439,7 +448,7 @@ namespace Microformats
             }
 
             //Implicit parsing for special properties (no implict mapping for backcompt properties)
-            if (!propertyValue.Any() && !node.GetClasses().Contains(ClassicMappings.DISABLE_IMPLIED_PROPS))
+            if (!propertyValue.Any() && !node.IsBackcompat())
             {
                 if (property.Name == Props.NAME)
                 {
@@ -449,24 +458,24 @@ namespace Microformats
                     if (node.Is("abbr") && node.HasAttr("title"))
                         return new[] { new MfValue(node.GetAttributeValue("title", null)) };
 
-                    if (node.TrySelectSingleChild("img", out HtmlNode imgChild) && imgChild.HasAttr("alt", ignoreEmpty: true) && !imgChild.IsMicoformatEntity())
+                    if (node.TrySelectSingleChild("img", out HtmlNode imgChild) && imgChild.HasAttr("alt", ignoreEmpty: true) && !imgChild.IsMicroformatRoot())
                         return new[] { new MfValue(imgChild.GetAttributeValue("alt", null)) };
 
-                    if (node.TrySelectSingleChild("area", out HtmlNode areaChild) && areaChild.HasAttr("alt", ignoreEmpty: true) && !areaChild.IsMicoformatEntity())
+                    if (node.TrySelectSingleChild("area", out HtmlNode areaChild) && areaChild.HasAttr("alt", ignoreEmpty: true) && !areaChild.IsMicroformatRoot())
                         return new[] { new MfValue(areaChild.GetAttributeValue("alt", null)) };
 
-                    if (node.TrySelectSingleChild("abbr", out HtmlNode abbrChild) && abbrChild.HasAttr("title", ignoreEmpty: true) && !abbrChild.IsMicoformatEntity())
+                    if (node.TrySelectSingleChild("abbr", out HtmlNode abbrChild) && abbrChild.HasAttr("title", ignoreEmpty: true) && !abbrChild.IsMicroformatRoot())
                         return new[] { new MfValue(abbrChild.GetAttributeValue("title", null)) };
 
-                    if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicoformatEntity())
+                    if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicroformatRoot())
                     {
-                        if (anyChild.TrySelectSingleChild("img", out HtmlNode imgNestedChild) && imgNestedChild.HasAttr("alt", ignoreEmpty: true) && !imgNestedChild.IsMicoformatEntity())
+                        if (anyChild.TrySelectSingleChild("img", out HtmlNode imgNestedChild) && imgNestedChild.HasAttr("alt", ignoreEmpty: true) && !imgNestedChild.IsMicroformatRoot())
                             return new[] { new MfValue(imgNestedChild.GetAttributeValue("alt", null)) };
 
-                        if (anyChild.TrySelectSingleChild("area", out HtmlNode areaNestedChild) && areaNestedChild.HasAttr("alt", ignoreEmpty: true) && !areaNestedChild.IsMicoformatEntity())
+                        if (anyChild.TrySelectSingleChild("area", out HtmlNode areaNestedChild) && areaNestedChild.HasAttr("alt", ignoreEmpty: true) && !areaNestedChild.IsMicroformatRoot())
                             return new[] { new MfValue(areaNestedChild.GetAttributeValue("alt", null)) };
 
-                        if (anyChild.TrySelectSingleChild("abbr", out HtmlNode abbrNestedChild) && abbrNestedChild.HasAttr("title", ignoreEmpty: true) && !abbrNestedChild.IsMicoformatEntity())
+                        if (anyChild.TrySelectSingleChild("abbr", out HtmlNode abbrNestedChild) && abbrNestedChild.HasAttr("title", ignoreEmpty: true) && !abbrNestedChild.IsMicroformatRoot())
                             return new[] { new MfValue(abbrNestedChild.GetAttributeValue("title", null)) };
                     }
 
@@ -497,10 +506,10 @@ namespace Microformats
                         return new[] { new MfValue(node.GetAttributeValue("data", null)) };
 
                     //No implicit if there are any nested microformats
-                    if (!node.Descendants().Any(d => d.IsMicoformatEntity()))
+                    if (!node.Descendants().Any(d => d.IsMicroformatRoot()))
                     {
 
-                        if (node.TrySelectFirstChild("img", out HtmlNode imgChild, onlyOfType: true) && !imgChild.IsMicoformatEntity(MfType.Url))
+                        if (node.TrySelectFirstChild("img", out HtmlNode imgChild, onlyOfType: true) && !imgChild.IsPropertyElement(MfType.Specification, MfType.Url))
                         {
                             if (imgChild.HasAttr("alt"))
                             {
@@ -515,13 +524,13 @@ namespace Microformats
                             }
                         }
 
-                        if (node.TrySelectFirstChild("object", out HtmlNode objChild, onlyOfType: true) && objChild.HasAttr("data") && !objChild.IsMicoformatEntity(MfType.Url))
+                        if (node.TrySelectFirstChild("object", out HtmlNode objChild, onlyOfType: true) && objChild.HasAttr("data") && !objChild.IsPropertyElement(MfType.Specification, MfType.Url))
                             return new[] { new MfValue(objChild.GetAttributeValue("data", null)) };
 
-                        if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicoformatEntity())
+                        if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicroformatRoot())
                         {
 
-                            if (anyChild.TrySelectFirstChild("img", out HtmlNode nestedImgChild, onlyOfType: true) && !nestedImgChild.IsMicoformatEntity(MfType.Url))
+                            if (anyChild.TrySelectFirstChild("img", out HtmlNode nestedImgChild, onlyOfType: true) && !nestedImgChild.IsPropertyElement(MfType.Specification, MfType.Url))
                             {
                                 if (nestedImgChild.HasAttr("alt"))
                                 {
@@ -536,7 +545,7 @@ namespace Microformats
                                 }
                             }
 
-                            if (anyChild.TrySelectFirstChild("object", out HtmlNode objNestedChild, onlyOfType: true) && objNestedChild.HasAttr("data") && !objNestedChild.IsMicoformatEntity(MfType.Url))
+                            if (anyChild.TrySelectFirstChild("object", out HtmlNode objNestedChild, onlyOfType: true) && objNestedChild.HasAttr("data") && !objNestedChild.IsPropertyElement(MfType.Specification, MfType.Url))
                                 return new[] { new MfValue(objNestedChild.GetAttributeValue("data", null)) };
 
                         }
@@ -552,19 +561,19 @@ namespace Microformats
                     if (node.Is("a", "area") && node.HasAttr("href"))
                         return new[] { new MfValue(node.GetAttributeValue("href", null)) };
 
-                    if (node.TrySelectFirstChild("a", out HtmlNode aChild, onlyOfType: true) && aChild.HasAttr("href") && !aChild.IsMicoformatEntity(MfType.Url))
+                    if (node.TrySelectFirstChild("a", out HtmlNode aChild, onlyOfType: true) && aChild.HasAttr("href") && !aChild.IsPropertyElement(MfType.Specification, MfType.Url))
                         return new[] { new MfValue(aChild.GetAttributeValue("href", null)) };
 
-                    if (node.TrySelectFirstChild("area", out HtmlNode areaChild, onlyOfType: true) && areaChild.HasAttr("href") && !areaChild.IsMicoformatEntity(MfType.Url))
+                    if (node.TrySelectFirstChild("area", out HtmlNode areaChild, onlyOfType: true) && areaChild.HasAttr("href") && !areaChild.IsPropertyElement(MfType.Specification, MfType.Url))
                         return new[] { new MfValue(aChild.GetAttributeValue("href", null)) };
 
-                    if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicoformatEntity())
+                    if (node.TrySelectSingleChild(out HtmlNode anyChild) && !anyChild.IsMicroformatRoot())
                     {
 
-                        if (anyChild.TrySelectFirstChild("a", out HtmlNode aNestedChild, onlyOfType: true) && aNestedChild.HasAttr("href") && !aNestedChild.IsMicoformatEntity(MfType.Url))
+                        if (anyChild.TrySelectFirstChild("a", out HtmlNode aNestedChild, onlyOfType: true) && aNestedChild.HasAttr("href") && !aNestedChild.IsPropertyElement(MfType.Specification, MfType.Url))
                             return new[] { new MfValue(aNestedChild.GetAttributeValue("href", null)) };
 
-                        if (anyChild.TrySelectFirstChild("area", out HtmlNode areaNestedChild, onlyOfType: true) && areaNestedChild.HasAttr("href") && !areaNestedChild.IsMicoformatEntity(MfType.Url))
+                        if (anyChild.TrySelectFirstChild("area", out HtmlNode areaNestedChild, onlyOfType: true) && areaNestedChild.HasAttr("href") && !areaNestedChild.IsPropertyElement(MfType.Specification, MfType.Url))
                             return new[] { new MfValue(areaNestedChild.GetAttributeValue("href", null)) };
 
                     }
@@ -596,7 +605,7 @@ namespace Microformats
                         node.ReplaceChild(HtmlNode.CreateNode(child.GetAttributeValue("src", null)), child);
                     }
                 }
-                if (!child.IsMicoformatEntity())
+                if (!child.IsMicroformatRoot())
                     ReplaceImgNodesWithText(child, isImplied);
             }
         }
