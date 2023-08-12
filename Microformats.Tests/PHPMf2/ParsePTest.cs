@@ -119,9 +119,9 @@ namespace Microformats.Tests.PHPMf2
             var result = parser.Parse(html);
 
             Assert.AreEqual("Street Name 9\n12345 NY, USA", result.Items[0].Get(Props.ADDRESS)[0]);
-            Assert.AreEqual("Street Name 9", result.Items[0].Get(Props.INSTRUCTIONS)[0]);
+            Assert.AreEqual("Street Name 9", result.Items[0].Get(Props.STREET_ADDRESS)[0]);
             Assert.AreEqual("12345 NY, USA", result.Items[0].Get(Props.LOCALITY)[0]);
-            Assert.IsTrue(result.Items[0].Properties.ContainsKey("name"));
+            Assert.IsFalse(result.Items[0].Properties.ContainsKey("name"));
         }
 
         ///<summary>

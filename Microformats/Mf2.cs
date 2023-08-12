@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using System.Xml.Linq;
 using static Microformats.Definitions.Constants;
 
@@ -163,13 +164,13 @@ namespace Microformats
 
             foreach (var child in node.ChildNodes.Where(c => !c.IsMicoformatEntity()))
             {
-                possibleProperties.AddRange(GetAllPropertiesForSpecification(child, disableImpliedProps));
+                possibleProperties.AddRange(GetAllPropertiesForSpecification(child, disableImpliedProps || child.GetClasses().Any(c => c.StartsWith("p-"))));
             }
 
             //Add default possible properties if not a classic mapping
             if (!disableImpliedProps)
             {
-                if (MfProperty.TryFromName(Props.NAME, out MfProperty nameResult))
+                if (!node.ChildNodes.Any(cn => cn.GetClasses().Any(c => c.StartsWith("p-"))) && MfProperty.TryFromName(Props.NAME, out MfProperty nameResult))
                     possibleProperties.Add(nameResult);
                 if (MfProperty.TryFromName(Props.PHOTO, out MfProperty photoResult))
                     possibleProperties.Add(photoResult);
@@ -253,8 +254,7 @@ namespace Microformats
                         }
                         else
                         {
-                            //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
-                            propertyValue.Add(new MfValue(Regex.Replace(child.InnerText.Trim(), @"\s+", " ")));
+                            propertyValue.Add(new MfValue(GetInnerTextOfNode(child)));
                         }
                     }
                     else if (property.Type == MfType.Url)
@@ -313,8 +313,7 @@ namespace Microformats
                         }
                         else
                         {
-                            //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
-                            propertyValue.Add(new MfValue(Regex.Replace(child.InnerText.Trim(), @"\s+", " ")));
+                            propertyValue.Add(new MfValue(GetInnerTextOfNode(child)));
                         }
                     }
                     else if (property.Type == MfType.DateTime)
@@ -471,8 +470,7 @@ namespace Microformats
                             return new[] { new MfValue(abbrNestedChild.GetAttributeValue("title", null)) };
                     }
 
-                    //TODO: dropping any nested <script> & <style> elements, replacing any nested <img> elements with their alt attribute, if present
-                    return new[] { new MfValue(Regex.Replace(node.InnerText.Trim(), @"\s+", " ")) };
+                    return new[] { new MfValue(GetInnerTextOfNode(node, isImplied: true)) };
 
                 }
                 else if (property.Name == Props.PHOTO)
@@ -582,6 +580,54 @@ namespace Microformats
             {
                 return propertyValue.ToArray();
             }
+        }
+
+        private void ReplaceImgNodesWithText(HtmlNode node, bool isImplied = false)
+        {
+            foreach(var child in node.ChildNodes.ToList())
+            {
+                if(child.Name == "img") {
+                    if (child.HasAttr("alt", ignoreEmpty: false))
+                    {
+                        node.ReplaceChild(HtmlNode.CreateNode(child.GetAttributeValue("alt", null)), child);
+                    }
+                    else if (child.HasAttr("src", ignoreEmpty: true) && !isImplied)
+                    {
+                        node.ReplaceChild(HtmlNode.CreateNode(child.GetAttributeValue("src", null)), child);
+                    }
+                }
+                if (!child.IsMicoformatEntity())
+                    ReplaceImgNodesWithText(child, isImplied);
+            }
+        }
+
+        private string GetInnerTextOfNode(HtmlNode node, bool isImplied = false)
+        {
+            ///Create copy of the node for transforming
+            var doc = new HtmlDocument();
+            doc.LoadHtml(node.OuterHtml);
+
+            doc.DocumentNode.Descendants()
+                .Where(n => n.Name == "script" || n.Name == "style")
+                .ToList()
+                .ForEach(n => n.Remove());
+
+            ReplaceImgNodesWithText(doc.DocumentNode, isImplied);
+
+            doc.DocumentNode.Descendants()
+              .Where(n => n.Name == "img" )
+              .ToList()
+              .ForEach(n => n.Remove());
+
+            foreach (var textNode in doc.DocumentNode.Descendants().Where(t => t.NodeType == HtmlNodeType.Text))
+                textNode.InnerHtml = Regex.Replace(textNode.InnerText, @"\s+", " ");
+
+            foreach(var brNode in doc.DocumentNode.Descendants().Where(n => n.Name == "br").ToList())
+            {
+                brNode.ParentNode.ReplaceChild(doc.CreateTextNode("\n"), brNode);
+            }
+
+            return Regex.Replace(doc.DocumentNode.InnerText.Trim(), @"[^\S\r\n]+", " ");
         }
 
         /// <summary>
