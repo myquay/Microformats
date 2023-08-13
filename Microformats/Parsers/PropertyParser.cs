@@ -17,7 +17,13 @@ namespace Microformats.Parsers
         private static readonly string REGEX_TIMEZONE = @"(([+-]\d{1,2}:\d{2})|([+-]\d)|([+-]\d{3,4}))$";
         private static readonly string REGEX_DATE = @"^[0-9]{4}";
 
-        internal static (object propertyValue, DateTimeParseContext context) ParseDate(HtmlNode node, DateTimeParseContext context)
+        /// <summary>
+        /// Parse DateTime property
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        internal static (object propertyValue, DateTimeParseContext context) ParseDate(HtmlNode node, Uri baseUri, DateTimeParseContext context)
         {
             context = context ?? new DateTimeParseContext();
 
@@ -71,7 +77,7 @@ namespace Microformats.Parsers
             }
             else
             {
-                parsedDate = InnerTextParser.GetInnerText(node);
+                parsedDate = InnerTextParser.GetInnerText(node, baseUri, convertImgToSrc: true);
             }
 
             if (parsedDate != null)
@@ -144,7 +150,7 @@ namespace Microformats.Parsers
         /// <param name="node">Node to parse</param>
         /// <param name="value">Parsed value</param>
         /// <returns>Whether the parse was successful</returns>
-        internal static string ParseText(HtmlNode node)
+        internal static string ParseText(HtmlNode node, Uri baseUri)
         {
             if (node.ChildNodes.Any(c => c.HasClass("value")))
             {
@@ -173,15 +179,20 @@ namespace Microformats.Parsers
             }
             else
             {
-                return InnerTextParser.GetInnerText(node);
+                return InnerTextParser.GetInnerText(node, baseUri, convertImgToSrc: true);
             }
         }
 
-        internal static object ParseUrl(HtmlNode node)
+        /// <summary>
+        /// Parse URL property
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        internal static object ParseUrl(HtmlNode node, Uri baseUri)
         {
             if (node.Is("a", "area", "link") && node.HasAttr("href"))
             {
-                return node.GetAttributeValue("href", null);
+                return node.GetAttributeValue("href", null).ToAbsoluteUri(baseUri);
             }
             else if (node.Is("img") && node.HasAttr("src"))
             {
@@ -190,25 +201,25 @@ namespace Microformats.Parsers
                     return new MfImage
                     {
                          Alt = node.GetAttributeValue("alt", null),
-                         Value = node.GetAttributeValue("src", null)
+                         Value = node.GetAttributeValue("src", null).ToAbsoluteUri(baseUri)
                     };
                 }
                 else
                 {
-                    return node.GetAttributeValue("src", null);
+                    return node.GetAttributeValue("src", null).ToAbsoluteUri(baseUri);
                 }
             }
             else if (node.Is("audio", "video", "source", "iframe") && node.HasAttr("src"))
             {
-                return node.GetAttributeValue("src", null);
+                return node.GetAttributeValue("src", null).ToAbsoluteUri(baseUri);
             }
             else if (node.Is("video") && node.HasAttr("poster"))
             {
-                return node.GetAttributeValue("poster", null);
+                return node.GetAttributeValue("poster", null).ToAbsoluteUri(baseUri);
             }
             else if (node.Is("object") && node.HasAttr("data"))
             {
-                return node.GetAttributeValue("data", null);
+                return node.GetAttributeValue("data", null).ToAbsoluteUri(baseUri);
             }
             else if (node.ChildNodes.Any(c => c.HasClass("value")))
             {
@@ -221,19 +232,19 @@ namespace Microformats.Parsers
                     if (s.Is("abbr"))
                         return s.GetAttributeValue("title", null) ?? s.InnerText.Trim();
                     return s.InnerText.Trim();
-                }).Aggregate((current, next) => $"{current} {next}");
+                }).Aggregate((current, next) => $"{current} {next}").ToAbsoluteUri(baseUri);
             }
             else if (node.Is("abbr") && node.HasAttr("title"))
             {
-                return node.GetAttributeValue("title", null);
+                return node.GetAttributeValue("title", null).ToAbsoluteUri(baseUri);
             }
             else if (node.Is("data", "input") && node.HasAttr("value"))
             {
-                return node.GetAttributeValue("value", null);
+                return node.GetAttributeValue("value", null).ToAbsoluteUri(baseUri);
             }
             else
             {
-                return InnerTextParser.GetInnerText(node);
+                return InnerTextParser.GetInnerText(node, baseUri, convertImgToSrc: true).ToAbsoluteUri(baseUri);
             }
         }
     }

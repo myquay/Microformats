@@ -43,7 +43,7 @@ namespace Microformats.Tests.PHPMf2
             var result = parser.Parse(html);
 
             Assert.IsTrue(result.Items[0].Properties.ContainsKey("url"));
-            Assert.AreEqual("http://example.com", result.Items[0].Get(Props.URL)[0]);
+            Assert.AreEqual("http://example.com/", result.Items[0].Get(Props.URL)[0]);
         }
 
         [TestMethod]
@@ -154,7 +154,7 @@ namespace Microformats.Tests.PHPMf2
                 o.BaseUri = new Uri("http://example.com/things/more/more.html");
                 return o;
             });
-            var html = "<div class=\"h-card\"><data class=\"u-photo\" value=\"http://example.com/someimage.png\"></data></div>";
+            var html = "<div class=\"h-card\"><img class=\"u-photo\" src=\"../image.png\" /></div>";
             var result = parser.Parse(html);
 
             Assert.AreEqual("http://example.com/things/image.png", result.Items[0].Get(Props.PHOTO)[0]);
@@ -230,7 +230,7 @@ namespace Microformats.Tests.PHPMf2
         public void ParseUHandlesVideo()
         {
             var parser = new Mf2();
-            var html = "<div class=\"h-entry\"><video class=\"u-video\" src=\"\"></video></div>";
+            var html = "<div class=\"h-entry\"><video class=\"u-video\" src=\"http://example.com/video.mp4\"></video></div>";
             var result = parser.Parse(html);
 
             Assert.IsTrue(result.Items[0].Properties.ContainsKey("video"));
@@ -339,7 +339,7 @@ namespace Microformats.Tests.PHPMf2
         {
             var parser = new Mf2().WithOptions(o =>
             {
-                o.BaseUri = new Uri("http://example.com");
+                o.BaseUri = new Uri("https://example.com/index.html");
                 return o;
             });
             var html = "<div class=\"h-test\"><data class=\"u-url\" value=\"relative.html\"></data></div>";

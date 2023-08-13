@@ -21,7 +21,7 @@ namespace Microformats.Parsers
         /// <param name="node">Node to parse</param>
         /// <param name="value">Parsed value</param>
         /// <returns>Whether the parse was successful</returns>
-        internal static bool TryParseName(HtmlNode node, out MfValue value)
+        internal static bool TryParseName(HtmlNode node, Uri baseUri, out MfValue value)
         {
             if (node.Is("img", "area") && node.HasAttr("alt"))
             {
@@ -73,7 +73,7 @@ namespace Microformats.Parsers
                 }
             }
 
-            value = new MfValue(Props.NAME, InnerTextParser.GetInnerText(node, replaceImage: true, convertImgToSrc: false));
+            value = new MfValue(Props.NAME, InnerTextParser.GetInnerText(node, baseUri, replaceImage: true, convertImgToSrc: false));
             return true;
         }
 
@@ -83,31 +83,29 @@ namespace Microformats.Parsers
         /// <param name="node">Node to parse</param>
         /// <param name="value">Parsed value</param>
         /// <returns>Whether the parse was successful</returns>
-        internal static bool TryParsePhoto(HtmlNode node, out MfValue value)
+        internal static bool TryParsePhoto(HtmlNode node, Uri baseUri, out MfValue value)
         {
-            //TODO: if there is a gotten photo value, return the normalized absolute URL of it, following the containing document's language's rules for resolving relative URLs (e.g. in HTML, use the current URL context as determined by the page, and first <base> element, if any).
-
             if (node.Is("img"))
             {
                 if (node.HasAttr("alt"))
                 {
                     value = new MfValue(Props.PHOTO, new MfImage
                     {
-                        Value = node.GetAttributeValue("src", null),
+                        Value = node.GetAttributeValue("src", null).ToAbsoluteUri(baseUri),
                         Alt = node.GetAttributeValue("alt", null)
                     });
                     return true;
                 }
                 else
                 {
-                    value = new MfValue(Props.PHOTO, node.GetAttributeValue("src", null));
+                    value = new MfValue(Props.PHOTO, node.GetAttributeValue("src", null).ToAbsoluteUri(baseUri));
                     return true;
                 }
             }
 
             if (node.Is("object") && node.HasAttr("data"))
             {
-                value = new MfValue(Props.PHOTO, node.GetAttributeValue("data", null));
+                value = new MfValue(Props.PHOTO, node.GetAttributeValue("data", null).ToAbsoluteUri(baseUri));
                 return true;
             }
 
@@ -121,21 +119,21 @@ namespace Microformats.Parsers
                     {
                         value = new MfValue(Props.PHOTO, new MfImage
                         {
-                            Value = imgChild.GetAttributeValue("src", null),
+                            Value = imgChild.GetAttributeValue("src", null).ToAbsoluteUri(baseUri),
                             Alt = imgChild.GetAttributeValue("alt", null)
                         });
                         return true;
                     }
                     else
                     {
-                        value = new MfValue(Props.PHOTO, imgChild.GetAttributeValue("src", null));
+                        value = new MfValue(Props.PHOTO, imgChild.GetAttributeValue("src", null).ToAbsoluteUri(baseUri));
                         return true;
                     }
                 }
 
                 if (node.TrySelectFirstChild("object", out HtmlNode objChild, onlyOfType: true) && objChild.HasAttr("data") && !objChild.IsPropertyElement(MfType.Specification, MfType.Url))
                 {
-                    value = new MfValue(Props.PHOTO, objChild.GetAttributeValue("data", null));
+                    value = new MfValue(Props.PHOTO, objChild.GetAttributeValue("data", null).ToAbsoluteUri(baseUri));
                     return true;
                 }
 
@@ -148,21 +146,21 @@ namespace Microformats.Parsers
                         {
                             value = new MfValue(Props.PHOTO, new MfImage
                             {
-                                Value = nestedImgChild.GetAttributeValue("src", null),
+                                Value = nestedImgChild.GetAttributeValue("src", null).ToAbsoluteUri(baseUri),
                                 Alt = nestedImgChild.GetAttributeValue("alt", null)
                             });
                             return true;
                         }
                         else
                         {
-                            value = new MfValue(Props.PHOTO, nestedImgChild.GetAttributeValue("src", null));
+                            value = new MfValue(Props.PHOTO, nestedImgChild.GetAttributeValue("src", null).ToAbsoluteUri(baseUri));
                             return true;
                         }
                     }
 
                     if (anyChild.TrySelectFirstChild("object", out HtmlNode objNestedChild, onlyOfType: true) && objNestedChild.HasAttr("data") && !objNestedChild.IsPropertyElement(MfType.Specification, MfType.Url))
                     {
-                        value = new MfValue(Props.PHOTO, objNestedChild.GetAttributeValue("data", null));
+                        value = new MfValue(Props.PHOTO, objNestedChild.GetAttributeValue("data", null).ToAbsoluteUri(baseUri));
                         return true;
                     }
                 }
@@ -178,25 +176,23 @@ namespace Microformats.Parsers
         /// <param name="node">Node to parse</param>
         /// <param name="value">Parsed value</param>
         /// <returns>Whether the parse was successful</returns>
-        internal static bool TryParseUrl(HtmlNode node, out MfValue value)
+        internal static bool TryParseUrl(HtmlNode node, Uri baseUri, out MfValue value)
         {
-            //TODO: if there is a gotten url value, return the normalized absolute URL of it, following the containing document's language's rules for resolving relative URLs (e.g. in HTML, use the current URL context as determined by the page, and first <base> element, if any).
-
             if (node.Is("a", "area") && node.HasAttr("href"))
             {
-                value = new MfValue(Props.URL, node.GetAttributeValue("href", null));
+                value = new MfValue(Props.URL, node.GetAttributeValue("href", null).ToAbsoluteUri(baseUri));
                 return true;
             }
 
             if (node.TrySelectFirstChild("a", out HtmlNode aChild, onlyOfType: true) && aChild.HasAttr("href") && !aChild.IsPropertyElement(MfType.Specification, MfType.Url))
             {
-                value = new MfValue(Props.URL, aChild.GetAttributeValue("href", null));
+                value = new MfValue(Props.URL, aChild.GetAttributeValue("href", null).ToAbsoluteUri(baseUri));
                 return true;
             }
 
             if (node.TrySelectFirstChild("area", out HtmlNode areaChild, onlyOfType: true) && areaChild.HasAttr("href") && !areaChild.IsPropertyElement(MfType.Specification, MfType.Url))
             {
-                value = new MfValue(Props.URL, areaChild.GetAttributeValue("href", null));
+                value = new MfValue(Props.URL, areaChild.GetAttributeValue("href", null).ToAbsoluteUri(baseUri));
                 return true;
             }
 
@@ -205,13 +201,13 @@ namespace Microformats.Parsers
 
                 if (anyChild.TrySelectFirstChild("a", out HtmlNode aNestedChild, onlyOfType: true) && aNestedChild.HasAttr("href") && !aNestedChild.IsPropertyElement(MfType.Specification, MfType.Url))
                 {
-                    value = new MfValue(Props.URL, aNestedChild.GetAttributeValue("href", null));
+                    value = new MfValue(Props.URL, aNestedChild.GetAttributeValue("href", null).ToAbsoluteUri(baseUri));
                     return true;
                 }
 
                 if (anyChild.TrySelectFirstChild("area", out HtmlNode areaNestedChild, onlyOfType: true) && areaNestedChild.HasAttr("href") && !areaNestedChild.IsPropertyElement(MfType.Specification, MfType.Url))
                 {
-                    value = new MfValue(Props.URL, areaNestedChild.GetAttributeValue("href", null));
+                    value = new MfValue(Props.URL, areaNestedChild.GetAttributeValue("href", null).ToAbsoluteUri(baseUri));
                     return true;
                 }
             }

@@ -82,9 +82,16 @@ namespace Microformats
                     entry.AddClass(Props.ENTRY);
             }
 
+            //Configure base url
+            var baseUri = options.BaseUri;
+            var baseElement = doc.DocumentNode.Descendants().Where(n => n.Name.ToLower() == "base" && n.HasAttr("href", ignoreEmpty: true)).FirstOrDefault();
+            if (baseElement != null)
+                baseUri = new Uri(baseElement.GetAttributeValue("href", null).ToAbsoluteUri(options.BaseUri));
+                
+
             var context = new MfResult
             {
-                Items = ParseElementForMicroformat(doc.DocumentNode)
+                Items = ParseElementForMicroformat(doc.DocumentNode, baseUri)
             };
 
             return context;
@@ -96,7 +103,7 @@ namespace Microformats
         /// <param name="node"></param>
         /// <param name="isBackcompat"></param>
         /// <returns></returns>
-        private MfSpec[] ParseElementForMicroformat(HtmlNode node, bool isBackcompat = false)
+        private MfSpec[] ParseElementForMicroformat(HtmlNode node, Uri baseUri, bool isBackcompat = false)
         {
             isBackcompat = isBackcompat || node.IsBackcompat();
 
@@ -109,12 +116,12 @@ namespace Microformats
             if (specifications.Any())
             {
                 //If microformat root, parse it for a microformat
-                return new[] { ParseElementForMicroformat(node, specifications, isBackcompat: isBackcompat) };
+                return new[] { ParseElementForMicroformat(node, specifications, baseUri, isBackcompat: isBackcompat) };
             }
             else
             {
                 //If no specifications, parse child elements for microformats (depth first, doc order)
-                return node.ChildNodes.SelectMany(n => ParseElementForMicroformat(n, isBackcompat: isBackcompat)).ToArray();
+                return node.ChildNodes.SelectMany(n => ParseElementForMicroformat(n, baseUri, isBackcompat: isBackcompat)).ToArray();
             }
         }
 
@@ -125,14 +132,14 @@ namespace Microformats
         /// <param name="specification"></param>
         /// <param name="isBackcompat"></param>
         /// <returns></returns>
-        private MfSpec ParseElementForMicroformat(HtmlNode node, MfProperty[] specifications, bool isBackcompat = false)
+        private MfSpec ParseElementForMicroformat(HtmlNode node, MfProperty[] specifications, Uri baseUri, bool isBackcompat = false)
         {
             var spec = new MfSpec
             {
                 Type = specifications.Select(s => s.Name).ToArray(),
                 Id = !String.IsNullOrEmpty(node.Id) ? node.Id : null,
                 Lang = options.DiscoverLang ? DiscoverLanguage(node) : null,
-                Properties = node.ChildNodes.SelectMany(n => ParseElementForMicroformatProperties(n, isBackcompat))
+                Properties = node.ChildNodes.SelectMany(n => ParseElementForMicroformatProperties(n, baseUri, isBackcompat))
                     .GroupBy(p => p.Property.Key)
                     .ToDictionary(g => g.Key, a => a.Select(s => s).ToArray())
             };
@@ -145,15 +152,15 @@ namespace Microformats
             //Parse the implied properties if applicable
             if (!isBackcompat)
             {
-                if (!spec.Properties.ContainsKey("name") && !spec.HasParsedType(MfType.Specification, MfType.Property, MfType.Embedded) && ImpliedPropertyParser.TryParseName(node, out MfValue name))
+                if (!spec.Properties.ContainsKey("name") && !spec.HasParsedType(MfType.Specification, MfType.Property, MfType.Embedded) && ImpliedPropertyParser.TryParseName(node, baseUri, out MfValue name))
                     spec.Properties.Add("name", new[] { name });
 
                 if (!spec.HasParsedType(MfType.Specification, MfType.Url))
                 {
-                    if (!spec.Properties.ContainsKey("photo") && ImpliedPropertyParser.TryParsePhoto(node, out MfValue photo))
+                    if (!spec.Properties.ContainsKey("photo") && ImpliedPropertyParser.TryParsePhoto(node, baseUri, out MfValue photo))
                         spec.Properties.Add("photo", new[] { photo });
 
-                    if (!spec.Properties.ContainsKey("url") && ImpliedPropertyParser.TryParseUrl(node, out MfValue url))
+                    if (!spec.Properties.ContainsKey("url") && ImpliedPropertyParser.TryParseUrl(node, baseUri, out MfValue url))
                         spec.Properties.Add("url", new[] { url });
                 }
             }
@@ -168,7 +175,7 @@ namespace Microformats
             return spec;
         }
 
-        private MfValue[] ParseElementForMicroformatProperties(HtmlNode node, bool isBackcompat)
+        private MfValue[] ParseElementForMicroformatProperties(HtmlNode node, Uri baseUri, bool isBackcompat)
         {
             isBackcompat = isBackcompat || node.IsBackcompat();
 
@@ -189,12 +196,12 @@ namespace Microformats
             //Parse properties on the node
             if(propertiesOnNode.Any(p => p.Type == MfType.Property))
             {
-                var propertyValue = PropertyParser.ParseText(node);
+                var propertyValue = PropertyParser.ParseText(node, baseUri);
                 foreach(var property in propertiesOnNode.Where(p => p.Type == MfType.Property))
                 {
                     if (specifications.Any())
                     {
-                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, isBackcompat: isBackcompat)));
+                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, baseUri, isBackcompat: isBackcompat)));
                     }
                     else
                     {
@@ -206,12 +213,12 @@ namespace Microformats
             //Parse URLs on the node
             if(propertiesOnNode.Any(p => p.Type == MfType.Url))
             {
-                var propertyValue = PropertyParser.ParseUrl(node);
+                var propertyValue = PropertyParser.ParseUrl(node, baseUri);
                 foreach (var property in propertiesOnNode.Where(p => p.Type == MfType.Url))
                 {
                     if (specifications.Any())
                     {
-                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, isBackcompat: isBackcompat)));
+                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, baseUri, isBackcompat: isBackcompat)));
                     }
                     else
                     {
@@ -223,14 +230,14 @@ namespace Microformats
             //Parse dates on the node
             if(propertiesOnNode.Any(p => p.Type == MfType.DateTime))
             {
-                var (propertyValue, newDateParseContext) = PropertyParser.ParseDate(node, this.dateParseContext);
+                var (propertyValue, newDateParseContext) = PropertyParser.ParseDate(node, baseUri, this.dateParseContext);
                 dateParseContext = newDateParseContext ?? dateParseContext;
 
                 foreach (var property in propertiesOnNode.Where(p => p.Type == MfType.DateTime))
                 {
                     if (specifications.Any())
                     {
-                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, isBackcompat: isBackcompat)));
+                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, baseUri, isBackcompat: isBackcompat)));
                     }
                     else
                     {
@@ -247,7 +254,7 @@ namespace Microformats
                 {
                     if (specifications.Any())
                     {
-                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, isBackcompat: isBackcompat)));
+                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, baseUri, isBackcompat: isBackcompat)));
                     }
                     else
                     {
@@ -256,11 +263,11 @@ namespace Microformats
                 }
             }
 
-            //TODO: PARSE h-* elements not attached to a property
+            //TODO: PARSE h-* elements not attached to a property (spec.hildren support)
 
             //Recursive parse child properties
             if (!specifications.Any())
-                results.AddRange(node.ChildNodes.SelectMany(n => ParseElementForMicroformatProperties(n, isBackcompat)));
+                results.AddRange(node.ChildNodes.SelectMany(n => ParseElementForMicroformatProperties(n, baseUri, isBackcompat)));
 
             return results.ToArray();
         }
