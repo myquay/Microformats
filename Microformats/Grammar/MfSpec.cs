@@ -23,6 +23,16 @@ namespace Microformats.Grammar
         public string Lang { get; set; }
 
         /// <summary>
+        /// Shape
+        /// </summary>
+        public string Shape { get; set; }
+
+        /// <summary>
+        /// Coords
+        /// </summary>
+        public string Coords { get; set; }
+
+        /// <summary>
         /// The Value
         /// </summary>
         public string[] Type { get; set; }
@@ -32,6 +42,13 @@ namespace Microformats.Grammar
         /// </summary>
         public Dictionary<string, MfValue[]> Properties { get; set; } = new Dictionary<string, MfValue[]>();
 
+        /// <summary>
+        /// Try get property value
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="property"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public bool TryGet<T>(string property, out T[] result)
             where T : class
         {
@@ -55,6 +72,12 @@ namespace Microformats.Grammar
             return results.All(a => !a.successful);
         }
 
+        /// <summary>
+        /// Get property value
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="property"></param>
+        /// <returns></returns>
         public T[] Get<T>(string property) 
             where T : class 
         {
@@ -86,5 +109,25 @@ namespace Microformats.Grammar
             return Array.Empty<string>();
         }
 
+        /// <summary>
+        /// Types this spec has already parsed
+        /// </summary>
+        public MfType[] ParsedTypes
+        {
+            get
+            {
+                return Properties.SelectMany(s => s.Value).Select(s => s.Property.Type).Distinct().ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Has parsed on of the specified types
+        /// </summary>
+        /// <param name="types"></param>
+        /// <returns></returns>
+        public bool HasParsedType(params MfType[] types)
+        {
+            return types.Any(a => ParsedTypes.Contains(a));
+        }
     }
 }

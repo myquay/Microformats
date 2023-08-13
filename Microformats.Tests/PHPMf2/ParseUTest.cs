@@ -64,7 +64,7 @@ namespace Microformats.Tests.PHPMf2
             var html = "<div class=\"h-card\"><img class=\"u-photo\" src=\"http://example.com/someimage.png\"></div>";
             var result = parser.Parse(html);
 
-            Assert.IsTrue(result.Items[0].Properties.ContainsKey("url"));
+            Assert.IsTrue(result.Items[0].Properties.ContainsKey("photo"));
             Assert.AreEqual("http://example.com/someimage.png", result.Items[0].Get(Props.PHOTO)[0]);
         }
 
@@ -321,14 +321,14 @@ namespace Microformats.Tests.PHPMf2
         {
             var parser = new Mf2().WithOptions(o =>
             {
-                o.BaseUri = new Uri("http://example.com");
+                o.BaseUri = new Uri("https://example.com");
                 return o;
             });
             var html = "<!doctype html>\r\n<html class=\"h-entry\">\r\n\t<head>\r\n\t\t<link rel=\"canonical\" class=\"u-url p-name\" href=\"https://example.com/\" title=\"Example.com homepage\">\r\n\t</head>\r\n\t<body></body>\r\n</html>";
             var result = parser.Parse(html);
 
             Assert.IsTrue(result.Items[0].Properties.ContainsKey("url"));
-            Assert.AreEqual("http://example.com/", result.Items[0].Get(Props.URL)[0]);
+            Assert.AreEqual("https://example.com/", result.Items[0].Get(Props.URL)[0]);
 
             Assert.IsTrue(result.Items[0].Properties.ContainsKey("name"));
             Assert.AreEqual("Example.com homepage", result.Items[0].Get(Props.NAME)[0]);

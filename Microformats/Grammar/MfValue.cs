@@ -12,39 +12,29 @@ namespace Microformats.Grammar
     /// </summary>
     public class MfValue
     {
-        private object _value { get; set; }
+        public MfProperty Property { get; set; }
 
-        public MfValue(string value)
-        {
-            _value = value;
-        }
+        private object Value { get; set; }
 
-        public MfValue(MfSpec value)
+        public MfValue(string property, object value)
         {
-            _value = value;
-        }
-
-        public MfValue(MfImage value)
-        {
-            _value = value;
-        }
-        public MfValue(MfEmbedded value)
-        {
-            _value = value;
+            Value = value;
+            if (MfProperty.TryFromName(property, out MfProperty result))
+                Property = result;
         }
 
         public object Get()
         {
-            return _value;
+            return Value;
         }
 
         public bool TryGet<T>(out T value) where T : class
         {
             value = default;
 
-            if (_value is T)
+            if (Value is T)
             {
-                value = _value as T;
+                value = Value as T;
                 return true;
             }
             
@@ -60,41 +50,41 @@ namespace Microformats.Grammar
 
         public string GetValue()
         {
-            if (_value is string v)
+            if (Value is string v)
             {
                 return v;
             }
-            else if (_value is MfImage img)
+            else if (Value is MfImage img)
             {
                 return img.Value;
             }
-            else if (_value is MfEmbedded emb)
+            else if (Value is MfEmbedded emb)
             {
                 return emb.Value;
             }
             else
             {
-                return ((MfSpec)_value).Value;
+                return ((MfSpec)Value).Value;
             }
         }
 
         public string GetName()
         {
-            if(_value is  string v)
+            if(Value is  string v)
             {
                 return v;
             }
-            else if (_value is MfImage img)
+            else if (Value is MfImage img)
             {
                 return img.Value;
             }
-            else if (_value is MfEmbedded emb)
+            else if (Value is MfEmbedded emb)
             {
                 return emb.Value;
             }
             else
             {
-                return ((MfSpec)_value)?.Get<String>(Props.NAME)?.First();
+                return ((MfSpec)Value)?.Get<String>(Props.NAME)?.First();
             }
         }
     }

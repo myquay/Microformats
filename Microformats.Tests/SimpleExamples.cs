@@ -69,7 +69,7 @@ namespace Microformats.Tests
         /// From: <see href="https://microformats.org/wiki/microformats2#detailed_person_example"/>
         /// </summary>
         [TestMethod]
-        public void PersonDefailedImageExample()
+        public void PersonDetailedImageExample()
         {
             var parser = new Mf2();
             var html = "<div class=\"h-card\">\r\n  <img class=\"u-photo\" alt=\"photo of Mitchell\"\r\n       src=\"https://webfwd.org/content/about-experts/300.mitchellbaker/mentor_mbaker.jpg\"/>\r\n  <a class=\"p-name u-url\"\r\n     href=\"http://blog.lizardwrangler.com/\" \r\n    >Mitchell Baker</a>\r\n (<a class=\"u-url\" \r\n     href=\"https://twitter.com/MitchellBaker\"\r\n    >@MitchellBaker</a>)\r\n  <span class=\"p-org\">Mozilla Foundation</span>\r\n  <p class=\"p-note\">\r\n    Mitchell is responsible for setting the direction and scope of the Mozilla Foundation and its activities.\r\n  </p>\r\n  <span class=\"p-category\">Strategy</span>\r\n  <span class=\"p-category\">Leadership</span>\r\n</div>";
@@ -184,10 +184,11 @@ namespace Microformats.Tests
 
             Assert.AreEqual(1, address.Type.Length);
             Assert.IsTrue(address.Type.Contains("h-adr"));
-            Assert.AreEqual(4, address.Properties.Count);
+            Assert.AreEqual(3, address.Properties.Count);
             Assert.AreEqual("17 Austerstræti", address.Get(Props.STREET_ADDRESS)[0]);
             Assert.AreEqual("Reykjavík", address.Get(Props.LOCALITY)[0]);
             Assert.AreEqual("Iceland", address.Get(Props.COUNTRY_NAME)[0]);
+            Assert.AreEqual("17 Austerstræti Reykjavík Iceland", address.Value);    
         }
 
         /// <summary>
@@ -202,12 +203,11 @@ namespace Microformats.Tests
 
             Assert.AreEqual(1, result.Items.Length);
             Assert.IsTrue(result.Items[0].Type.Contains("h-adr"));
-            Assert.AreEqual(5, result.Items[0].Properties.Count);
+            Assert.AreEqual(4, result.Items[0].Properties.Count);
             Assert.AreEqual("17 Austerstræti", result.Items[0].Get(Props.STREET_ADDRESS)[0]);
             Assert.AreEqual("Reykjavík", result.Items[0].Get(Props.LOCALITY)[0]);
             Assert.AreEqual("Iceland", result.Items[0].Get(Props.COUNTRY_NAME)[0]);
             Assert.AreEqual("107", result.Items[0].Get(Props.POSTAL_CODE)[0]);
-            Assert.AreEqual("17 Austerstræti Reykjavík Iceland 107", result.Items[0].Get(Props.NAME)[0]);
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace Microformats.Tests
 
             Assert.AreEqual(1, result.Items.Length);
             Assert.IsTrue(result.Items[0].Type.Contains("h-geo"));
-            Assert.AreEqual(3, result.Items[0].Properties.Count);
+            Assert.AreEqual(2, result.Items[0].Properties.Count);
             Assert.AreEqual("-27.116667", result.Items[0].Get(Props.LONGITUDE)[0]);
             Assert.AreEqual("-109.366667", result.Items[0].Get(Props.LATITUDE)[0]);
         }
@@ -311,10 +311,9 @@ namespace Microformats.Tests
 
             Assert.AreEqual(1, result.Items.Length);
             Assert.IsTrue(result.Items[0].Type.Contains("h-geo"));
-            Assert.AreEqual(3, result.Items[0].Properties.Count);
+            Assert.AreEqual(2, result.Items[0].Properties.Count);
             Assert.AreEqual("-109.366667", result.Items[0].Get(Props.LONGITUDE)[0]);
             Assert.AreEqual("-27.116667", result.Items[0].Get(Props.LATITUDE)[0]);
-            Assert.AreEqual("-27.116667, -109.366667", result.Items[0].Get(Props.NAME)[0]);
         }
 
         /// <summary>
