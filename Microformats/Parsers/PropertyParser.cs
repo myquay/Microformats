@@ -23,7 +23,7 @@ namespace Microformats.Parsers
         /// <param name="node"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        internal static (object propertyValue, DateTimeParseContext context) ParseDate(HtmlNode node, Uri baseUri, DateTimeParseContext context)
+        internal static (string propertyValue, DateTimeParseContext context) ParseDate(HtmlNode node, Uri baseUri, DateTimeParseContext context)
         {
             context = context ?? new DateTimeParseContext();
 
@@ -135,7 +135,7 @@ namespace Microformats.Parsers
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        internal static object ParseEmbedded(HtmlNode node)
+        internal static MfEmbedded ParseEmbedded(HtmlNode node)
         {
             return new MfEmbedded
             {

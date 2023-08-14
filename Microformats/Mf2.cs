@@ -21,6 +21,7 @@ namespace Microformats
     /// </summary>
     public class Mf2
     {
+        private static readonly string REGEX_TIMEZONE = @"(([+-]\d{1,2}:\d{2})|([+-]\d)|([+-]\d{3,4}))$";
 
         private Mf2Options options = new Mf2Options();
         private DateTimeParseContext dateParseContext;
@@ -116,7 +117,7 @@ namespace Microformats
             if (specifications.Any())
             {
                 //If microformat root, parse it for a microformat
-                return new[] { ParseElementForMicroformat(node, specifications, baseUri, isBackcompat: isBackcompat) };
+                return new[] { ParseElementForMicroformat(node, specifications, null, baseUri, isBackcompat: isBackcompat) };
             }
             else
             {
@@ -132,22 +133,34 @@ namespace Microformats
         /// <param name="specification"></param>
         /// <param name="isBackcompat"></param>
         /// <returns></returns>
-        private MfSpec ParseElementForMicroformat(HtmlNode node, MfProperty[] specifications, Uri baseUri, bool isBackcompat = false)
+        private MfSpec ParseElementForMicroformat(HtmlNode node, MfProperty[] specifications, string simpleValue, Uri baseUri, bool isBackcompat = false)
         {
             var spec = new MfSpec
             {
                 Type = specifications.Select(s => s.Name).ToArray(),
                 Id = !String.IsNullOrEmpty(node.Id) ? node.Id : null,
-                Lang = options.DiscoverLang ? DiscoverLanguage(node) : null,
-                Properties = node.ChildNodes.SelectMany(n => ParseElementForMicroformatProperties(n, baseUri, isBackcompat))
-                    .GroupBy(p => p.Property.Key)
-                    .ToDictionary(g => g.Key, a => a.Select(s => s).ToArray())
+                Lang = options.DiscoverLang ? DiscoverLanguage(node) : null
             };
 
-            //TODO: SET VALUE PROPERTY
-            //Set the spec value property if applicable
-            //if (valueProp != null)
-            //    spec.Value = spec.Get(valueProp.Name).FirstOrDefault();
+            var parsedProperties = node.ChildNodes.SelectMany(n => ParseElementForMicroformatProperties(n, baseUri, isBackcompat));
+
+            //DateTime properties may take timezone of subsequent property if missing
+            var datetimes = parsedProperties.Where(p => p.Property.Type == MfType.DateTime).ToArray();
+            for(int i = 1; i < datetimes.Length; i++)
+            {
+                if(datetimes[i - 1].TryGet<string>(out string dtPrimary) && datetimes[i - 1].TryGet<string>(out string dtSecondary)
+                    && !Regex.IsMatch(dtPrimary, REGEX_TIMEZONE) && Regex.IsMatch(dtSecondary, REGEX_TIMEZONE))
+                {
+                    var tz = Regex.Match(dtSecondary, REGEX_TIMEZONE).Value;
+                    datetimes[i - 1] = new MfValue(datetimes[i - 1].Property.Name, dtPrimary + tz);
+                }
+            }
+
+            spec.Properties = parsedProperties.GroupBy(p => p.Property.Key)
+                    .ToDictionary(g => g.Key, a => a.Select(s => s).ToArray());
+
+            if (!String.IsNullOrEmpty(simpleValue))
+                spec.Value = simpleValue;
 
             //Parse the implied properties if applicable
             if (!isBackcompat)
@@ -201,7 +214,7 @@ namespace Microformats
                 {
                     if (specifications.Any())
                     {
-                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, baseUri, isBackcompat: isBackcompat)));
+                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, propertyValue, baseUri, isBackcompat: isBackcompat)));
                     }
                     else
                     {
@@ -214,11 +227,14 @@ namespace Microformats
             if(propertiesOnNode.Any(p => p.Type == MfType.Url))
             {
                 var propertyValue = PropertyParser.ParseUrl(node, baseUri);
+
+                var simpleValue = propertyValue is MfImage ? ((MfImage)propertyValue).Alt : (string)propertyValue;
+
                 foreach (var property in propertiesOnNode.Where(p => p.Type == MfType.Url))
                 {
                     if (specifications.Any())
                     {
-                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, baseUri, isBackcompat: isBackcompat)));
+                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, simpleValue, baseUri, isBackcompat: isBackcompat)));
                     }
                     else
                     {
@@ -237,7 +253,7 @@ namespace Microformats
                 {
                     if (specifications.Any())
                     {
-                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, baseUri, isBackcompat: isBackcompat)));
+                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, propertyValue, baseUri, isBackcompat: isBackcompat)));
                     }
                     else
                     {
@@ -254,7 +270,7 @@ namespace Microformats
                 {
                     if (specifications.Any())
                     {
-                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, baseUri, isBackcompat: isBackcompat)));
+                        results.Add(new MfValue(property.Name, ParseElementForMicroformat(node, specifications, propertyValue.Value, baseUri, isBackcompat: isBackcompat)));
                     }
                     else
                     {
