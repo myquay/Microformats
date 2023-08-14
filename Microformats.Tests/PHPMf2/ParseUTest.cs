@@ -309,8 +309,8 @@ namespace Microformats.Tests.PHPMf2
             Assert.IsTrue(result.Items[3].Properties.ContainsKey("url"));
             Assert.AreEqual("http://example.com/", result.Items[1].Get(Props.URL)[0]);
 
-            Assert.IsTrue(result.Items[4].Properties.ContainsKey("url"));
-            Assert.AreEqual("http://example.com/", result.Items[1].Get(Props.URL)[0]);
+            Assert.IsTrue(result.Items[4].Children[0].Properties.ContainsKey("url"));
+            Assert.AreEqual("http://example.com/", result.Items[4].Children[0].Get(Props.URL)[0]);
         }
 
         ///<summary>

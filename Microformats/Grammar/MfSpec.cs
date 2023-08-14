@@ -43,6 +43,11 @@ namespace Microformats.Grammar
         public Dictionary<string, MfValue[]> Properties { get; set; } = new Dictionary<string, MfValue[]>();
 
         /// <summary>
+        /// Children specs of the value
+        /// </summary>
+        public List<MfSpec> Children { get; set; } = new List<MfSpec>();
+
+        /// <summary>
         /// Try get property value
         /// </summary>
         /// <typeparam name="T"></typeparam>

@@ -107,8 +107,7 @@ namespace Microformats.Tests.PHPMf2
             var result = parser.Parse(html);
 
             Assert.AreEqual("1234", result.Items[0].Get(Props.TELEPHONE)[0]);
-            //TODO: CHILDREN SUPPORT REQUIRED
-            Assert.AreEqual("5678", result.Items[0].Get<MfSpec>(Props.TELEPHONE)[0].Get(Props.TELEPHONE)[0]);
+            Assert.AreEqual("5678", result.Items[0].Children[0].Get(Props.TELEPHONE)[0]);
         }
 
         ///<summary>
