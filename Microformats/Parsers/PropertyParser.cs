@@ -57,7 +57,12 @@ namespace Microformats.Parsers
 
                 context.ImpliedTimezone = context.ImpliedTimezone ?? dateTimeParts.FirstOrDefault(a => a.IsTimezone)?.Part;
                 context.ImpliedDate = context.ImpliedDate ?? dateTimeParts.FirstOrDefault(a => a.IsDate)?.Part;
-                
+
+            }
+            else if (node.ChildNodes.Any(c => c.HasClass("value-title") && c.HasAttr("title")))
+            {
+                parsedDate = node.ChildNodes.Where(c => c.HasClass("value-title") && c.HasAttr("title"))
+                    .Select(s => s.GetAttributeValue("title", null)).Aggregate((current, next) => $"{current}{next}");
             }
             else if (node.Is("time", "ins", "del") && node.HasAttr("datetime"))
             {
@@ -163,7 +168,12 @@ namespace Microformats.Parsers
                     if (s.Is("abbr"))
                         return s.GetAttributeValue("title", null) ?? s.InnerText.Trim();
                     return s.InnerText.Trim();
-                }).Aggregate((current, next) => $"{current} {next}");
+                }).Aggregate((current, next) => $"{current}{next}");
+            }
+            else if (node.ChildNodes.Any(c => c.HasClass("value-title") && c.HasAttr("title")))
+            {
+                return node.ChildNodes.Where(c => c.HasClass("value-title") && c.HasAttr("title"))
+                    .Select(s => s.GetAttributeValue("title", null)).Aggregate((current, next) => $"{current}{next}");
             }
             else if (node.Is("abbr", "link") && node.HasAttr("title"))
             {
