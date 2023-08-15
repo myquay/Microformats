@@ -15,7 +15,7 @@ jobs:
     - name: 🛠️ Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '7.0.x'
 
     - name: 🛠️ Restore NuGet packages
       run: dotnet restore
@@ -40,3 +40,15 @@ jobs:
       with:
         name: nuget-package
         path: ${{github.workspace}}/**/Microformats.*.snupkg
+
+    - name: 🛠️ Setup NuGet
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+        nuget-version: '5.x'
+    
+    - name: 🌐 Push NuGet package live
+      run: nuget push ${{github.workspace}}/**/Microformats.*.nupkg -src https://api.nuget.org/v3/index.json
+    
+    - name: 🌐 Push NuGet symbol package live
+      run: nuget push ${{github.workspace}}/**/Microformats.*.snupkg -src https://api.nuget.org/v3/index.json
