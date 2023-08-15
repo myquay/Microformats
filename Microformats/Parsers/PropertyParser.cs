@@ -140,11 +140,11 @@ namespace Microformats.Parsers
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        internal static MfEmbedded ParseEmbedded(HtmlNode node)
+        internal static MfEmbedded ParseEmbedded(HtmlNode node, Uri baseUri)
         {
             return new MfEmbedded
             {
-                Value = node.InnerText.Trim(),
+                Value = InnerTextParser.GetInnerText(node, baseUri).Trim(),
                 Html = node.InnerHtml.Trim()
             };
         }

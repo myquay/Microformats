@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Microformats.Parsers
 {
@@ -24,10 +25,22 @@ namespace Microformats.Parsers
         /// <returns></returns>
         public static string GetInnerText(HtmlNode node, Uri baseUri, bool replaceImage = true, bool convertImgToSrc = false)
         {
+            var elements = GetInnerTextElements(node, baseUri, replaceImage, convertImgToSrc)
+                .Select(s => Regex.Replace(s, @"[ ]+", " "));
 
-            var elements = GetInnerTextElements(node, baseUri, replaceImage, convertImgToSrc);
-           
-            return Regex.Replace(String.Join("", elements), @"[^\S\r\n]+", " ").Trim();
+            if(!elements.Any())
+                return String.Empty;
+
+            if (elements.Count() == 1)
+                return elements.First().Trim();
+
+            return elements.Aggregate((a, b) =>
+                {
+                    if(Regex.IsMatch(a, @"\s$") && Regex.IsMatch(b, @"^\s+"))
+                        return $"{a}{b.Substring(1)}";
+                    else
+                        return $"{a}{b}";  
+                }).Trim();
         }
 
         /// <summary>
@@ -46,6 +59,11 @@ namespace Microformats.Parsers
             else if (node.NodeType == HtmlNodeType.Text)
             {
                 return new[] { Regex.Replace(node.InnerText, @"\s+", " ") };
+            }
+            else if(node.Name.ToLowerInvariant() == "p")
+            {
+                //Paragraphs should be separated by a newline
+                return node.ChildNodes.SelectMany(n => GetInnerTextElements(n, baseUri, replaceImage, convertImgToSrc)).Concat(new[] { "\n" }).ToArray();
             }
             else if (node.Is("img") && replaceImage)
             {

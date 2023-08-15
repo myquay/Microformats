@@ -268,7 +268,7 @@ namespace Microformats
             //Parse embedded microformats on the node
             if (propertiesOnNode.Any(p => p.Type == MfType.Embedded))
             {
-                var propertyValue = PropertyParser.ParseEmbedded(node);
+                var propertyValue = PropertyParser.ParseEmbedded(node, baseUri);
                 foreach (var property in propertiesOnNode.Where(p => p.Type == MfType.Embedded))
                 {
                     if (specifications.Any())
