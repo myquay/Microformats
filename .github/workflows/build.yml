@@ -1,6 +1,7 @@
 ﻿name: Build Microformats library
 
 on:
+  workflow_dispatch:
   push:
     branches:
     - master
@@ -29,3 +30,18 @@ jobs:
       
     - name: 👟 Run tests
       run: dotnet test
+      
+    - name: 📦 Pack NuGet package
+      run: dotnet pack --configuration Release
+
+    - name: 💾 Archive package
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-package
+        path: ${{github.workspace}}/**/Microformats.*.nupkg
+
+    - name: 💾 Archive symbols package
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-package
+        path: ${{github.workspace}}/**/Microformats.*.snupkg
