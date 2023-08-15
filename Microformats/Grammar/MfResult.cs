@@ -23,6 +23,16 @@ namespace Microformats.Grammar
         /// <summary>
         /// Rel-urls values present
         /// </summary>
-        public Dictionary<string, Dictionary<string, object>> RelUrls { get; set; } = new Dictionary<string, Dictionary<string, object>>();
+        public Dictionary<string, MfRelUrlResult> RelUrls { get; set; } = new Dictionary<string, MfRelUrlResult>();
+    }
+
+    public class MfRelUrlResult
+    {
+        public string[] Rels { get; set; } = Array.Empty<string>();
+        public string Text { get; set; }
+        public string Type { get; set; }
+        public string Title { get; set; }
+        public string Media { get; set; }
+        public string HrefLang { get; set; }
     }
 }

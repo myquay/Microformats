@@ -88,11 +88,12 @@ namespace Microformats
             var baseElement = doc.DocumentNode.Descendants().Where(n => n.Name.ToLower() == "base" && n.HasAttr("href", ignoreEmpty: true)).FirstOrDefault();
             if (baseElement != null)
                 baseUri = new Uri(baseElement.GetAttributeValue("href", null).ToAbsoluteUri(options.BaseUri));
-                
 
             var context = new MfResult
             {
-                Items = ParseElementForMicroformat(doc.DocumentNode, baseUri)
+                Items = ParseElementForMicroformat(doc.DocumentNode, baseUri),
+                Rels = RelParser.ParseRels(doc.DocumentNode, baseUri),
+                RelUrls = RelParser.ParseRelUrls(doc.DocumentNode, baseUri)
             };
 
             return context;
