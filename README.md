@@ -47,7 +47,7 @@ Here is an example parsing someone's h-card.
 
 ```csharp
  var parser = new Mf2();
- var html = "<a class=\"h-card\" href=\"{website address}\">\r\n <img alt=\"{name of person}\" src=\"{address of photo}\" />\r\n</a>";
+ var html = "<a class=\"h-card\" href=\"{website address}\"><img alt=\"{name of person}\" src=\"{address of photo}\" /></a>";
  var result = parser.Parse(html);
 
  result.Items[0].Get(Props.NAME)[0]; //Access name
