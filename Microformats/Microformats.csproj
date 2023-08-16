@@ -2,7 +2,26 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Title>Microformats</Title>
+    <Authors>Michael McKenna</Authors>
+    <Copyright>Copyright 2012-2023  Michael McKenna</Copyright>
+    <PackageProjectUrl>https://github.com/myquay/Microformats</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/myquay/Microformats.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>microformats;microformats2;microformat;indieweb</PackageTags>
+    <PackageReleaseNotes>$(ReleaseNotes)</PackageReleaseNotes>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.50" />
