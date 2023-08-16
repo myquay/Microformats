@@ -60,7 +60,7 @@ Here is an example parsing someone's h-card.
 * All the different Microformats (h-\*) parsed are held in the `result.Items` array.
 * Access the string value for a property using the `.Get({name})` method. This returns an array of all values for that property, typically it will be just one if present.
 * Some properties can have a more complex data structure which are represented by the types `MfImage`, and `MfEmbedded`. Use the generic .Get\<Type\>({name}) to access the underlying complex type.
-* Unsure of the underlying type? Use the .TryGet\<T\>({name}, out T result) and fallback on the string version if failes.
+* Unsure of the underlying type? Use the .TryGet\<T\>({name}, out T result) and fallback on the string version on failure.
 * Well known properties from the spec are in the `Props` class (e.g. `Props.NAME`), these are just strings, you can pass in any non-standard property as long as it follows the p-\*, u-\* etc. pattern. (e.g. `.Get("p-some-non-standard-prop")`).
 
 ## Roadmap
