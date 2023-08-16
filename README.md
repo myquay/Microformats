@@ -1,4 +1,4 @@
-#  <img src="https://raw.githubusercontent.com/myquay/Microformats/4a2af9ec1e17704436f55693ebbcf5d0540f1593/logo.svg" alt="Microformats Logo" style="width: 30px"> Microformats .NET
+# Microformats .NET
 
 **A .NET Microformats2 parser.**
 
