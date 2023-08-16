@@ -15,6 +15,7 @@
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageIcon>logo.png</PackageIcon>
+    <Description>This parser implements the full Microformats2 specification, including backwards compatibility with classic Microformats.</Description>
   </PropertyGroup>
 
   <ItemGroup>
