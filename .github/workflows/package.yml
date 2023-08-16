@@ -49,6 +49,3 @@ jobs:
     
     - name: 🌐 Push NuGet package live
       run: nuget push ${{github.workspace}}/**/Microformats.*.nupkg -src https://api.nuget.org/v3/index.json
-    
-    - name: 🌐 Push NuGet symbol package live
-      run: nuget push ${{github.workspace}}/**/Microformats.*.snupkg -src https://api.nuget.org/v3/index.json
