@@ -1,4 +1,4 @@
-# Microformats .NET
+# ![Project Logo](https://raw.githubusercontent.com/myquay/Microformats/main/logo-sm.png) Microformats .NET
 
 **A .NET Microformats2 parser.**
 
