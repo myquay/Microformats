@@ -41,6 +41,28 @@ var parser = new Mf2().WithOptions(o =>
  var result = parser.Parse(html);
 ```
 
+## Example
+
+Here is an example parsing someone's h-card.
+
+```csharp
+ var parser = new Mf2();
+ var html = "<a class=\"h-card\" href=\"{website address}\">\r\n <img alt=\"{name of person}\" src=\"{address of photo}\" />\r\n</a>";
+ var result = parser.Parse(html);
+
+ result.Items[0].Get(Props.NAME)[0]; //Access name
+ result.Items[0].Get(Props.URL)[0]; //Access website
+ result.Items[0].Get(Props.PHOTO)[0]; //Access photo
+```
+
+## Usage notes
+
+* All the different Microformats (h-\*) parsed are held in the `result.Items` array.
+* Access the string value for a property using the `.Get({name})` method. This returns an array of all values for that property, typically it will be just one if present.
+* Some properties can have a more complex data structure which are represented by the types `MfImage`, and `MfEmbedded`. Use the generic .Get\<Type\>({name}) to access the underlying complex type.
+* Unsure of the underlying type? Use the .TryGet\<T\>({name}, out T result) and fallback on the string version if failes.
+* Well known properties from the spec are in the `Props` class (e.g. `Props.NAME`), these are just strings, you can pass in any non-standard property as long as it follows the p-\*, u-\* etc. pattern. (e.g. `.Get("p-some-non-standard-prop")`).
+
 ## Roadmap
 
 - [ ] Format to JSON
